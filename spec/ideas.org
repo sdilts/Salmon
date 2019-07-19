@@ -1,0 +1,197 @@
+* Lanaguage features
+** Automatic destructuring/returning multiple values
+** Tail call optimization
+** Gradual typing
+** Garbage collection
+** Seamless C interop for simple memory usage
+   + Support automatic collection of pointers to arbitray c objects
+   + Support finalizers
+   + Don't support explicit malloc and free.
+** Multi-value namespace
+   Seperate namespaces for functions and variables
+** Error handling
+   + Resumable execptions
+   + inheretable exceptions
+** Macros
+*** Reader macros
+    + All reader macros start with a =#= character
+*** True macros
+** Function arguments
+*** Optional args
+*** keyword args
+** Iterators
+* Types
+** Built-in Types
+*** Symbols
+*** Keywords
+*** Arrays
+    + Static sized arrays
+    + Fill-pointer arrays
+**** Example code
+     #+BEGIN_SRC lisp
+       (make-array dimensions
+		   &key type resizable initial-size initial-contents)
+
+       (let ((arr1 [3 2 1])
+	     (arr2 [[1 2] [3 4]]))
+	 ;; prints 3
+	 (print (ref arr 0))
+	 ;; prints [1 2]
+	 (print (ref arr 0))
+	 ;; prints 2
+	 (print (ref arr 0 1)))
+
+       ;; function signature:
+       (ref array index &rest other-indexes)
+     #+END_SRC
+*** Lists
+    + s-list :: Singly linked list
+    + d-list :: Doubly linked list
+*** Numbers
+  + int :: system's default =int= type
+  + u-int :: system's default =unsigned int=
+  + intXX :: XX bit integer type
+  + u-intXX :: XX bit unsigned integer type
+  + long :: system's defalut =long= type
+  + u-long :: system's default =unsigned long= type
+  + float :: system's default =float= type
+  + double :: system's default =double= type
+*** Character types
+*** Function Pointers
+*** Anyonomus functions
+*** Errors
+** Stdlib Types
+*** Paths
+*** Patterns
+*** Strings
+*** Maps
+*** Sets
+* Structure types
+   #+BEGIN_SRC lisp
+     (defstruct foo ()
+       (slot1 :int)
+       (slot2 :double))
+
+     ;; generates
+     (foo-slot1 obj)
+     (foo-slot2 obj)
+
+     (defstruct bar (foo)
+       (slot3 :string))
+
+     ;; generates bar-slot3 function:
+     (bar-slot3 :obj)
+
+     (defstruct nested
+       (slot-a :int)
+       (defstruct inner
+	 (slot-inner :string)))
+
+     ;; generates
+     (nested.inner-slot-inner obj)
+
+     (defunion union-example
+       (first :int)
+       (second :double))
+
+     ;; generates
+     (union-example-first obj &optional default)
+     ;; either :int or errors
+     (union-example-second obj &optional default)
+     ;; either :double or errors
+
+     ;; allows you to use:
+     (union:current-type obj &optional default)
+     ;; -> either :int or :double
+   #+END_SRC
+* Multi-methods
+* Special forms
+** Conditionals
+  #+BEGIN_EXAMPLE
+    (when <condition>
+       <expressions>)
+
+    (if <condition>
+	<true expression>
+	<false expression>)
+
+    (case <variable>
+	  (:is <value>
+	     <expressions>)
+	  (:else <value
+	     <expressions>))
+
+    (cond
+       (:test <test1> <expressions>)
+       (:test <test2> <expressions>)
+       (:else <expressions>))
+  #+END_EXAMPLE
+** looping
+   #+BEGIN_EXAMPLE
+     (while <condition>
+	<expressions>)
+
+     ;; iterator version:
+     ;; iterator returns three values
+     (for ((:iter [a b c] :in <iterator>))
+	<expressions>)
+
+     ;; can specify a condition to stop with using
+     ;; the check directive. As long as one
+     ;; condition is present in the loop, it will
+     ;; compile.
+     (for ((:count [a] :start 0 :inc 1)
+	   (:check (< a b)))
+	<expressions>)
+
+     ;; here, our exit condition is a < 10
+     (for ((:count [a] :start 1 :end-before 10 :inc 1))
+	<expressions>)
+
+     ;; built-in for directives:
+     :count :check :iter
+	:count counts using the specified variable
+	   ;; possible keywords to count directive:
+	   :start :inc :end-before :end-at
+	      :start is the initial value of the counter
+	      :inc is how the value changes each loop
+	      :end-before will stop the loop when the counter
+		   equals the value specified (counter < given)
+	      :end-at will stop the loop when the counter is equal
+		   to the value given (counter <= given)
+	:check end the loop if the condition is false
+	:iter Loop over the values in the specified iterator
+   #+END_EXAMPLE
+** Variable declarations
+   #+BEGIN_EXAMPLE
+     ;; specifying the type is optional
+     ;; unless an initial value is not set
+     ;; or the type isn't the default:
+     (let ((a 10)
+	   (b 20 :long)
+	   (c :float))
+       <expressions>)
+
+     ;; bind a and b to the multiple values returned from a function:
+     (let (([a b] (multi-ret-val-func 10)))
+       <expressions>)
+
+     ;; bind c and d to the same value:
+     (let (({c d} 10))
+       <expressions>)
+
+     ;; same form for the variable's value as a let binding
+     ;; here:
+     (defglobal (a 10))
+   #+END_EXAMPLE
+** Variable assignment
+   #+BEGIN_EXAMPLE
+     ;; setting a single value at a time:
+     (set a 10)
+     (set (foo-slot1 obj) 10)
+
+     ;; using something that returns multiple values:
+     (set [a b] (multi-ret-val-func 10))
+     ;; setting two variables to the same thing:
+     (set {a b} 10)
+   #+END_EXAMPLE
