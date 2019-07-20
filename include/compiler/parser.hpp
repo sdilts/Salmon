@@ -22,7 +22,9 @@ namespace salmon {
 
     std::ostream& operator<<(std::ostream &os, const ReadResult& result);
 
-    ReadResult lex(std::istream &input, std::string &item);
+    ReadResult read(std::istream &input, std::string &item);
+
+    ReadResult read_from_string(std::string input, std::string &item);
 
   }
 

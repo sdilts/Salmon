@@ -5,7 +5,9 @@
 #include <streambuf>
 #include <limits>
 #include <set>
+#include <list>
 #include <cassert>
+#include <iterator>
 
 #include "compiler/parser.hpp"
 
@@ -139,30 +141,87 @@ namespace salmon {
       }
     }
 
-    ReadResult lex(std::istream &input, std::string &item) {
+    static ReadResult read_next(std::istream &input, std::string &item);
+
+    static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator) {
+      std::list<std::string> items;
+      while(true) {
+	std::string item;
+	ReadResult result = read_next(input, item);
+	if(result == ReadResult::ITEM) {
+	  items.push_back(item);
+	} else if(result == terminator) {
+	  return items;
+	} else if(result == ReadResult::END) {
+	  std::cerr << "EOF reached while parsing\n";
+	  std::cerr << "Implemlement error handling at " << __FILE__ << ": " << __LINE__ << std::endl;
+	  exit(-1);
+	} else {
+	  std::cerr << "Unmatched closing character: " << result;
+	  std::cerr << "Implemlement error handling at " << __FILE__ << ": " << __LINE__ << std::endl;
+	  exit(-1);
+	}
+      }
+    }
+
+    static std::string read_thing(std::istream &input, char start, char end,
+					     ReadResult terminator) {
+      std::ostringstream collected_items;
+      std::list<std::string> possible_output;
+
+      collected_items << " " << start;
+
+      possible_output = collect_list(input, terminator);
+      std::copy(possible_output.begin(), possible_output.end(), std::ostream_iterator<std::string>(collected_items, " "));
+      collected_items << end;
+      std::string result = collected_items.str();
+      std::cerr << result << '\n';
+      return result;
+    }
+
+    static std::string read_list(std::istream &input) {
+      return read_thing(input, '(', ')', ReadResult::R_PAREN);
+    }
+
+    static std::string read_array(std::istream &input) {
+      return read_thing(input, '[', ']', ReadResult::R_BRACKET);
+    }
+
+    static std::string read_set(std::istream &input) {
+      return read_thing(input, '{', '}', ReadResult::R_BRACE);
+    }
+
+    static ReadResult read_next(std::istream &input, std::string &item) {
       do {
 	//consume any preceding whitespace:
 	trim_stream(input);
 	char ch = input.peek();
 	if(ch != EOF) {
-	  std::cerr << "Read char: " << ch << "\n";
-
 	  switch(ch) {
 	  case ';':
 	    // discard the comment:
 	    input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	    break;
 	  case '(':
-	    return ReadResult::L_PAREN;
+	    input.get();
+	    item = read_list(input);
+	    return ReadResult::ITEM;
 	  case ')':
+	    input.get();
 	    return ReadResult::R_PAREN;
 	  case '[':
-	    return ReadResult::L_BRACKET;
+	    input.get();
+	    item = read_array(input);
+	    return ReadResult::ITEM;
 	  case ']':
+	    input.get();
 	    return ReadResult::R_BRACKET;
 	  case '{':
-	    return ReadResult::L_BRACE;
+	    input.get();
+	    item = read_set(input);
+	    return ReadResult::ITEM;
 	  case '}':
+	    input.get();
 	    return ReadResult::R_BRACE;
 	  default:
 	    item = parse_item(input);
@@ -170,6 +229,27 @@ namespace salmon {
 	  }
 	} else return ReadResult::END;
       } while(true);
+    }
+
+    ReadResult read(std::istream &input, std::string &item) {
+      ReadResult result = read_next(input, item);
+      switch(result) {
+      case ReadResult::R_PAREN:
+      case ReadResult::R_BRACKET:
+      case ReadResult::R_BRACE:
+	// this is an error:
+	std::cerr << "Unmatched closing character: " << result;
+	std::cerr << "\nImplemlement error handling at " << __FILE__ << ": " << __LINE__ << std::endl;
+	return ReadResult::END;
+	break;
+      default:
+	return result;
+      }
+    }
+
+    ReadResult read_from_string(std::string input, std::string &item) {
+      std::istringstream input_stream(input);
+      return read(input_stream, item);
     }
   }
 }
