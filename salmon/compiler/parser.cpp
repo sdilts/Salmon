@@ -10,10 +10,25 @@
 #include <iterator>
 
 #include "compiler/parser.hpp"
+#include "compiler/CountingStream.hpp"
 
 namespace salmon {
 
   namespace parser {
+
+    ParseException::ParseException(const std::string &msg, const position_info &start,
+				   const position_info &end) : std::runtime_error(msg), expression_start(start), expression_end(end) {}
+
+    void ParseException::add_file_info(const std::filesystem::path &file) {
+      source_file = file;
+    }
+
+    static std::string build_unmatched_error_str(const std::string &message, char ch) {
+      std::stringstream out;
+      out << message;
+      out << ch;
+      return out.str();
+    }
 
     std::ostream& operator<<(std::ostream &os, const ReadResult& result) {
       switch(result) {
@@ -35,6 +50,25 @@ namespace salmon {
 	return os << "ReadResult::END";
       }
       return os << "";
+    }
+
+    static char toTerminator(ReadResult &result) {
+      switch(result) {
+      case ReadResult::L_PAREN:
+	return '(';
+      case ReadResult::R_PAREN:
+	return ')';
+      case ReadResult::L_BRACKET:
+	return '[';
+      case ReadResult::R_BRACKET:
+	return ']';
+      case ReadResult::L_BRACE:
+	return '{';
+      case ReadResult::R_BRACE:
+	return '}';
+      default:
+	throw std::runtime_error("Given ReadResult is not a terminator.");
+      }
     }
 
     static void trim_stream(std::istream &input) {
@@ -74,7 +108,16 @@ namespace salmon {
       }
     }
 
+    static inline CountingStreamBuffer *tracker_from_stream(std::istream &stream) {
+      return dynamic_cast<CountingStreamBuffer*>(stream.std::ios::rdbuf());
+    }
+
     static std::string parse_string(std::istream &input) {
+      CountingStreamBuffer countStreamBuf = tracker_from_stream(input);
+
+      position_info start_info = countStreamBuf.positionInfo();
+      position_info end_info;
+
       // count number of quotes:
       char ch;
       std::size_t count = 0;
@@ -99,9 +142,9 @@ namespace salmon {
 	}
       }
       if(input.eof()) {
-	std::cerr << "Implemlement error handling at " << __FILE__ << ": " << __LINE__ << std::endl;
-	std::cerr << "Found EOF while parsing string" << std::endl;
-	exit(-1);
+	end_info = countStreamBuf.positionInfo();
+	throw ParseException("EOF reached while parsing string",
+			     start_info, end_info);
       }
       std::string toReturn = token.str();
       toReturn.erase(toReturn.length()-count);
@@ -144,6 +187,14 @@ namespace salmon {
     static ReadResult read_next(std::istream &input, std::string &item);
 
     static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator) {
+      CountingStreamBuffer countStreamBuf = tracker_from_stream(input);
+
+      position_info start_info = countStreamBuf.positionInfo();
+      position_info end_info;
+
+      // consume the starting bracket/brace/etc.
+      input.get();
+
       std::list<std::string> items;
       while(true) {
 	std::string item;
@@ -153,19 +204,20 @@ namespace salmon {
 	} else if(result == terminator) {
 	  return items;
 	} else if(result == ReadResult::END) {
-	  std::cerr << "EOF reached while parsing\n";
-	  std::cerr << "Implemlement error handling at " << __FILE__ << ": " << __LINE__ << std::endl;
-	  exit(-1);
+	  end_info = countStreamBuf.positionInfo();
+	  throw ParseException("EOF reached while parsing",
+			       start_info, end_info);
 	} else {
-	  std::cerr << "Unmatched closing character: " << result;
-	  std::cerr << "Implemlement error handling at " << __FILE__ << ": " << __LINE__ << std::endl;
-	  exit(-1);
+	  char term_char = toTerminator(result);
+	  end_info = countStreamBuf.positionInfo();
+	  throw ParseException(build_unmatched_error_str("Unexpected closing character: ",term_char),
+			       start_info, end_info);
 	}
       }
     }
 
     static std::string read_thing(std::istream &input, char start, char end,
-					     ReadResult terminator) {
+				  ReadResult terminator) {
       std::ostringstream collected_items;
       std::list<std::string> possible_output;
 
@@ -203,21 +255,18 @@ namespace salmon {
 	    input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 	    break;
 	  case '(':
-	    input.get();
 	    item = read_list(input);
 	    return ReadResult::ITEM;
 	  case ')':
 	    input.get();
 	    return ReadResult::R_PAREN;
 	  case '[':
-	    input.get();
 	    item = read_array(input);
 	    return ReadResult::ITEM;
 	  case ']':
 	    input.get();
 	    return ReadResult::R_BRACKET;
 	  case '{':
-	    input.get();
 	    item = read_set(input);
 	    return ReadResult::ITEM;
 	  case '}':
@@ -232,16 +281,25 @@ namespace salmon {
     }
 
     ReadResult read(std::istream &input, std::string &item) {
-      ReadResult result = read_next(input, item);
+      CountingStreamBuffer countStreamBuf(input.rdbuf());
+      std::istream inStream(&countStreamBuf);
+      assert(tracker_from_stream(inStream) == &countStreamBuf);
+
+      position_info start_info = countStreamBuf.positionInfo();
+      position_info end_info;
+
+      // if there is an error, we need to have the first character, as read_next consumes it.
+      char first_char = inStream.peek();
+
+      ReadResult result = read_next(inStream, item);
       switch(result) {
       case ReadResult::R_PAREN:
       case ReadResult::R_BRACKET:
       case ReadResult::R_BRACE:
 	// this is an error:
-	std::cerr << "Unmatched closing character: " << result;
-	std::cerr << "\nImplemlement error handling at " << __FILE__ << ": " << __LINE__ << std::endl;
-	return ReadResult::END;
-	break;
+	end_info = countStreamBuf.positionInfo();
+	throw ParseException(build_unmatched_error_str("Unexpected closing character: ",first_char),
+			     start_info, end_info);
       default:
 	return result;
       }
