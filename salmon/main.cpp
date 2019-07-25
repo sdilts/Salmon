@@ -22,12 +22,10 @@ int main() {
       linenoiseHistoryAdd(line);
       linenoiseHistorySave(history_file.string().c_str());
       std::cout << "You entered " << line  << std::endl;
-      std::istringstream input(line);
-      while(!input.eof()) {
-	std::string token;
-	parser::ReadResult result = parser::lex(input, token);
-	std::cout << "Result: " << result << "\n token: " << token << std::endl;
-      }
+
+      std::string token;
+      parser::ReadResult result = parser::read_from_string(line, token);
+      std::cout << "Result: " << result << "\n token: " << token << std::endl;
     }
     free(line);
   }
