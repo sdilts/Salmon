@@ -9,9 +9,9 @@
 #include "util/environment.hpp"
 #include "compiler/parser.hpp"
 
-static void repl(const std::filesystem::path &config_dir) {
+static void repl(const std::filesystem::path &data_dir) {
 	using namespace salmon;
-	const std::filesystem::path history_file = config_dir / "history.txt";
+	const std::filesystem::path history_file = data_dir / "history.txt";
 
 	linenoiseHistoryLoad(history_file.string().c_str());
 
@@ -55,11 +55,12 @@ int main(int argc ,char **argv) {
 		return -1;
 	}
 
+	std::filesystem::path data_dir = salmon::get_data_dir();
 	std::filesystem::path config_dir = salmon::get_config_dir();
-	std::cout << "Using config dir: " << config_dir << std::endl;
+	std::filesystem::path cache_dir = salmon::get_cache_dir();
 
 	if (repl_flag) {
-		repl(config_dir);
+		repl(data_dir);
 	}
 
 	return 0;
