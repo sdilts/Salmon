@@ -119,13 +119,13 @@ namespace salmon::parser {
 	}
 
 	static inline CountingStreamBuffer *tracker_from_stream(std::istream &stream) {
-		return dynamic_cast<CountingStreamBuffer*>(stream.std::ios::rdbuf());
+		return static_cast<CountingStreamBuffer*>(stream.std::ios::rdbuf());
 	}
 
 	static std::string parse_string(std::istream &input) {
-		CountingStreamBuffer countStreamBuf = tracker_from_stream(input);
+		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
-		position_info start_info = countStreamBuf.positionInfo();
+		position_info start_info = countStreamBuf->positionInfo();
 		position_info end_info;
 
 		// count number of quotes:
@@ -153,7 +153,7 @@ namespace salmon::parser {
 			}
 		}
 		if(input.eof()) {
-			end_info = countStreamBuf.positionInfo();
+			end_info = countStreamBuf->positionInfo();
 			throw ParseException("EOF reached while parsing string",
 								 start_info, end_info);
 		}
@@ -198,9 +198,9 @@ namespace salmon::parser {
 	static ReadResult read_next(std::istream &input, std::string &item);
 
 	static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator) {
-		CountingStreamBuffer countStreamBuf = tracker_from_stream(input);
+		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
-		position_info start_info = countStreamBuf.positionInfo();
+		position_info start_info = countStreamBuf->positionInfo();
 		position_info end_info;
 
 		// consume the starting bracket/brace/etc.
@@ -215,12 +215,12 @@ namespace salmon::parser {
 			} else if(result == terminator) {
 				return items;
 			} else if(result == ReadResult::END) {
-				end_info = countStreamBuf.positionInfo();
+				end_info = countStreamBuf->positionInfo();
 				throw ParseException("EOF reached while parsing",
 									 start_info, end_info);
 			} else {
 				char term_char = toTerminator(result);
-				end_info = countStreamBuf.positionInfo();
+				end_info = countStreamBuf->positionInfo();
 				throw ParseException(build_unmatched_error_str("Unexpected closing character: ",term_char),
 									 start_info, end_info);
 			}
