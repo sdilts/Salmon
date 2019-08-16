@@ -37,14 +37,24 @@ int main(int argc ,char **argv) {
 	bool repl_flag = false;
 	bool invalid_flag = false;
 
+	const short max_verbose_lvl = 3;
+	short verbosity_level = 0;
+
 	char c;
-	while( (c = getopt(argc, argv, "r")) != -1) {
+	while( (c = getopt(argc, argv, "rv")) != -1) {
 		switch(c) {
 		case 'r':
 			repl_flag = true;
 			break;
 		case '?':
 			invalid_flag = true;
+			break;
+		case 'v':
+			if(verbosity_level < max_verbose_lvl) {
+				verbosity_level++;
+			} else {
+				std::cerr << "Warning: highest verbosity level is " << max_verbose_lvl << std::endl;
+			}
 			break;
 		default:
 			abort();
@@ -55,9 +65,16 @@ int main(int argc ,char **argv) {
 		return -1;
 	}
 
-	std::filesystem::path data_dir = salmon::get_data_dir();
-	std::filesystem::path config_dir = salmon::get_config_dir();
-	std::filesystem::path cache_dir = salmon::get_cache_dir();
+	const std::filesystem::path data_dir = salmon::get_data_dir();
+	const std::filesystem::path config_dir = salmon::get_config_dir();
+	const std::filesystem::path cache_dir = salmon::get_cache_dir();
+
+	if (verbosity_level > 0) {
+		std::cerr << "Verbosity level: " << verbosity_level
+				  << "\nUsing cache dir:  " << cache_dir
+				  << "\nUsing config dir: " << config_dir
+				  << "\nUsing data dir:   " << data_dir<< "\n" << std::endl;
+	}
 
 	if (repl_flag) {
 		repl(data_dir);
