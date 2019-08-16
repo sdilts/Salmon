@@ -22,9 +22,10 @@ namespace salmon::parser {
 
 	public:
 		void add_file_info(const std::filesystem::path &file);
+		std::string build_error_str() const;
 	private:
-		position_info expression_start;
-		position_info expression_end;
+		const position_info expression_start;
+		const position_info expression_end;
 		std::filesystem::path source_file;
 	};
 

@@ -19,6 +19,16 @@ namespace salmon::parser {
 	ParseException::ParseException(const std::string &msg, const position_info &start,
 								   const position_info &end) : std::runtime_error(msg), expression_start(start), expression_end(end) {}
 
+	std::string ParseException::build_error_str() const {
+		std::stringstream out;
+		out << this->runtime_error::what() << "\n";
+		out << "Error parsing expression starting at " <<
+			this->expression_start.line << ":" << this->expression_start.column;
+		out << "\nand ending at " <<
+			this->expression_end.line << ":" << this->expression_end.column;
+		return out.str();
+	}
+
 	void ParseException::add_file_info(const std::filesystem::path &file) {
 		source_file = file;
 	}
