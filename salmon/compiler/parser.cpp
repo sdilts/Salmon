@@ -47,7 +47,7 @@ namespace salmon::parser {
 		source_file = file;
 	}
 
-	static std::string build_unmatched_error_str(const std::string &message, char ch) {
+	static std::string build_unmatched_error_str(const std::string &message, const char ch) {
 		std::stringstream out;
 		out << message;
 		out << ch;
@@ -76,7 +76,7 @@ namespace salmon::parser {
 		return os << "";
 	}
 
-	static char toTerminator(ReadResult &result) {
+	static char toTerminator(const ReadResult &result) {
 		switch(result) {
 		case ReadResult::L_PAREN:
 			return '(';
@@ -132,7 +132,7 @@ namespace salmon::parser {
 		}
 	}
 
-	static inline CountingStreamBuffer *tracker_from_stream(std::istream &stream) {
+	static inline CountingStreamBuffer *tracker_from_stream(const std::istream &stream) {
 		return static_cast<CountingStreamBuffer*>(stream.std::ios::rdbuf());
 	}
 
