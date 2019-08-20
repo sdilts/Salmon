@@ -12,7 +12,7 @@ namespace salmon::parser {
 	/***
 	 * A parse exception holds data for:
 	 *   start_info:    the start of the form where the error occured
-	 *   end_info: where the actually figured out where the errors.
+	 *   end_info: where the actual error occured
 	 *   file_info:     the name of the source file (if available) where the error took place.
 	 ***/
 	struct ParseException : public std::runtime_error {
