@@ -29,21 +29,6 @@ namespace salmon::parser {
 		std::filesystem::path source_file;
 	};
 
-	enum class ReadResult {
-		// built-in seperator tokens:
-		L_PAREN,
-		R_PAREN,
-		L_BRACKET,
-		R_BRACKET,
-		L_BRACE,
-		R_BRACE,
-		// some salmon object, usually a symbol
-		ITEM,
-		END
-	};
-
-	std::ostream& operator<<(std::ostream &os, const ReadResult& result);
-
 	std::string read(std::istream &input);
 
 	std::string read_from_string(std::string input);

@@ -9,12 +9,26 @@
 #include <cassert>
 #include <iterator>
 
-#include "compiler/parser.hpp"
-#include "compiler/CountingStream.hpp"
+#include <compiler/parser.hpp>
+#include <compiler/CountingStream.hpp>
+#include <core/salmon_type.h>
 
 namespace salmon::parser {
 
-	//ParseException::ParseException(const std::string &msg) : std::runtime_error(msg) {}
+	enum class ReadResult {
+		// built-in seperator tokens:
+		L_PAREN,
+		R_PAREN,
+		L_BRACKET,
+		R_BRACKET,
+		L_BRACE,
+		R_BRACE,
+		// some salmon object, usually a symbol
+		ITEM,
+		END
+	};
+
+	std::ostream& operator<<(std::ostream &os, const ReadResult& result);
 
 	ParseException::ParseException(const std::string &msg, const salmon::meta::position_info &start,
 								   const salmon::meta::position_info &end) : std::runtime_error(msg), expression_start(start), expression_end(end) {}
@@ -160,6 +174,23 @@ namespace salmon::parser {
 		// the last quote(s) are added to the output stream: remove them.
 		toReturn.erase(toReturn.length()-num_quotes);
 		return toReturn;
+	}
+
+	static bool isNumber(const std::string &symbol) {
+		bool found_decimal = false;
+		for(size_t i = 0; i < symbol.length(); i++) {
+			auto c = symbol[i];
+			if(c == '.') {
+				if(!found_decimal) {
+					found_decimal = true;
+				} else {
+					return false;
+				}
+			} else if(!std::isdigit(static_cast<unsigned char>(c))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	static std::string parse_symbol(std::istream &input) {
