@@ -290,8 +290,6 @@ namespace salmon::parser {
 		std::istream inStream(&countStreamBuf);
 		assert(tracker_from_stream(inStream) == &countStreamBuf);
 
-		trim_stream(inStream);
-
 		salmon::meta::position_info start_info = countStreamBuf.positionInfo();
 		salmon::meta::position_info end_info;
 
