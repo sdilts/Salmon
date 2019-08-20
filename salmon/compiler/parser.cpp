@@ -269,13 +269,12 @@ namespace salmon::parser {
 		std::ostringstream collected_items;
 		std::list<std::string> possible_output;
 
-		collected_items << " " << start;
+		collected_items << start << " ";
 
 		possible_output = collect_list(input, terminator);
 		std::copy(possible_output.begin(), possible_output.end(), std::ostream_iterator<std::string>(collected_items, " "));
 		collected_items << end;
 		std::string result = collected_items.str();
-		std::cerr << result << '\n';
 		return result;
 	}
 
