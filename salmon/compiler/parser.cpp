@@ -183,18 +183,6 @@ namespace salmon::parser {
 		return toReturn;
 	}
 
-	static std::string parse_item(std::istream &input) {
-		char ch = input.peek();
-		switch(ch) {
-		case '#':
-			return reader_macro(input);
-		case '"':
-			return parse_string(input);
-		default:
-			return parse_symbol(input);
-		}
-	}
-
 	static ReadResult read_next(std::istream &input, std::string &item);
 
 	static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator) {
@@ -283,8 +271,14 @@ namespace salmon::parser {
 				case '}':
 					input.get();
 					return ReadResult::R_BRACE;
+				case '#':
+					item = reader_macro(input);
+					return ReadResult::ITEM;
+				case '"':
+					item = parse_string(input);
+					return ReadResult::ITEM;
 				default:
-					item = parse_item(input);
+					item = parse_symbol(input);
 					return ReadResult::ITEM;
 				}
 			} else return ReadResult::END;
