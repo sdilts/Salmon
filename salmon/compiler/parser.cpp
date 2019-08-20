@@ -92,7 +92,7 @@ namespace salmon::parser {
 
 	static std::string reader_macro(std::istream &input) {
 		input.peek();
-		std::cerr << "Not implemented at " << __FILE__ << ":" << __LINE__ << std::endl;
+		std::cerr << "Reader macros aren't implemented yet" << __FILE__ << ":" << __LINE__ << std::endl;
 		exit(-1);
 		return "";
 	}
