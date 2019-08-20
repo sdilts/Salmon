@@ -1,4 +1,5 @@
 salmon_sources = files(
+  'config.cpp',
   'main.cpp',
 
   'compiler/CountingStream.cpp',

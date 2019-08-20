@@ -8,10 +8,17 @@
 
 #include <util/environment.hpp>
 #include <compiler/parser.hpp>
+#include <config.hpp>
 
-static void repl(const std::filesystem::path &data_dir) {
+static salmon::CompilerConfig get_config() {
+	return {
+		0, salmon::get_cache_dir(), salmon::get_config_dir(), salmon::get_data_dir()
+	};
+}
+
+static void repl(const salmon::CompilerConfig& config) {
 	using namespace salmon;
-	const std::filesystem::path history_file = data_dir / "history.txt";
+	const std::filesystem::path history_file = config.data_dir / "history.txt";
 
 	linenoiseHistoryLoad(history_file.string().c_str());
 
@@ -29,15 +36,17 @@ static void repl(const std::filesystem::path &data_dir) {
 		}
 		free(line);
 	}
-	linenoiseHistorySave(history_file.string().c_str());
+	if(!linenoiseHistorySave(history_file.string().c_str())) {
+		std::cerr << "Failed to save history" << std::endl;
+	}
 }
 
 int main(int argc ,char **argv) {
 	bool repl_flag = false;
 	bool invalid_flag = false;
 
-	const short max_verbose_lvl = 3;
-	short verbosity_level = 0;
+	const int max_verbose_lvl = 3;
+	int verbosity_level = 0;
 
 	char c;
 	while( (c = getopt(argc, argv, "rv")) != -1) {
@@ -64,19 +73,17 @@ int main(int argc ,char **argv) {
 		return -1;
 	}
 
-	const std::filesystem::path data_dir = salmon::get_data_dir();
-	const std::filesystem::path config_dir = salmon::get_config_dir();
-	const std::filesystem::path cache_dir = salmon::get_cache_dir();
+	salmon::CompilerConfig config = get_config();
+	config.verbosity_level = verbosity_level;
+
+	std::cout << "Welcome to salmon version 0.0.1!" << std::endl;
 
 	if (verbosity_level > 0) {
-		std::cerr << "Verbosity level: " << verbosity_level
-				  << "\nUsing cache dir:  " << cache_dir
-				  << "\nUsing config dir: " << config_dir
-				  << "\nUsing data dir:   " << data_dir<< "\n" << std::endl;
+		std::cerr << "\n" << config << std::endl;
 	}
 
 	if (repl_flag) {
-		repl(data_dir);
+		repl(config);
 	}
 
 	return 0;
