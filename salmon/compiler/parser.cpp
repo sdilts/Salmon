@@ -194,7 +194,12 @@ namespace salmon::parser {
 		return true;
 	}
 
-	static std::string parse_symbol(std::istream &input) {
+	static bool isKeyword(const std::string &symbol) {
+		assert(!symbol.empty());
+		return symbol[0] == ':';
+	}
+
+	static std::string parse_primitive(std::istream &input) {
 		static const std::set<char> terminating_chars =
 			{ ')', '(', '[', ']', '{', '}', '"'};
 		std::ostringstream token;
@@ -212,6 +217,15 @@ namespace salmon::parser {
 
 		std::string toReturn = token.str();
 		assert(!toReturn.empty());
+
+		if(isNumber(toReturn)) {
+			//std::cerr << "Number found " << toReturn << std::endl;
+		} else if(isKeyword(toReturn)) {
+			// std::cerr << "Keyword found " << toReturn << std::endl;
+		} else {
+			// std::cerr << "Symbol found " << toReturn << std::endl;
+		}
+
 		return toReturn;
 	}
 
@@ -310,7 +324,7 @@ namespace salmon::parser {
 					item = parse_string(input);
 					return ReadResult::ITEM;
 				default:
-					item = parse_symbol(input);
+					item = parse_primitive(input);
 					return ReadResult::ITEM;
 				}
 			} else return ReadResult::END;
