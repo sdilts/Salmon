@@ -20,9 +20,8 @@ static void repl(const std::filesystem::path &data_dir) {
 		if(line[0] != '\0') {
 
 			try {
-				std::string token;
-				parser::ReadResult result = parser::read_from_string(line, token);
-				std::cout << "Result: " << result << "\n token: " << token << std::endl;
+				std::string token = parser::read_from_string(line);
+				std::cout << " token: " << token << std::endl;
 				linenoiseHistoryAdd(line);
 			} catch(const parser::ParseException &error) {
 				std::cout << error.build_error_str() << std::endl;

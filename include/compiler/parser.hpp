@@ -44,8 +44,8 @@ namespace salmon::parser {
 
 	std::ostream& operator<<(std::ostream &os, const ReadResult& result);
 
-	ReadResult read(std::istream &input, std::string &item);
+	std::string read(std::istream &input);
 
-	ReadResult read_from_string(std::string input, std::string &item);
+	std::string read_from_string(std::string input);
 
 }

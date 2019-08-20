@@ -285,7 +285,7 @@ namespace salmon::parser {
 		} while(true);
 	}
 
-	ReadResult read(std::istream &input, std::string &item) {
+	std::string read(std::istream &input) {
 		CountingStreamBuffer countStreamBuf(input.rdbuf());
 		std::istream inStream(&countStreamBuf);
 		assert(tracker_from_stream(inStream) == &countStreamBuf);
@@ -298,6 +298,7 @@ namespace salmon::parser {
 		// if there is an error we need to have the first character, as read_next() consumes it.
 		char first_char = inStream.peek();
 
+		std::string item;
 		ReadResult result = read_next(inStream, item);
 		switch(result) {
 		case ReadResult::R_PAREN:
@@ -309,18 +310,12 @@ namespace salmon::parser {
 														   first_char),
 								 start_info, end_info);
 		default:
-			return result;
+			return item;
 		}
 	}
 
-	ReadResult read_from_string(std::string input, std::string &item) {
+	std::string read_from_string(std::string input) {
 		std::istringstream input_stream(input);
-		try {
-			ReadResult result = read(input_stream, item);
-			return result;
-		} catch (const ParseException &error) {
-			throw;
-		}
-		return ReadResult::END;
+		return read(input_stream);
 	}
 }
