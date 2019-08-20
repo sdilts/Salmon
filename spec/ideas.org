@@ -22,11 +22,25 @@
 ** Iterators
 * Types
 ** Built-in Types
+*** Types
+    Types are first-class citizens of salmon, and are mainly used
+    in compiler macros to perform optimizations
 *** Symbols
 *** Keywords
 *** Arrays
-    + Static sized arrays
-    + Fill-pointer arrays
+    All array types have these functions that can operate on them:
+    + nth :: returns the nth element in the array
+    + find :: finds an element in the array based on a predicate
+      function
+    + find-all :: finds all the elements in an  array based on a
+      predicate function.
+    + map :: maps a function over an array and returns another array
+      with the results.
+    + reduce :: iterates over the array and accumulates a value.
+**** Arrays
+     An array is a fixed-size array
+**** Vectors
+     A vector is a re-sizable array
 **** Example code
      #+BEGIN_SRC lisp
        (make-array dimensions
@@ -49,11 +63,11 @@
     + d-list :: Doubly linked list
 *** Numbers
   + int :: system's default =int= type
-  + u-int :: system's default =unsigned int=
+  + uint :: system's default =unsigned int=
   + intXX :: XX bit integer type
-  + u-intXX :: XX bit unsigned integer type
+  + uintXX :: XX bit unsigned integer type
   + long :: system's defalut =long= type
-  + u-long :: system's default =unsigned long= type
+  + ulong :: system's default =unsigned long= type
   + float :: system's default =float= type
   + double :: system's default =double= type
 *** Character types
@@ -122,8 +136,8 @@
 	     <expressions>))
 
     (cond
-       (:test <test1> <expressions>)
-       (:test <test2> <expressions>)
+       (<test1> <expressions>)
+       (<test2> <expressions>)
        (:else <expressions>))
   #+END_EXAMPLE
 ** looping
@@ -137,11 +151,11 @@
 	<expressions>)
 
      ;; can specify a condition to stop with using
-     ;; the check directive. As long as one
+     ;; the while directive. As long as one
      ;; condition is present in the loop, it will
      ;; compile.
      (for ((:count [a] :start 0 :inc 1)
-	   (:check (< a b)))
+	   (:while (< a b)))
 	<expressions>)
 
      ;; here, our exit condition is a < 10
@@ -149,7 +163,7 @@
 	<expressions>)
 
      ;; built-in for directives:
-     :count :check :iter
+     :count :while :iter
 	:count counts using the specified variable
 	   ;; possible keywords to count directive:
 	   :start :inc :end-before :end-at
@@ -159,7 +173,7 @@
 		   equals the value specified (counter < given)
 	      :end-at will stop the loop when the counter is equal
 		   to the value given (counter <= given)
-	:check end the loop if the condition is false
+	:while end the loop if the condition is false
 	:iter Loop over the values in the specified iterator
    #+END_EXAMPLE
 ** Variable declarations
