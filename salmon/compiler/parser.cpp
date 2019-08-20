@@ -130,18 +130,17 @@ namespace salmon::parser {
 
 		// count number of quotes:
 		char ch;
-		std::size_t count = 0;
-		std::ostringstream token;
-
-		// count number of double quotes used:
+		std::size_t num_quotes = 0;
 		while( (ch = input.peek()) && ch == '"') {
-			count++;
+			num_quotes++;
 			input.get();
 		};
+
 		std::size_t curCount = 0;
-		while( curCount != count && (ch = input.get()) && ch != EOF) {
+		std::ostringstream token;
+		while( curCount != num_quotes && (ch = input.get()) && ch != EOF) {
 			if(ch == '\\') {
-				//convert escape to character:
+				//convert escape sequence to character:
 				token << escape(input);
 			} else {
 				token << ch;
@@ -158,7 +157,8 @@ namespace salmon::parser {
 								 start_info, end_info);
 		}
 		std::string toReturn = token.str();
-		toReturn.erase(toReturn.length()-count);
+		// the last quote(s) are added to the output stream: remove them.
+		toReturn.erase(toReturn.length()-num_quotes);
 		return toReturn;
 	}
 
