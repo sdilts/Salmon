@@ -53,7 +53,7 @@ int main(int argc ,char **argv) {
 			if(verbosity_level < max_verbose_lvl) {
 				verbosity_level++;
 			} else {
-				std::cerr << "Warning: highest verbosity level is " << max_verbose_lvl << std::endl;
+				std::cerr << "Warning: highest verbosity level possible is " << max_verbose_lvl << std::endl;
 			}
 			break;
 		default:
