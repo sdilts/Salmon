@@ -1,7 +1,8 @@
 #include <streambuf>
 #include <iostream>
 
-#include "compiler/CountingStream.hpp"
+#include <compiler/CountingStream.hpp>
+#include <compiler/meta.hpp>
 
 namespace salmon::parser {
 
@@ -36,11 +37,11 @@ namespace salmon::parser {
 		return filePos_;
 	}
 
-	position_info CountingStreamBuffer::positionInfo() const {
+	salmon::meta::position_info CountingStreamBuffer::positionInfo() const {
 		return { lineNumber_, column_};
 	}
 
-	position_info CountingStreamBuffer::prevPositionInfo() const {
+	salmon::meta::position_info CountingStreamBuffer::prevPositionInfo() const {
 		return { lastLineNumber_, prevColumn_};
 	}
 

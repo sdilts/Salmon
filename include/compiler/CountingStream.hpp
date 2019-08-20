@@ -3,12 +3,9 @@
 #include <streambuf>
 #include <iostream>
 
-namespace salmon::parser {
+#include <compiler/meta.hpp>
 
-	struct position_info {
-		unsigned int line;
-		unsigned int column;
-	};
+namespace salmon::parser {
 
 	class CountingStreamBuffer : public std::streambuf {
 	public:
@@ -26,9 +23,9 @@ namespace salmon::parser {
 		// Get file position
 		std::streamsize     filepos() const;
 
-		position_info positionInfo() const;
+		salmon::meta::position_info positionInfo() const;
 
-		position_info prevPositionInfo() const;
+		salmon::meta::position_info prevPositionInfo() const;
 
 	protected:
 		CountingStreamBuffer(const CountingStreamBuffer&);

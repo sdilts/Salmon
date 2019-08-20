@@ -16,8 +16,8 @@ namespace salmon::parser {
 
 	//ParseException::ParseException(const std::string &msg) : std::runtime_error(msg) {}
 
-	ParseException::ParseException(const std::string &msg, const position_info &start,
-								   const position_info &end) : std::runtime_error(msg), expression_start(start), expression_end(end) {}
+	ParseException::ParseException(const std::string &msg, const salmon::meta::position_info &start,
+								   const salmon::meta::position_info &end) : std::runtime_error(msg), expression_start(start), expression_end(end) {}
 
 	std::string ParseException::build_error_str() const {
 		std::stringstream out;
@@ -77,7 +77,7 @@ namespace salmon::parser {
 		case ReadResult::R_BRACE:
 			return '}';
 		default:
-			throw std::runtime_error("Given ReadResult is not a terminator.");
+			abort();
 		}
 	}
 
@@ -125,8 +125,8 @@ namespace salmon::parser {
 	static std::string parse_string(std::istream &input) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
-		position_info start_info = countStreamBuf->positionInfo();
-		position_info end_info;
+		salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+		salmon::meta::position_info end_info;
 
 		// count number of quotes:
 		char ch;
@@ -200,8 +200,8 @@ namespace salmon::parser {
 	static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
-		position_info start_info = countStreamBuf->positionInfo();
-		position_info end_info;
+		salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+		salmon::meta::position_info end_info;
 
 		// consume the starting bracket/brace/etc.
 		input.get();
@@ -296,10 +296,12 @@ namespace salmon::parser {
 		std::istream inStream(&countStreamBuf);
 		assert(tracker_from_stream(inStream) == &countStreamBuf);
 
-		position_info start_info = countStreamBuf.positionInfo();
-		position_info end_info;
+		trim_stream(inStream);
 
-		// if there is an error, we need to have the first character, as read_next consumes it.
+		salmon::meta::position_info start_info = countStreamBuf.positionInfo();
+		salmon::meta::position_info end_info;
+
+		// if there is an error we need to have the first character, as read_next() consumes it.
 		char first_char = inStream.peek();
 
 		ReadResult result = read_next(inStream, item);
@@ -309,7 +311,8 @@ namespace salmon::parser {
 		case ReadResult::R_BRACE:
 			// this is an error:
 			end_info = countStreamBuf.positionInfo();
-			throw ParseException(build_unmatched_error_str("Unexpected closing character: ",first_char),
+			throw ParseException(build_unmatched_error_str("Unexpected closing character: ",
+														   first_char),
 								 start_info, end_info);
 		default:
 			return result;
@@ -318,6 +321,12 @@ namespace salmon::parser {
 
 	ReadResult read_from_string(std::string input, std::string &item) {
 		std::istringstream input_stream(input);
-		return read(input_stream, item);
+		try {
+			ReadResult result = read(input_stream, item);
+			return result;
+		} catch (const ParseException &error) {
+			throw;
+		}
+		return ReadResult::END;
 	}
 }

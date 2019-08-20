@@ -17,15 +17,15 @@ namespace salmon::parser {
 	 ***/
 	struct ParseException : public std::runtime_error {
 		//ParseException(const std::string &msg);
-		ParseException(const std::string &msg, const position_info &start,
-					   const position_info &end);
+		ParseException(const std::string &msg, const salmon::meta::position_info &start,
+					   const salmon::meta::position_info &end);
 
 	public:
 		void add_file_info(const std::filesystem::path &file);
 		std::string build_error_str() const;
 	private:
-		const position_info expression_start;
-		const position_info expression_end;
+		const salmon::meta::position_info expression_start;
+		const salmon::meta::position_info expression_end;
 		std::filesystem::path source_file;
 	};
 
