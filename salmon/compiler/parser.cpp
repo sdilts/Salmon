@@ -154,7 +154,7 @@ namespace salmon::parser {
 
 		std::size_t curCount = 0;
 		std::ostringstream token;
-		while( curCount != num_quotes && (ch = input.get()) && ch != EOF) {
+		while(curCount != num_quotes && (ch = input.get()) != EOF) {
 			if(ch == '\\') {
 				//convert escape sequence to character:
 				token << escape(input);
