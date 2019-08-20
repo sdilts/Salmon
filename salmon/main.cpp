@@ -6,8 +6,8 @@
 
 #include <unistd.h>
 
-#include "util/environment.hpp"
-#include "compiler/parser.hpp"
+#include <util/environment.hpp>
+#include <compiler/parser.hpp>
 
 static void repl(const std::filesystem::path &data_dir) {
 	using namespace salmon;
