@@ -8,6 +8,8 @@
 #include <list>
 #include <cassert>
 #include <iterator>
+#include <utility>
+#include <optional>
 
 #include <compiler/parser.hpp>
 #include <compiler/CountingStream.hpp>
@@ -229,7 +231,7 @@ namespace salmon::parser {
 		return toReturn;
 	}
 
-	static ReadResult read_next(std::istream &input, std::string &item);
+	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input);
 
 	static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
@@ -241,24 +243,25 @@ namespace salmon::parser {
 		input.get();
 
 		std::list<std::string> items;
-		while(true) {
-			std::string item;
-			ReadResult result = read_next(input, item);
-			if(result == ReadResult::ITEM) {
-				items.push_back(item);
-			} else if(result == terminator) {
-				return items;
-			} else if(result == ReadResult::END) {
-				end_info = countStreamBuf->positionInfo();
-				throw ParseException("EOF reached while parsing",
-									 start_info, end_info);
-			} else {
-				char term_char = toTerminator(result);
-				end_info = countStreamBuf->positionInfo();
-				throw ParseException(build_unmatched_error_str("Unexpected closing character: ",term_char),
-									 start_info, end_info);
+		{
+			auto [result, cur_item] = read_next(input);
+			while(result != terminator) {
+				if(result == ReadResult::ITEM) {
+					items.push_back(*cur_item);
+				} else if(result == ReadResult::END) {
+					end_info = countStreamBuf->positionInfo();
+					throw ParseException("EOF reached while parsing",
+										 start_info, end_info);
+				} else {
+					char term_char = toTerminator(result);
+					end_info = countStreamBuf->positionInfo();
+					throw ParseException(build_unmatched_error_str("Unexpected closing character: ",term_char),
+										 start_info, end_info);
+				}
+				std::tie(result, cur_item) = read_next(input);
 			}
 		}
+		return items;
 	}
 
 	static std::string read_thing(std::istream &input, char start, char end,
@@ -288,7 +291,7 @@ namespace salmon::parser {
 		return read_thing(input, '{', '}', ReadResult::R_BRACE);
 	}
 
-	static ReadResult read_next(std::istream &input, std::string &item) {
+	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input) {
 		do {
 			//consume any preceding whitespace:
 			trim_stream(input);
@@ -300,34 +303,28 @@ namespace salmon::parser {
 					input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 					break;
 				case '(':
-					item = read_list(input);
-					return ReadResult::ITEM;
+					return std::make_pair(ReadResult::ITEM, read_list(input));
 				case ')':
 					input.get();
-					return ReadResult::R_PAREN;
+					return std::make_pair(ReadResult::R_PAREN, std::nullopt);
 				case '[':
-					item = read_array(input);
-					return ReadResult::ITEM;
+					return std::make_pair(ReadResult::ITEM, read_array(input));
 				case ']':
 					input.get();
-					return ReadResult::R_BRACKET;
+					return std::make_pair(ReadResult::R_BRACKET, std::nullopt);
 				case '{':
-					item = read_set(input);
-					return ReadResult::ITEM;
+					return std::make_pair(ReadResult::ITEM, read_set(input));
 				case '}':
 					input.get();
-					return ReadResult::R_BRACE;
+					return std::make_pair(ReadResult::R_BRACE, std::nullopt);
 				case '#':
-					item = reader_macro(input);
-					return ReadResult::ITEM;
+					return std::make_pair(ReadResult::ITEM, reader_macro(input));
 				case '"':
-					item = parse_string(input);
-					return ReadResult::ITEM;
+					return std::make_pair(ReadResult::ITEM, parse_string(input));
 				default:
-					item = parse_primitive(input);
-					return ReadResult::ITEM;
+					return std::make_pair(ReadResult::ITEM, parse_primitive(input));
 				}
-			} else return ReadResult::END;
+			} else return std::make_pair(ReadResult::END, std::nullopt);
 		} while(true);
 	}
 
@@ -342,8 +339,8 @@ namespace salmon::parser {
 		// if there is an error we need to have the first character, as read_next() consumes it.
 		char first_char = inStream.peek();
 
-		std::string item;
-		ReadResult result = read_next(inStream, item);
+		auto [result, item] = read_next(inStream);
+
 		switch(result) {
 		case ReadResult::R_PAREN:
 		case ReadResult::R_BRACKET:
@@ -354,7 +351,7 @@ namespace salmon::parser {
 														   first_char),
 								 start_info, end_info);
 		default:
-			return item;
+			return *item;
 		}
 	}
 
