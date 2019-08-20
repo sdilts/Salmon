@@ -157,11 +157,14 @@ namespace salmon::parser {
 				//convert escape sequence to character:
 				token << escape(input);
 			} else {
-				token << ch;
 				if (ch == '"') {
 					curCount++;
 				} else {
-					curCount = 0;
+					if (curCount != 0) {
+						std::fill_n(std::ostreambuf_iterator(token), curCount, '"');
+						curCount = 0;
+					}
+					token << ch;
 				}
 			}
 		}
@@ -171,8 +174,6 @@ namespace salmon::parser {
 								 start_info, end_info);
 		}
 		std::string toReturn = token.str();
-		// the last quote(s) are added to the output stream: remove them.
-		toReturn.erase(toReturn.length()-num_quotes);
 		return toReturn;
 	}
 
