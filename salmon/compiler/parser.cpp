@@ -323,11 +323,15 @@ namespace salmon::parser {
 				default:
 					return std::make_pair(ReadResult::ITEM, parse_primitive(input));
 				}
-			} else return std::make_pair(ReadResult::END, std::nullopt);
+			} else {
+				// push the stream so the eof bit is set
+				input.get();
+				return std::make_pair(ReadResult::END, std::nullopt);
+			}
 		} while(true);
 	}
 
-	std::string read(std::istream &input) {
+	std::optional<std::string> read(std::istream &input) {
 		CountingStreamBuffer countStreamBuf(input.rdbuf());
 		std::istream inStream(&countStreamBuf);
 		assert(tracker_from_stream(inStream) == &countStreamBuf);
@@ -349,12 +353,17 @@ namespace salmon::parser {
 			throw ParseException(build_unmatched_error_str("Unexpected closing character: ",
 														   first_char),
 								 start_info, end_info);
+		case ReadResult::END:
+			// push  the origin stream past the end of the stream so it's
+			// eof bit is set.
+			input.get();
+			// fallthrough
 		default:
 			return *item;
 		}
 	}
 
-	std::string read_from_string(std::string input) {
+	std::optional<std::string> read_from_string(std::string input) {
 		std::istringstream input_stream(input);
 		return read(input_stream);
 	}

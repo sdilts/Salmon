@@ -4,6 +4,7 @@
 #include <string>
 #include <exception>
 #include <filesystem>
+#include <optional>
 
 #include "compiler/CountingStream.hpp"
 
@@ -29,8 +30,8 @@ namespace salmon::parser {
 		std::filesystem::path source_file;
 	};
 
-	std::string read(std::istream &input);
+	std::optional<std::string> read(std::istream &input);
 
-	std::string read_from_string(std::string input);
+	std::optional<std::string> read_from_string(std::string input);
 
 }

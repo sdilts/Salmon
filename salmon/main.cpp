@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <stdlib.h>
 #include <string>
 #include <filesystem>
@@ -16,6 +17,30 @@ static salmon::CompilerConfig get_config() {
 	};
 }
 
+static void process_files(char **filenames, const int length) {
+	for(int i = 0; i < length; i++) {
+		std::filesystem::path filepath(filenames[i]);
+		if(std::filesystem::is_regular_file(filepath)) {
+			std::cout << "Processing file " << filepath.string() << std::endl;
+			try {
+				std::ifstream file;
+				file.open(filepath);
+				auto token = salmon::parser::read(file);
+				while(!file.eof()) {
+					std::cout << *token << "\n";
+					token = salmon::parser::read(file);
+				}
+				file.close();
+			} catch(salmon::parser::ParseException &error) {
+				error.add_file_info(std::filesystem::canonical(filepath));
+				std::cout << error.build_error_str() << std::endl;
+			}
+		} else {
+			std::cout << "Cannot process file" << filepath.string() << std::endl;
+		}
+	}
+}
+
 static void repl(const salmon::CompilerConfig& config) {
 	using namespace salmon;
 	const std::filesystem::path history_file = config.data_dir / "history.txt";
@@ -27,8 +52,8 @@ static void repl(const salmon::CompilerConfig& config) {
 		if(line[0] != '\0') {
 
 			try {
-				std::string token = parser::read_from_string(line);
-				std::cout << " token: " << token << std::endl;
+			    auto token = parser::read_from_string(line);
+				std::cout << " token: " << *token << std::endl;
 				linenoiseHistoryAdd(line);
 			} catch(const parser::ParseException &error) {
 				std::cout << error.build_error_str() << std::endl;
@@ -81,6 +106,8 @@ int main(int argc ,char **argv) {
 	if (verbosity_level > 0) {
 		std::cerr << "\n" << config << std::endl;
 	}
+
+	process_files(argv+optind, argc-optind);
 
 	if (repl_flag) {
 		repl(config);
