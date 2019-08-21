@@ -27,7 +27,7 @@ namespace salmon::parser {
 	private:
 		const salmon::meta::position_info expression_start;
 		const salmon::meta::position_info expression_end;
-		std::filesystem::path source_file;
+		std::optional<std::filesystem::path> source_file;
 	};
 
 	std::optional<std::string> read(std::istream &input);

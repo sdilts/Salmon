@@ -42,6 +42,9 @@ namespace salmon::parser {
 			this->expression_start.line << ":" << this->expression_start.column;
 		out << "\nand ending at " <<
 			this->expression_end.line << ":" << this->expression_end.column;
+		if(source_file) {
+			out << "\n in file " << *source_file;
+		}
 		return out.str();
 	}
 
@@ -295,6 +298,7 @@ namespace salmon::parser {
 			//consume any preceding whitespace:
 			trim_stream(input);
 			char ch = input.peek();
+
 			if(ch != EOF) {
 				switch(ch) {
 				case ';':
