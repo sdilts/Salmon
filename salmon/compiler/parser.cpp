@@ -361,7 +361,7 @@ namespace salmon::parser {
 			// push  the origin stream past the end of the stream so it's
 			// eof bit is set.
 			input.get();
-			// fallthrough
+			[[fallthrough]];
 		default:
 			return *item;
 		}
