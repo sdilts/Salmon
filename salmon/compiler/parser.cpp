@@ -59,28 +59,6 @@ namespace salmon::parser {
 		return out.str();
 	}
 
-	std::ostream& operator<<(std::ostream &os, const ReadResult& result) {
-		switch(result) {
-		case ReadResult::L_PAREN:
-			return os << "ReadResult::L_PAREN";
-		case ReadResult::R_PAREN:
-			return os << "ReadResult::R_PAREN";
-		case ReadResult::L_BRACKET:
-			return os << "ReadResult::L_BRACKET";
-		case ReadResult::R_BRACKET:
-			return os << "ReadResult::R_BRACKET";
-		case ReadResult::L_BRACE:
-			return os << "ReadResult::L_BRACE";
-		case ReadResult::R_BRACE:
-			return os << "ReadResult::R_BRACE";
-		case ReadResult::ITEM:
-			return os << "ReadResult::ITEM";
-		case ReadResult::END:
-			return os << "ReadResult::END";
-		}
-		return os << "";
-	}
-
 	static char toTerminator(const ReadResult &result) {
 		switch(result) {
 		case ReadResult::L_PAREN:
