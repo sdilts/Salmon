@@ -9,7 +9,9 @@
 
 #include <util/environment.hpp>
 #include <compiler/parser.hpp>
-#include <config.hpp>
+#include <compiler/config.hpp>
+#include <salmon/init.h>
+
 
 static salmon::CompilerConfig get_config() {
 	return {
@@ -107,11 +109,21 @@ int main(int argc ,char **argv) {
 		std::cerr << "\n" << config << std::endl;
 	}
 
-	process_files(argv+optind, argc-optind);
+	// initialize all of the core datastructures of the stdlib
+	salmon_init();
+
+	const int num_to_process = argc - optind;
+
+	if(num_to_process) {
+		process_files(argv+optind, num_to_process);
+	} else if(!repl_flag) {
+		std::cout << "No files specified. Nothing to do.\n";
+	}
 
 	if (repl_flag) {
 		repl(config);
 	}
 
+	salmon_cleanup();
 	return 0;
 }

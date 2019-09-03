@@ -1,4 +1,4 @@
-#include <config.hpp>
+#include <compiler/config.hpp>
 
 std::ostream& operator<<(std::ostream &os, const salmon::CompilerConfig& config) {
 	return os << "Verbosity level: " << config.verbosity_level
