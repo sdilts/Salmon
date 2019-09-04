@@ -1,9 +1,10 @@
 salmon_sources = files(
   'main.cpp',
 
-  'compiler/config.cpp',
   'compiler/CountingStream.cpp',
+  'compiler/config.cpp',
   'compiler/parser.cpp',
+  'compiler/type.cpp',
   'compiler/vm/memory.cpp',
 
   'util/environment.cpp',
