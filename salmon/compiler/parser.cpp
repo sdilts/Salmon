@@ -13,7 +13,6 @@
 
 #include <compiler/parser.hpp>
 #include <compiler/CountingStream.hpp>
-#include <core/salmon_type.h>
 
 namespace salmon::parser {
 

@@ -10,7 +10,6 @@
 #include <util/environment.hpp>
 #include <compiler/parser.hpp>
 #include <compiler/config.hpp>
-#include <salmon/init.h>
 
 
 static salmon::CompilerConfig get_config() {
@@ -109,9 +108,6 @@ int main(int argc ,char **argv) {
 		std::cerr << "\n" << config << std::endl;
 	}
 
-	// initialize all of the core datastructures of the stdlib
-	salmon_init();
-
 	const int num_to_process = argc - optind;
 
 	if(num_to_process) {
@@ -124,6 +120,5 @@ int main(int argc ,char **argv) {
 		repl(config);
 	}
 
-	salmon_cleanup();
 	return 0;
 }
