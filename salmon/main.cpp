@@ -10,6 +10,7 @@
 #include <util/environment.hpp>
 #include <compiler/parser.hpp>
 #include <compiler/config.hpp>
+#include <compiler/compiler.hpp>
 
 
 static salmon::CompilerConfig get_config() {
@@ -101,6 +102,8 @@ int main(int argc ,char **argv) {
 
 	salmon::CompilerConfig config = get_config();
 	config.verbosity_level = verbosity_level;
+
+	salmon::compiler::Compiler engine(config);
 
 	std::cout << "Welcome to salmon version 0.0.1!" << std::endl;
 
