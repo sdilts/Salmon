@@ -338,7 +338,7 @@ namespace salmon::compiler {
 			input.get();
 			[[fallthrough]];
 		default:
-			return *item;
+			return item;
 		}
 	}
 
