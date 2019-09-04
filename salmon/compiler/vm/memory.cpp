@@ -8,25 +8,25 @@
 
 namespace salmon::vm {
 
-	Box *Memory::allocate_box() {
+	Box *MemoryManager::allocate_box() {
 		Box *chunk = new Box();
 		chunk->tag = this->last_tag;
 		this->allocated.push_back(chunk);
 		return chunk;
 	}
 
-	void Memory::free(Box *box) {
+	void MemoryManager::free(Box *box) {
 		auto place = std::find(allocated.begin(), allocated.end(), box);
 		assert(place != allocated.end());
 		allocated.erase(place);
 		delete box;
 	}
 
-	void Memory::add_root(const std::list<Box*>& root) {
+	void MemoryManager::add_root(const std::list<Box*>& root) {
 		roots.push_back(std::ref(root));
 	}
 
-	void Memory::remove_root(const std::list<Box*>& root) {
+	void MemoryManager::remove_root(const std::list<Box*>& root) {
 		auto place = std::find_if(roots.begin(), roots.end(), [root](const auto &other) {
 			return &root == &other.get();
 		});
@@ -34,11 +34,11 @@ namespace salmon::vm {
 		roots.erase(place);
 	}
 
-	void Memory::add_root(const std::map<std::string, Box*>& root) {
+	void MemoryManager::add_root(const std::map<std::string, Box*>& root) {
 		named_roots.push_back(std::ref(root));
 	}
 
-	void Memory::remove_root(const std::map<std::string, Box*>& root) {
+	void MemoryManager::remove_root(const std::map<std::string, Box*>& root) {
 		auto place = std::find_if(named_roots.begin(), named_roots.end(), [root](const auto &other) {
 			return &root == &other.get();
 		});
@@ -79,7 +79,7 @@ namespace salmon::vm {
 	/**
 	 * this functions implements mark and sweep garbage collection.
 	 **/
-	void Memory::do_gc() {
+	void MemoryManager::do_gc() {
 		const unsigned char new_tag = last_tag + 1;
 
 		// mark each reachable box

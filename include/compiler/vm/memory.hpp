@@ -12,7 +12,7 @@
 namespace salmon::vm {
 	using namespace salmon::compiler;
 
-	class Memory {
+	class MemoryManager {
 
 	public:
 		Box *allocate_box();
@@ -20,6 +20,7 @@ namespace salmon::vm {
 		void free(Box *);
 
 		void do_gc();
+
 		void add_root(const std::list<Box*>&);
 		void add_root(const std::map<std::string, Box*>&);
 
