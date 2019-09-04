@@ -18,10 +18,10 @@ add_project_arguments(common_args, language: 'c',)
 
 
 linenoise = dependency('linenoise')
+
 salmon_inc = include_directories('include')
 
 # subdir('include')
 subdir('salmon')
-
 
 doxygen = find_program('doxygen', required : false)
