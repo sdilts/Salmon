@@ -8,7 +8,7 @@
 
 #include "compiler/CountingStream.hpp"
 
-namespace salmon::parser {
+namespace salmon::compiler {
 
 	/***
 	 * A parse exception holds data for:

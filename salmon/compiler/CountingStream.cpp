@@ -4,7 +4,7 @@
 #include <compiler/CountingStream.hpp>
 #include <compiler/meta.hpp>
 
-namespace salmon::parser {
+namespace salmon::compiler {
 
 	// constructor
 	CountingStreamBuffer::CountingStreamBuffer(std::streambuf* sbuf) :

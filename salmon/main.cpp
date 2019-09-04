@@ -26,13 +26,13 @@ static void process_files(char **filenames, const int length) {
 			try {
 				std::ifstream file;
 				file.open(filepath);
-				auto token = salmon::parser::read(file);
+				auto token = salmon::compiler::read(file);
 				while(!file.eof()) {
 					std::cout << *token << "\n";
-					token = salmon::parser::read(file);
+					token = salmon::compiler::read(file);
 				}
 				file.close();
-			} catch(salmon::parser::ParseException &error) {
+			} catch(salmon::compiler::ParseException &error) {
 				error.add_file_info(std::filesystem::canonical(filepath));
 				std::cout << error.build_error_str() << std::endl;
 			}
@@ -53,10 +53,10 @@ static void repl(const salmon::CompilerConfig& config) {
 		if(line[0] != '\0') {
 
 			try {
-			    auto token = parser::read_from_string(line);
+			    auto token = compiler::read_from_string(line);
 				std::cout << " token: " << *token << std::endl;
 				linenoiseHistoryAdd(line);
-			} catch(const parser::ParseException &error) {
+			} catch(const compiler::ParseException &error) {
 				std::cout << error.build_error_str() << std::endl;
 			}
 		}

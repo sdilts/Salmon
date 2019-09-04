@@ -5,7 +5,7 @@
 
 #include <compiler/meta.hpp>
 
-namespace salmon::parser {
+namespace salmon::compiler {
 
 	class CountingStreamBuffer : public std::streambuf {
 	public:

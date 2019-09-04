@@ -14,7 +14,7 @@
 #include <compiler/parser.hpp>
 #include <compiler/CountingStream.hpp>
 
-namespace salmon::parser {
+namespace salmon::compiler {
 
 	enum class ReadResult {
 		// built-in seperator tokens:
