@@ -6,17 +6,11 @@
 
 #include <stdint.h>
 #include <map>
-#include <variant>
 
+#include <compiler/box.hpp>
 
 namespace salmon::vm {
-
-	struct Box {
-		struct salmon_type *type;
-		std::variant<int32_t, double,void*> elem;
-		//! tag used for garbage collection
-		unsigned char tag;
-	};
+	using namespace salmon::compiler;
 
 	class Memory {
 
