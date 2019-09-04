@@ -30,8 +30,6 @@ namespace salmon::parser {
 		END
 	};
 
-	std::ostream& operator<<(std::ostream &os, const ReadResult& result);
-
 	ParseException::ParseException(const std::string &msg, const salmon::meta::position_info &start,
 								   const salmon::meta::position_info &end) : std::runtime_error(msg), expression_start(start), expression_end(end) {}
 
@@ -324,7 +322,7 @@ namespace salmon::parser {
 		// if there is an error we need to have the first character, as read_next() consumes it.
 		char first_char = inStream.peek();
 
-		auto [result, item] = read_next(inStream);
+		const auto [result, item] = read_next(inStream);
 
 		switch(result) {
 		case ReadResult::R_PAREN:
