@@ -112,7 +112,7 @@ namespace salmon::compiler {
 		}
 	}
 
-	static inline CountingStreamBuffer *tracker_from_stream(const std::istream &stream) {
+	static CountingStreamBuffer *tracker_from_stream(const std::istream &stream) {
 		return static_cast<CountingStreamBuffer*>(stream.std::ios::rdbuf());
 	}
 
