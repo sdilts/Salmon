@@ -1,17 +1,27 @@
+compiler_deps = []
+
+lib_compiler = static_library(
+  'salmon_compiler',
+  files(
+    'compiler/box.cpp',
+    'compiler/CountingStream.cpp',
+    'compiler/compiler.cpp',
+    'compiler/config.cpp',
+    'compiler/parser.cpp',
+    'compiler/type.cpp',
+#    'compiler/vm/memory.cpp',
+  ),
+  include_directories: salmon_inc,
+  dependencies: compiler_deps,
+)
+
+
 salmon_sources = files(
   'main.cpp',
-
-  'compiler/CountingStream.cpp',
-  'compiler/compiler.cpp',
-  'compiler/config.cpp',
-  'compiler/parser.cpp',
-  'compiler/type.cpp',
-  'compiler/vm/memory.cpp',
-
   'util/environment.cpp',
   )
 
-salmon_deps = [
+salmon_exe_deps = [
   linenoise,
 ]
 
@@ -19,6 +29,7 @@ executable(
   'salmon',
   salmon_sources,
   include_directories: [salmon_inc],
-  dependencies: salmon_deps,
+  dependencies: salmon_exe_deps,
+  link_with: lib_compiler,
   install: true
 )
