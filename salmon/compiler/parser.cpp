@@ -181,7 +181,7 @@ namespace salmon::compiler {
 
 	static std::string parse_primitive(std::istream &input) {
 		static const std::set<char> terminating_chars =
-			{ ')', '(', '[', ']', '{', '}', '"'};
+			{ '(', ')', '[', ']', '{', '}', '"'};
 		std::ostringstream token;
 		char ch;
 
@@ -242,6 +242,7 @@ namespace salmon::compiler {
 		return items;
 	}
 
+	// temporary function to put list items into a string:
 	static std::string read_thing(std::istream &input, char start, char end,
 								  ReadResult terminator) {
 		std::ostringstream collected_items;
