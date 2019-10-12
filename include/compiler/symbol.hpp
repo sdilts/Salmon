@@ -22,7 +22,6 @@ namespace salmon::compiler {
 		const std::string name;
 
 		friend const Symbol& intern_symbol(const std::string &name, Package &package);
-		friend std::ostream& operator<<(std::ostream &os, const Package &package);
 		friend bool is_external(const Symbol &symbol, const Package &package);
 	private:
 		Package();
@@ -41,6 +40,7 @@ namespace salmon::compiler {
 	bool operator<(const Symbol &first, const Symbol &second);
 
 	std::ostream& operator<<(std::ostream &os, const Symbol &symbol);
+	std::ostream& operator<<(std::ostream &os, const Package &package);
 }
 
 
