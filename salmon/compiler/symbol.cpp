@@ -14,35 +14,60 @@ namespace salmon::compiler {
 
 
 	std::optional<std::reference_wrapper<const Symbol>>
-	owned_by(const std::string name, const Package &package) {
-		auto result = package.interned.find(name);
-		if(result == package.interned.end()) {
+	Package::find_external_symbol(const std::string &name) const {
+		auto result = this->exported.find(name);
+		if(result == this->exported.end()) {
+			for(const auto &pkg : this->used) {
+				auto found = pkg.get().find_external_symbol(name);
+				if(found) {
+					return *found;
+				}
+			}
 			return std::nullopt;
 		}
-		return std::make_optional(std::ref(*result));
+		return *result;
 	}
 
-	const Symbol& intern_symbol(const std::string &name, Package &package) {
+	const Symbol& Package::intern_symbol(const std::string &name) {
 
-		for(const auto &pkg : package.used) {
-			auto found = owned_by(name, pkg);
+		for(const auto &pkg : this->used) {
+			auto found = pkg.get().find_external_symbol(name);
 			if(found) {
 				return *found;
 			}
 		}
 
-		auto interned_result = package.interned.lower_bound(name);
-		if(interned_result == package.interned.end() || (*interned_result).name != name) {
-			auto final_place = package.interned.insert(interned_result, {name, package});
+		auto interned_result = this->interned.lower_bound(name);
+		if(interned_result == this->interned.end() || (*interned_result).name != name) {
+			auto final_place = this->interned.insert(interned_result, {name, *this});
 			assert((*final_place).name == name);
 			return *final_place;
 		}
 		return *interned_result;
 	}
 
-	bool is_external(const Symbol &symbol, const Package &package) {
-		auto found = package.exported.find(symbol);
-		return found != package.exported.end();
+	std::optional<std::reference_wrapper<const Symbol>> Package::find_symbol(const std::string &name) const {
+		for(const auto &pkg : this->used) {
+			auto found = pkg.get().find_external_symbol(name);
+			if(found) {
+				return *found;
+			}
+		}
+
+		auto interned_result = this->interned.find(name);
+		if(interned_result == this->interned.end() || (*interned_result).name != name) {
+			return *interned_result;
+		}
+		return std::nullopt;
+	}
+
+	void Package::export_symbol(const Symbol &symbol) {
+		exported.insert(symbol);
+	}
+
+	bool Package::is_exported(const Symbol &symbol) const {
+		auto found = this->exported.find(symbol);
+		return found != this->exported.end();
 	}
 
 	bool operator<(const Package &first, const Package &second) {

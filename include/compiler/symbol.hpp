@@ -12,6 +12,9 @@ namespace salmon::compiler {
 	struct Symbol {
 		const std::string name;
 		Package &package;
+
+		Symbol(const Symbol&) = delete;
+		void operator=(const Symbol&) = delete;
 	};
 
 	class Package {
@@ -19,18 +22,25 @@ namespace salmon::compiler {
 		Package(const std::string &name);
 		Package(const std::string &name, const std::set<std::reference_wrapper<Package>> &used);
 
+		Package(const Package&) = delete;
+		void operator=(const Package&) = delete;
+
 		const std::string name;
 
-		friend const Symbol& intern_symbol(const std::string &name, Package &package);
-		friend bool is_external(const Symbol &symbol, const Package &package);
+		const Symbol& intern_symbol(const std::string &name);
+		std::optional<std::reference_wrapper<const Symbol>> find_symbol(const std::string &name) const;
+		bool is_exported(const Symbol &symbol) const;
+		void export_symbol(const Symbol &symbol);
+
 	private:
 		Package();
 
-		friend std::optional<std::reference_wrapper<const Symbol>> owned_by(const std::string,
-																	  const Package&);
+		std::optional<std::reference_wrapper<const Symbol>>
+		     find_external_symbol(const std::string&) const;
 
+		// TODO: figure out a better way to store the interned/exported symbols.
 		std::set<Symbol, std::less<>> interned;
-		std::set<Symbol, std::less<>> exported;
+		std::set<std::reference_wrapper<const Symbol>, std::less<>> exported;
 		std::set<std::reference_wrapper<Package>> used;
 	};
 
