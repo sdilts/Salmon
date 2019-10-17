@@ -6,6 +6,6 @@ tests = {
 foreach name, file : tests
   e = executable(name, file,
 		 include_directories: [salmon_inc],
-		link_with: lib_compiler)
+		link_with: [lib_compiler, lib_catch] )
   test(name, e)
 endforeach
