@@ -185,6 +185,7 @@ namespace salmon::compiler {
 		std::ostringstream token;
 		char ch;
 
+		// use peek() so terminating chars aren't consumed:
 		while( (ch = input.peek()) && ch != EOF) {
 			if(std::isspace(static_cast<unsigned char>(ch)) ||
 			   terminating_chars.count(ch) == 1) {

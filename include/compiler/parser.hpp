@@ -6,7 +6,7 @@
 #include <filesystem>
 #include <optional>
 
-#include "compiler/CountingStream.hpp"
+#include <compiler/CountingStream.hpp>
 
 namespace salmon::compiler {
 
