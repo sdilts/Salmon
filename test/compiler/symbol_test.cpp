@@ -23,7 +23,7 @@ namespace salmon::compiler {
 		}
 	}
 
-	SCENARIO( "Unexported symbols aren't inherited.", "[package][!shouldfail]") {
+	SCENARIO( "Unexported symbols aren't inherited.", "[package]") {
 		GIVEN( "A package that uses some non-empty package") {
 			Package parent1("parent1");
 			Package parent2("parent2");
@@ -36,16 +36,16 @@ namespace salmon::compiler {
 				const Symbol &other = child.intern_symbol("foo");
 
 				THEN( "The given symbol is the one from the parent.") {
-					REQUIRE(&other == &foo_symb);
-					REQUIRE(&other.package == &parent1);
+					REQUIRE(&other != &foo_symb);
+					REQUIRE(&other.package != &parent1);
 				}
 			}
 			WHEN( "A string from the second parent is interned") {
 				const Symbol &other = child.intern_symbol("bar");
 
 				THEN( "The given symbol is the one from the parent.") {
-					REQUIRE(&other == &bar_symb);
-					REQUIRE(&other.package == &parent2);
+					REQUIRE(&other != &bar_symb);
+					REQUIRE(&other.package != &parent2);
 				}
 			}
 		}
