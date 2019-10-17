@@ -2,6 +2,8 @@
 
 namespace salmon::vm {
 
+	std::map<Box*,unsigned int> vm_ptr::instances;
+
 	std::vector<Box*> vm_ptr::get_instances() {
 		std::vector<Box*> things;
 		for(const auto& [key, value] : vm_ptr::instances) {
