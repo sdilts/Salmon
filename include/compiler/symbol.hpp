@@ -54,6 +54,4 @@ namespace salmon::compiler {
 	std::ostream& operator<<(std::ostream &os, const Package &package);
 }
 
-
-
 #endif

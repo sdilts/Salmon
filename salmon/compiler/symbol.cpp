@@ -99,5 +99,4 @@ namespace salmon::compiler {
 	std::ostream& operator<<(std::ostream &os, const Package &package) {
 		return os << "#<PACKAGE: \"" << package.name << "\">";
 	}
-
 }
