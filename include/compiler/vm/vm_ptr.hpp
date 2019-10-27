@@ -2,6 +2,7 @@
 #define SALMON_COMPILER_VM_MEMORY
 
 #include <map>
+#include <vector>
 #include <compiler/box.hpp>
 
 namespace salmon::vm {
