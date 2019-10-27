@@ -13,7 +13,6 @@ namespace salmon::compiler {
 		const std::string name;
 		Package &package;
 
-		Symbol(const Symbol&) = delete;
 		void operator=(const Symbol&) = delete;
 	};
 
