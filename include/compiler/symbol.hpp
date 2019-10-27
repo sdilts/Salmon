@@ -11,8 +11,10 @@ namespace salmon::compiler {
 
 	struct Symbol {
 		const std::string name;
-		Package &package;
+		std::optional<Package*> package;
 
+		Symbol(const Symbol&) = delete;
+		Symbol(Symbol &&) = default;
 		void operator=(const Symbol&) = delete;
 	};
 

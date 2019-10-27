@@ -37,9 +37,10 @@ namespace salmon::compiler {
 			}
 		}
 
-		auto interned_result = this->interned.lower_bound(name);
-		if(interned_result == this->interned.end() || (*interned_result).name != name) {
-			auto final_place = this->interned.insert(interned_result, {name, *this});
+		auto interned_result = interned.lower_bound(name);
+		if(interned_result == interned.end() || (*interned_result).name != name) {
+			Symbol new_symb = {name, std::make_optional(this)};
+			auto final_place = interned.insert(interned_result, std::move(new_symb));
 			assert((*final_place).name == name);
 			return *final_place;
 		}
@@ -87,7 +88,12 @@ namespace salmon::compiler {
 	}
 
 	std::ostream& operator<<(std::ostream &os, const Symbol &symbol) {
-		return os << symbol.package.name << "::" << symbol.name;
+		if(symbol.package) {
+			os << (*symbol.package)->name;
+		} else {
+			os << "#:";
+		}
+		return os << symbol.name;
 	}
 
 	std::ostream& operator<<(std::ostream &os, const Package &package) {

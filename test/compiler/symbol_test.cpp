@@ -37,7 +37,11 @@ namespace salmon::compiler {
 
 				THEN( "The given symbol is the one from the parent.") {
 					REQUIRE(&other != &foo_symb);
-					REQUIRE(&other.package != &parent1);
+					if(other.package) {
+						REQUIRE((*other.package) != &parent1);
+					} else {
+						REQUIRE(false);
+					}
 				}
 			}
 			WHEN( "A string from the second parent is interned") {
@@ -45,7 +49,11 @@ namespace salmon::compiler {
 
 				THEN( "The given symbol is the one from the parent.") {
 					REQUIRE(&other != &bar_symb);
-					REQUIRE(&other.package != &parent2);
+					if(other.package) {
+						REQUIRE((*other.package) != &parent2);
+					} else {
+						REQUIRE(false);
+					}
 				}
 			}
 		}
