@@ -26,6 +26,7 @@ namespace salmon::vm {
 					REQUIRE(instances.empty());
 				}
 			}
+			delete item;
 		}
 	}
 
@@ -65,6 +66,7 @@ namespace salmon::vm {
 					REQUIRE(instances.empty());
 				}
 			}
+			delete item;
 		}
 	}
 	SCENARIO( "Copying an vm_ptr should behave correctly", "[vm_ptr]") {
@@ -99,10 +101,11 @@ namespace salmon::vm {
 					REQUIRE(instances.empty());
 				}
 			}
+			delete item;
 		}
 	}
 
-	SCENARIO("vm_ptrs initialized with nullptr still function") {
+	SCENARIO("vm_ptrs initialized with nullptr still function", "[vm_ptr]") {
 		vm_ptr ptr(nullptr);
 
 		WHEN("The pointer is deleted") {
