@@ -105,6 +105,36 @@ namespace salmon::vm {
 		}
 	}
 
+	SCENARIO("Assigning vm_ptrs using operator= functions correctly", "[vm_ptr]") {
+		Box *item = new Box();
+		vm_ptr ptr(item);
+
+		WHEN("An empty vm_ptr is assigned to") {
+			vm_ptr other(nullptr);
+			other = ptr;
+			THEN("Both pointers point to the same object.") {
+				REQUIRE(other.get() == ptr.get());
+				REQUIRE(other.get() == item);
+			}
+		}
+
+		WHEN("An non-empty vm_ptr is assigned to") {
+			Box *other_box = new Box();
+			vm_ptr other(other_box);
+
+			other = ptr;
+			THEN("The pointer it used to contain is freed.") {
+				std::vector<Box*> instances = vm_ptr::get_instances();
+
+				REQUIRE(!instances.empty());
+				REQUIRE(instances[0] == item);
+				REQUIRE(instances.size() == 1);
+			}
+			delete other_box;
+		}
+		delete item;
+	}
+
 	SCENARIO("vm_ptrs initialized with nullptr still function", "[vm_ptr]") {
 		vm_ptr ptr(nullptr);
 
