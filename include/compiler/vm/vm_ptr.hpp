@@ -1,5 +1,5 @@
-#ifndef SALMON_COMPILER_VM_MEMORY
-#define SALMON_COMPILER_VM_MEMORY
+#ifndef SALMON_COMPILER_VM_VM_PTR
+#define SALMON_COMPILER_VM_VM_PTR
 
 #include <map>
 #include <vector>
