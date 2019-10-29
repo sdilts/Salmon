@@ -17,7 +17,7 @@ namespace salmon::compiler {
 				const Symbol &other = package.intern_symbol("foo");
 
 				THEN( "The two returned symbols are the same.") {
-					REQUIRE(&symbol == &other);
+					REQUIRE(symbol == other);
 				}
 			}
 		}
@@ -48,7 +48,7 @@ namespace salmon::compiler {
 				const Symbol &other = child.intern_symbol("bar");
 
 				THEN( "The given symbol is the one from the parent.") {
-					REQUIRE(&other != &bar_symb);
+					REQUIRE(other != bar_symb);
 					if(other.package) {
 						REQUIRE((*other.package) != &parent2);
 					} else {
@@ -70,7 +70,7 @@ namespace salmon::compiler {
 				THEN( "The parent's symbols should be used.") {
 					const Symbol &child_symb = parent.intern_symbol("test");
 
-					REQUIRE(&child_symb == &symb);
+					REQUIRE(child_symb == symb);
 				}
 			}
 		}

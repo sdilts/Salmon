@@ -84,7 +84,31 @@ namespace salmon::compiler {
 	}
 
 	bool operator<(const Symbol &first, const Symbol &second) {
+		if(first.package && second.package) {
+			if (*first.package == *second.package) {
+				return first.name < second.name;
+			}
+			return first.package < second.package;
+		} else if(first.package) {
+			return false;
+		} else if (second.package) {
+			return true;
+		}
 		return first.name < second.name;
+	}
+
+	bool operator==(const Symbol &first, const Symbol &second) {
+		if(first.package && second.package) {
+			if (*first.package == *second.package) {
+				return first.name == second.name;
+			}
+			return first.package < second.package;
+		}
+		return false;
+	}
+
+	bool operator!=(const Symbol &first, const Symbol &second) {
+		return !(first == second);
 	}
 
 	std::ostream& operator<<(std::ostream &os, const Symbol &symbol) {
