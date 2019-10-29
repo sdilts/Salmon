@@ -88,6 +88,7 @@ namespace salmon::compiler {
 			if (*first.package == *second.package) {
 				return first.name < second.name;
 			}
+			// std::optional uses the package comparison operators under the hood:
 			return first.package < second.package;
 		} else if(first.package) {
 			return false;
@@ -98,13 +99,7 @@ namespace salmon::compiler {
 	}
 
 	bool operator==(const Symbol &first, const Symbol &second) {
-		if(first.package && second.package) {
-			if (*first.package == *second.package) {
-				return first.name == second.name;
-			}
-			return first.package < second.package;
-		}
-		return false;
+		return &first == &second;
 	}
 
 	bool operator!=(const Symbol &first, const Symbol &second) {
