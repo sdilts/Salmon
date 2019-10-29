@@ -7,6 +7,7 @@ lib_compiler = static_library(
     'compiler/CountingStream.cpp',
     'compiler/compiler.cpp',
     'compiler/config.cpp',
+    'compiler/package.cpp',
     'compiler/parser.cpp',
     'compiler/symbol.cpp',
     'compiler/type.cpp',

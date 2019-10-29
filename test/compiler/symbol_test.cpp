@@ -1,4 +1,6 @@
 #include <compiler/symbol.hpp>
+#include <compiler/package.hpp>
+
 #include <test/catch.hpp>
 
 namespace salmon::compiler {
