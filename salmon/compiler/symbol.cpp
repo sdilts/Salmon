@@ -109,6 +109,11 @@ namespace salmon::compiler {
 	std::ostream& operator<<(std::ostream &os, const Symbol &symbol) {
 		if(symbol.package) {
 			os << (*symbol.package)->name;
+			if((*symbol.package)->is_exported(symbol)) {
+				os << ":";
+			} else {
+				os << "::";
+			}
 		} else {
 			os << "#:";
 		}
