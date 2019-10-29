@@ -28,6 +28,8 @@ namespace salmon::compiler {
 		std::string documentation;
 	};
 
+	std::ostream &operator<<(std::ostream &stream, const Type &type);
+
 	/**
 	 * An instance of this struct represents the particular metadata associated with
 	 * a variable at compile time, as outlined by the actual type field of the structure.
