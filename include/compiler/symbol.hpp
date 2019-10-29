@@ -52,7 +52,7 @@ namespace salmon::compiler {
 
 	bool operator<(const Symbol &first, const Symbol &second);
 	bool operator==(const Symbol &first, const Symbol &second);
-	bool operator!=(const Symbol &first, const Symbol &second)
+	bool operator!=(const Symbol &first, const Symbol &second);
 
 	std::ostream& operator<<(std::ostream &os, const Symbol &symbol);
 	std::ostream& operator<<(std::ostream &os, const Package &package);
