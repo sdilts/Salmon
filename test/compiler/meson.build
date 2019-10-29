@@ -1,5 +1,6 @@
 tests = {
 	  # 'parser_tests' : 'compiler/parser_test.cpp',
+	  'package_tests' : 'package_test.cpp',
 	  'symbol_tests' : 'symbol_test.cpp',
 	  'vm_ptr_tests' : 'vm/vm_ptr_tests.cpp',
 	}
