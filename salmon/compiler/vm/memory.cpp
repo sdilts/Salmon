@@ -3,6 +3,7 @@
 
 #include <assert.h>
 
+#include <compiler/vm/vm_ptr.hpp>
 #include <compiler/vm/memory.hpp>
 
 
@@ -22,47 +23,11 @@ namespace salmon::vm {
 		delete box;
 	}
 
-	void MemoryManager::add_root(const std::list<Box*>& root) {
-		roots.push_back(std::ref(root));
-	}
-
-	void MemoryManager::remove_root(const std::list<Box*>& root) {
-		auto place = std::find_if(roots.begin(), roots.end(), [root](const auto &other) {
-			return &root == &other.get();
-		});
-		assert(place != roots.end());
-		roots.erase(place);
-	}
-
-	void MemoryManager::add_root(const std::map<std::string, Box*>& root) {
-		named_roots.push_back(std::ref(root));
-	}
-
-	void MemoryManager::remove_root(const std::map<std::string, Box*>& root) {
-		auto place = std::find_if(named_roots.begin(), named_roots.end(), [root](const auto &other) {
-			return &root == &other.get();
-		});
-		assert(place != named_roots.end());
-		named_roots.erase(place);
-	}
-
 	static void mark_box(Box* root, const unsigned char tag) {
 		root->tag = tag;
 	}
 
-	static void mark_roots(const std::list<Box*> &container, const unsigned char tag) {
-		for(const auto &item : container) {
-			mark_box(item, tag);
-		}
-	}
-
-	static void mark_roots(const std::map<std::string,Box*> &container, const unsigned char tag) {
-		for(const auto &item : container) {
-			mark_box(item.second, tag);
-		}
-	}
-
-	static void remove_old(std::list<Box*> &pointers, const unsigned char current_tag) {
+	static void remove_old(std::vector<Box*> &pointers, const unsigned char current_tag) {
 		auto iterator = pointers.begin();
 		while(iterator != pointers.end()) {
 			Box *item = *iterator;
@@ -83,11 +48,8 @@ namespace salmon::vm {
 		const unsigned char new_tag = last_tag + 1;
 
 		// mark each reachable box
-		for(const auto& root : roots) {
-			mark_roots(root, new_tag);
-		}
-		for(const auto& root : named_roots) {
-			mark_roots(root, new_tag);
+		for(Box *root : vm_ptr::get_instances()) {
+			mark_box(root, new_tag);
 		}
 
 		remove_old(allocated, new_tag);

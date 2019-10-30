@@ -12,7 +12,7 @@ lib_compiler = static_library(
     'compiler/symbol.cpp',
     'compiler/type.cpp',
     'compiler/vm/vm_ptr.cpp',
-#    'compiler/vm/memory.cpp',
+    'compiler/vm/memory.cpp',
   ),
   include_directories: salmon_inc,
   dependencies: compiler_deps,
