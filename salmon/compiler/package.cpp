@@ -35,13 +35,13 @@ namespace salmon::compiler {
 		}
 
 		auto interned_result = interned.lower_bound(name);
-		if(interned_result == interned.end() || (*interned_result).name != name) {
+		if(interned_result == interned.end() || (*interned_result).second.name != name) {
 			Symbol new_symb = {name, std::make_optional(this)};
-			auto final_place = interned.insert(interned_result, std::move(new_symb));
-			assert((*final_place).name == name);
-			return *final_place;
+			auto final_place = interned.insert(interned_result, {name, std::move(new_symb)});
+			assert((*final_place).second.name == name);
+			return (*final_place).second;
 		}
-		return *interned_result;
+		return (*interned_result).second;
 	}
 
 	std::optional<std::reference_wrapper<const Symbol>> Package::find_symbol(const std::string &name) const {
@@ -53,8 +53,8 @@ namespace salmon::compiler {
 		}
 
 		auto interned_result = this->interned.find(name);
-		if(interned_result == this->interned.end() || (*interned_result).name != name) {
-			return *interned_result;
+		if(interned_result == this->interned.end() || (*interned_result).second.name != name) {
+			return (*interned_result).second;
 		}
 		return std::nullopt;
 	}

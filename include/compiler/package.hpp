@@ -3,6 +3,7 @@
 
 #include <string>
 #include <set>
+#include <map>
 #include <optional>
 #include <functional>
 
@@ -32,7 +33,7 @@ namespace salmon::compiler {
 		find_external_symbol(const std::string&) const;
 
 		// TODO: figure out a better way to store the interned/exported symbols.
-		std::set<Symbol, std::less<>> interned;
+		std::map<std::string, Symbol> interned;
 		std::set<std::reference_wrapper<const Symbol>, std::less<>> exported;
 		std::set<std::reference_wrapper<Package>> used;
 	};
