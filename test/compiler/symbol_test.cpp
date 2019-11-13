@@ -9,8 +9,8 @@ namespace salmon::compiler {
 		GIVEN( "Two symbols from a different package") {
 			Package pkg1 = Package("Test1");
 			Package pkg2 = Package("Test2");
-			const Symbol &foo_symb = pkg1.intern_symbol("Foo");
-			const Symbol &bar_symb = pkg2.intern_symbol("Foo");
+			const Symbol foo_symb = {"Foo", &pkg1};
+			const Symbol bar_symb = {"Foo", &pkg2};
 
 			THEN( "The two symbols are not reported as equal") {
 				REQUIRE(foo_symb != bar_symb);
@@ -34,7 +34,7 @@ namespace salmon::compiler {
 
 		GIVEN( "A symbol with a package") {
 			Package pkg = Package("Test");
-			const Symbol &foo_symb = pkg.intern_symbol("foo");
+			const Symbol &foo_symb = {"foo", &pkg};
 
 			THEN( "It is equal to itself." ) {
 				REQUIRE(foo_symb == foo_symb);
