@@ -3,6 +3,7 @@
 
 #include <map>
 #include <vector>
+#include <functional>
 
 namespace salmon::vm {
 
@@ -110,6 +111,15 @@ namespace salmon::vm {
 	void swap(vm_ptr<T>& first, vm_ptr<T>& second) {
 		first.swap(second);
 	}
+}
+
+namespace std {
+	template<typename T>
+	struct hash<salmon::vm::vm_ptr<T>> {
+		size_t operator()(const salmon::vm::vm_ptr<T>& thing) {
+			return std::hash<T*>(thing.get());
+		}
+	};
 }
 
 #endif
