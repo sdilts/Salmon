@@ -1,8 +1,14 @@
 #include <test/catch.hpp>
 
 #include <compiler/vm/vm_ptr.hpp>
+#include <compiler/box.hpp>
 
 namespace salmon::vm {
+
+	using namespace salmon::compiler;
+
+	template<>
+	std::map<Box*,unsigned int> vm_ptr<Box>::instances = {};
 
     SCENARIO( "A single vm_ptr records its root correctly.", "[vm_ptr]") {
 
@@ -11,7 +17,7 @@ namespace salmon::vm {
 			vm_ptr ptr(item);
 
 			THEN( "The box and only the box is shown in vm_ptr::get_instances()") {
-				std::vector<Box*> instances = vm_ptr::get_instances();
+				std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 				REQUIRE(!instances.empty());
 				REQUIRE(instances.size() == 1);
@@ -22,7 +28,7 @@ namespace salmon::vm {
 				ptr.~vm_ptr();
 
 				THEN( "The box is not in vm_ptr::get_instances()") {
-					std::vector<Box*> instances = vm_ptr::get_instances();
+					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 					REQUIRE(instances.empty());
 				}
 			}
@@ -37,7 +43,7 @@ namespace salmon::vm {
 			vm_ptr ptr2(item);
 
 			THEN( "The box and only the box is shown in vm_ptr::get_instances()") {
-				std::vector<Box*> instances = vm_ptr::get_instances();
+				std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 				REQUIRE(!instances.empty());
 				REQUIRE(instances.size() == 1);
@@ -48,7 +54,7 @@ namespace salmon::vm {
 				ptr2.~vm_ptr();
 
 				THEN( "The box is still in vm_ptr::get_instances") {
-					std::vector<Box*> instances = vm_ptr::get_instances();
+					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(!instances.empty());
 					REQUIRE(instances.size() == 1);
@@ -61,7 +67,7 @@ namespace salmon::vm {
 				ptr1.~vm_ptr();
 
 				THEN( "The vm_ptr::get_instances is empty") {
-					std::vector<Box*> instances = vm_ptr::get_instances();
+					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(instances.empty());
 				}
@@ -84,7 +90,7 @@ namespace salmon::vm {
 					REQUIRE(&*copy == item);
 				}
 				THEN("The item is still in the instances list.") {
-					std::vector<Box*> instances = vm_ptr::get_instances();
+					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(!instances.empty());
 					REQUIRE(instances[0] == item);
@@ -96,7 +102,7 @@ namespace salmon::vm {
 				copy.~vm_ptr();
 
 				THEN( "The vm_ptr::get_instances is empty") {
-					std::vector<Box*> instances = vm_ptr::get_instances();
+					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(instances.empty());
 				}
@@ -110,7 +116,7 @@ namespace salmon::vm {
 		vm_ptr ptr(item);
 
 		WHEN("An empty vm_ptr is assigned to") {
-			vm_ptr other(nullptr);
+			vm_ptr<Box> other(nullptr);
 			other = ptr;
 			THEN("Both pointers point to the same object.") {
 				REQUIRE(other.get() == ptr.get());
@@ -124,7 +130,7 @@ namespace salmon::vm {
 
 			other = ptr;
 			THEN("The pointer it used to contain is freed.") {
-				std::vector<Box*> instances = vm_ptr::get_instances();
+				std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 				REQUIRE(!instances.empty());
 				REQUIRE(instances[0] == item);
@@ -136,7 +142,7 @@ namespace salmon::vm {
 	}
 
 	SCENARIO("vm_ptrs initialized with nullptr still function", "[vm_ptr]") {
-		vm_ptr ptr(nullptr);
+		vm_ptr<Box> ptr(nullptr);
 
 		WHEN("The pointer is deleted") {
 			THEN("Nothing bad happens") {
