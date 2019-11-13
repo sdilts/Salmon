@@ -41,7 +41,6 @@ namespace salmon {
 				target_dir = home_dir;
 				target_dir /= other_path;
 			} else {
-				// TODO: use exception
 				std::ostringstream error_message;
 				error_message << "Could not get config dir from $" <<
 					var_name << " or $HOME. Check to ensure either of these environment variables are set.";
