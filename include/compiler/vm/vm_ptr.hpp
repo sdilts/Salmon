@@ -29,7 +29,7 @@ namespace salmon::vm {
 		}
 
 		explicit vm_ptr(T *box) : ptr(box) {
-			auto [pos, newly_added] = vm_ptr::instances.insert({box, 1});
+			auto [pos, newly_added] = vm_ptr<T>::instances.insert({box, 1});
 			position = pos;
 			if(!newly_added) {
 				pos->second += 1;
@@ -56,8 +56,8 @@ namespace salmon::vm {
 			if(ptr) {
 				position->second -= 1;
 				if(position->second == 0) {
-					vm_ptr::instances.erase(position);
-					position = vm_ptr::instances.end();
+					vm_ptr<T>::instances.erase(position);
+					position = vm_ptr<T>::instances.end();
 				}
 			}
 		}

@@ -10,6 +10,9 @@ namespace salmon::vm {
 	template<>
 	std::map<Box*,unsigned int> vm_ptr<Box>::instances = {};
 
+	template<>
+	std::map<Symbol*,unsigned int> vm_ptr<Symbol>::instances = {};
+
     SCENARIO( "A single vm_ptr records its root correctly.", "[vm_ptr]") {
 
 		GIVEN( "A vm_ptr with a non-null pointer to keep track of") {
