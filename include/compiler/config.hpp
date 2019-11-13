@@ -11,6 +11,8 @@ namespace salmon {
 		const std::filesystem::path cache_dir;
 		const std::filesystem::path config_dir;
 		const std::filesystem::path data_dir;
+
+		static const int max_verbose_lvl = 3;
 	};
 }
 

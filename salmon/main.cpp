@@ -72,7 +72,6 @@ int main(int argc ,char **argv) {
 	bool repl_flag = false;
 	bool invalid_flag = false;
 
-	const int max_verbose_lvl = 3;
 	int verbosity_level = 0;
 
 	char c;
@@ -85,10 +84,10 @@ int main(int argc ,char **argv) {
 			invalid_flag = true;
 			break;
 		case 'v':
-			if(verbosity_level < max_verbose_lvl) {
+			if(verbosity_level < salmon::CompilerConfig::max_verbose_lvl) {
 				verbosity_level++;
 			} else {
-				std::cerr << "Warning: highest verbosity level possible is " << max_verbose_lvl << std::endl;
+				std::cerr << "Warning: highest verbosity level possible is " << salmon::CompilerConfig::max_verbose_lvl << std::endl;
 			}
 			break;
 		default:
