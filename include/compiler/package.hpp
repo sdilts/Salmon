@@ -34,7 +34,7 @@ namespace salmon::compiler {
 
 		// TODO: figure out a better way to store the interned/exported symbols.
 		std::map<std::string, Symbol> interned;
-		std::set<std::reference_wrapper<const Symbol>, std::less<>> exported;
+		std::map<std::string, std::reference_wrapper<const Symbol>> exported;
 		std::set<std::reference_wrapper<Package>> used;
 	};
 

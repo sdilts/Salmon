@@ -22,7 +22,7 @@ namespace salmon::compiler {
 			}
 			return std::nullopt;
 		}
-		return *result;
+		return (*result).second;
 	}
 
 	const Symbol& Package::intern_symbol(const std::string &name) {
@@ -60,11 +60,11 @@ namespace salmon::compiler {
 	}
 
 	void Package::export_symbol(const Symbol &symbol) {
-		exported.insert(symbol);
+		exported.insert({symbol.name, symbol});
 	}
 
 	bool Package::is_exported(const Symbol &symbol) const {
-		auto found = this->exported.find(symbol);
+		auto found = this->exported.find(symbol.name);
 		return found != this->exported.end();
 	}
 
