@@ -9,6 +9,9 @@
 
 namespace salmon::vm {
 
+	template<>
+	std::map<Box*,unsigned int> vm_ptr<Box>::instances = {};
+
 	Box *MemoryManager::allocate_box() {
 		Box *chunk = new Box();
 		chunk->tag = this->last_tag;
@@ -48,7 +51,7 @@ namespace salmon::vm {
 		const unsigned char new_tag = last_tag + 1;
 
 		// mark each reachable box
-		for(Box *root : vm_ptr::get_instances()) {
+		for(Box *root : vm_ptr<Box>::get_instances()) {
 			mark_box(root, new_tag);
 		}
 
