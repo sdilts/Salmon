@@ -48,6 +48,7 @@ static void repl(const salmon::CompilerConfig& config) {
 	const std::filesystem::path history_file = config.data_dir / "history.txt";
 
 	linenoiseHistoryLoad(history_file.string().c_str());
+	linenoiseHistorySetMaxLen(100);
 
 	char *line;
 	while((line = linenoise(" > ")) != nullptr) {
@@ -63,7 +64,7 @@ static void repl(const salmon::CompilerConfig& config) {
 		}
 		free(line);
 	}
-	if(!linenoiseHistorySave(history_file.string().c_str())) {
+	if(linenoiseHistorySave(history_file.string().c_str()) == -1) {
 		std::cerr << "Failed to save history" << std::endl;
 	}
 }
