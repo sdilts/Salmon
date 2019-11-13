@@ -101,6 +101,10 @@ int main(int argc ,char **argv) {
 
 	salmon::CompilerConfig config = get_config();
 	config.verbosity_level = verbosity_level;
+	if(std::optional<std::error_code> errc = salmon::CompilerConfig::ensure_required_dirs(config)) {
+		std::cerr << "FATAL: Could not create required directories.\n";
+		return errc->value();
+	}
 
 	salmon::compiler::Compiler engine(config);
 
