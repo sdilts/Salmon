@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include <functional>
+#include <iostream>
 
 namespace salmon::vm {
 
@@ -15,7 +16,6 @@ namespace salmon::vm {
 		static typename std::map<T*,unsigned int> instances;
 
 		T *ptr;
-		typename std::map<T*,unsigned int>::iterator position;
 
 	public:
 
@@ -30,20 +30,19 @@ namespace salmon::vm {
 
 		explicit vm_ptr(T *box) : ptr(box) {
 			auto [pos, newly_added] = vm_ptr<T>::instances.insert({box, 1});
-			position = pos;
 			if(!newly_added) {
 				pos->second += 1;
 			}
 		}
 
-		vm_ptr(std::nullptr_t) : ptr(nullptr), position(vm_ptr<T>::instances.end()) {}
+		vm_ptr(std::nullptr_t) : ptr(nullptr) {}
 
-		vm_ptr(const vm_ptr<T>& other)  :
-			ptr(other.ptr),
-			position(other.position) {
+		vm_ptr(const vm_ptr<T>& other) :
+			ptr(other.ptr) {
 			// Unless we point to something, don't do anything:
 			if(ptr) {
-				position->second += 1;
+				auto pos = vm_ptr<T>::instances.find(ptr);
+				pos->second += 1;
 			}
 		}
 
@@ -54,10 +53,11 @@ namespace salmon::vm {
 		~vm_ptr()  {
 			// Unless we point to something, don't do anything:
 			if(ptr) {
-				position->second -= 1;
-				if(position->second == 0) {
-					vm_ptr<T>::instances.erase(position);
-					position = vm_ptr<T>::instances.end();
+				auto pos = vm_ptr<T>::instances.find(ptr);
+				pos->second -= 1;
+				if(pos->second == 0) {
+					vm_ptr<T>::instances.erase(pos);
+					// position = vm_ptr<T>::instances.end();
 				}
 			}
 		}
@@ -103,7 +103,6 @@ namespace salmon::vm {
 
 		void swap(vm_ptr<T>& other) noexcept  {
 			std::swap(ptr, other.ptr);
-			std::swap(position, other.position);
 		}
 	};
 

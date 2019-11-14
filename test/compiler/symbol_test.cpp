@@ -1,4 +1,5 @@
 #include <compiler/symbol.hpp>
+#include <compiler/vm/memory.hpp>
 #include <compiler/package.hpp>
 
 #include <test/catch.hpp>
@@ -6,9 +7,11 @@
 namespace salmon::compiler {
 
 	SCENARIO("Symbol equality functions work.", "[package]") {
+		MemoryManager mem_manager;
+
 		GIVEN( "Two symbols from a different package") {
-			Package pkg1 = Package("Test1");
-			Package pkg2 = Package("Test2");
+			Package pkg1 = Package("Test1",mem_manager);
+			Package pkg2 = Package("Test2", mem_manager);
 			const Symbol foo_symb = {"Foo", &pkg1};
 			const Symbol bar_symb = {"Foo", &pkg2};
 
@@ -33,7 +36,7 @@ namespace salmon::compiler {
 		}
 
 		GIVEN( "A symbol with a package") {
-			Package pkg = Package("Test");
+			Package pkg = Package("Test", mem_manager);
 			const Symbol &foo_symb = {"foo", &pkg};
 
 			THEN( "It is equal to itself." ) {

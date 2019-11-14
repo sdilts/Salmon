@@ -3,10 +3,13 @@
 
 #include <vector>
 
-#include <stdint.h>
 #include <map>
+#include <unordered_set>
+
+#include <compiler/vm/vm_ptr.hpp>
 
 #include <compiler/box.hpp>
+#include <compiler/symbol.hpp>
 
 namespace salmon::vm {
 	using namespace salmon::compiler;
@@ -14,13 +17,12 @@ namespace salmon::vm {
 	class MemoryManager {
 
 	public:
-		Box *allocate_box();
-		void free(Box *);
+		vm_ptr<Box> make_box();
+		vm_ptr<Symbol> make_symbol(const std::string &name);
 
 		void do_gc();
 	private:
-		unsigned char last_tag;
-		std::vector<Box*> allocated;
+		std::vector<void*> allocated;
 	};
 }
 #endif
