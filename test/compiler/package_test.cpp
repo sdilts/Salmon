@@ -20,6 +20,7 @@ namespace salmon::compiler {
 			}
 			std::cerr << "done\n";
 		}
+		manager.do_gc();
 	}
 
 	SCENARIO( "Symbols are only interned once.", "[package]") {
@@ -40,6 +41,7 @@ namespace salmon::compiler {
 				}
 			}
 		}
+		manager.do_gc();
 	}
 
 	SCENARIO( "Unexported symbols aren't inherited.", "[package]") {
@@ -76,6 +78,7 @@ namespace salmon::compiler {
 				}
 			}
 		}
+		manager.do_gc();
 	}
 
 	SCENARIO( "Exported symbols should be inherited.", "[package]") {
@@ -93,5 +96,6 @@ namespace salmon::compiler {
 				}
 			}
 		}
+		manager.do_gc();
 	}
 }
