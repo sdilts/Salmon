@@ -18,12 +18,12 @@ namespace salmon::compiler {
 
 	enum class ReadResult {
 		// built-in seperator tokens:
-		L_PAREN,
-		R_PAREN,
-		L_BRACKET,
-		R_BRACKET,
-		L_BRACE,
-		R_BRACE,
+		L_PAREN = '(',
+		R_PAREN = ')',
+		L_BRACKET = '[',
+		R_BRACKET = ']',
+		L_BRACE = '{',
+		R_BRACE = '}',
 		// some salmon object, usually a symbol
 		ITEM,
 		END
@@ -54,25 +54,6 @@ namespace salmon::compiler {
 		out << message;
 		out << ch;
 		return out.str();
-	}
-
-	static char toTerminator(const ReadResult &result) {
-		switch(result) {
-		case ReadResult::L_PAREN:
-			return '(';
-		case ReadResult::R_PAREN:
-			return ')';
-		case ReadResult::L_BRACKET:
-			return '[';
-		case ReadResult::R_BRACKET:
-			return ']';
-		case ReadResult::L_BRACE:
-			return '{';
-		case ReadResult::R_BRACE:
-			return '}';
-		default:
-			abort();
-		}
 	}
 
 	static void trim_stream(std::istream &input) {
@@ -232,7 +213,7 @@ namespace salmon::compiler {
 					throw ParseException("EOF reached while parsing",
 										 start_info, end_info);
 				} else {
-					char term_char = toTerminator(result);
+					char term_char = static_cast<char>(result);
 					end_info = countStreamBuf->positionInfo();
 					throw ParseException(build_unmatched_error_str("Unexpected closing character: ",term_char),
 										 start_info, end_info);
