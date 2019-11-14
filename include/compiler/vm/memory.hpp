@@ -3,9 +3,9 @@
 
 #include <vector>
 
-#include <map>
 #include <unordered_set>
 
+#include <compiler/vm/allocateditem.hpp>
 #include <compiler/vm/vm_ptr.hpp>
 
 #include <compiler/box.hpp>
@@ -22,7 +22,7 @@ namespace salmon::vm {
 
 		void do_gc();
 	private:
-		std::vector<void*> allocated;
+		std::unordered_set<AllocatedItem*> allocated;
 	};
 }
 #endif

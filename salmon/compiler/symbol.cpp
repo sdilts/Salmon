@@ -8,6 +8,13 @@
 
 namespace salmon::compiler {
 
+	Symbol::Symbol(const std::string &name, const std::optional<Package*> &package)
+		: name{name}, package{package} {
+
+	}
+
+	Symbol::~Symbol() { }
+
 	bool operator<(const std::string &first, const Symbol &second) {
 		return first < second.name;
 	}

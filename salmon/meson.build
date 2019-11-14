@@ -11,6 +11,7 @@ lib_compiler = static_library(
     'compiler/parser.cpp',
     'compiler/symbol.cpp',
     'compiler/type.cpp',
+    'compiler/vm/allocateditem.cpp',
     'compiler/vm/memory.cpp',
   ),
   include_directories: salmon_inc,

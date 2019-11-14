@@ -5,17 +5,23 @@
 #include <set>
 #include <ostream>
 
+#include <compiler/vm/allocateditem.hpp>
+
 namespace salmon::compiler {
 
 	class Package;
 
-	struct Symbol {
+	struct Symbol : public salmon::vm::AllocatedItem {
 		const std::string name;
 		std::optional<Package*> package;
 
+		Symbol(const std::string&, const std::optional<Package*>&);
 		Symbol(const Symbol&) = delete;
 		Symbol(Symbol &&) = default;
+
+		~Symbol();
 		void operator=(const Symbol&) = delete;
+
 	};
 
 	bool operator<(const std::string &first, const Symbol &second);
