@@ -4,13 +4,14 @@
 #include <variant>
 
 #include <compiler/vm/allocateditem.hpp>
+#include <compiler/vm/vm_ptr.hpp>
 #include <compiler/symbol.hpp>
 
 namespace salmon::compiler {
 	struct Box : public salmon::vm::AllocatedItem {
 		~Box();
 		struct Type *type;
-		std::variant<int32_t, double,void*> elem;
+		std::variant<int32_t, double,salmon::vm::vm_ptr<Symbol>> elem;
 	};
 }
 
