@@ -17,7 +17,6 @@ namespace salmon::compiler {
 	 *   file_info:     the name of the source file (if available) where the error took place.
 	 ***/
 	struct ParseException : public std::runtime_error {
-		//ParseException(const std::string &msg);
 		ParseException(const std::string &msg, const salmon::meta::position_info &start,
 					   const salmon::meta::position_info &end);
 

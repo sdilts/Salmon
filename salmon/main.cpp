@@ -56,7 +56,7 @@ static void repl(const salmon::CompilerConfig& config) {
 
 			try {
 			    auto token = compiler::read_from_string(line);
-				std::cout << " token: " << *token << std::endl;
+				std::cout << "token: " << *token << std::endl;
 				linenoiseHistoryAdd(line);
 			} catch(const compiler::ParseException &error) {
 				std::cout << error.build_error_str() << std::endl;
