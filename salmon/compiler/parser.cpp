@@ -57,7 +57,7 @@ namespace salmon::compiler {
 	}
 
 	static void trim_stream(std::istream &input) {
-		char ch;
+		int ch;
 		ch = input.peek();
 		while(!(ch == EOF || !std::isspace(static_cast<unsigned char>(ch)))) {
 			input.get();
@@ -103,17 +103,21 @@ namespace salmon::compiler {
 		salmon::meta::position_info start_info = countStreamBuf->positionInfo();
 		salmon::meta::position_info end_info;
 
-		// count number of quotes:
-		char ch;
 		std::size_t num_quotes = 0;
-		while( (ch = input.peek()) && ch == '"') {
-			num_quotes++;
-			input.get();
-		};
+		// count number of quotes:
+		{
+			int ch;
+			while( (ch = input.peek()) && ch == '"') {
+				num_quotes++;
+				input.get();
+			};
+		}
 
 		std::size_t curCount = 0;
 		std::ostringstream token;
-		while(curCount != num_quotes && (ch = input.get()) != EOF) {
+		int read_in;
+		while(curCount != num_quotes && (read_in = input.get()) != EOF) {
+			char ch = static_cast<char>(read_in);
 			if(ch == '\\') {
 				//convert escape sequence to character:
 				token << escape(input);
