@@ -76,8 +76,9 @@ int main(int argc ,char **argv) {
 
 	int verbosity_level = 0;
 
-	char c;
-	while( (c = getopt(argc, argv, "rv")) != -1) {
+	int read_in;
+	while( (read_in = getopt(argc, argv, "rv")) != -1) {
+		char c = static_cast<char>(read_in);
 		switch(c) {
 		case 'r':
 			repl_flag = true;

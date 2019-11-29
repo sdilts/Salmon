@@ -168,10 +168,10 @@ namespace salmon::compiler {
 		static const std::set<char> terminating_chars =
 			{ '(', ')', '[', ']', '{', '}', '"'};
 		std::ostringstream token;
-		char ch;
-
+		int read_in;
 		// use peek() so terminating chars aren't consumed:
-		while( (ch = input.peek()) && ch != EOF) {
+		while( (read_in = input.peek()) && read_in != EOF) {
+			char ch = static_cast<char>(read_in);
 			if(std::isspace(static_cast<unsigned char>(ch)) ||
 			   terminating_chars.count(ch) == 1) {
 				break;
@@ -259,9 +259,10 @@ namespace salmon::compiler {
 		do {
 			//consume any preceding whitespace:
 			trim_stream(input);
-			char ch = input.peek();
+			int read_in = input.peek();
 
-			if(ch != EOF) {
+			if(read_in != EOF) {
+				char ch = static_cast<char>(read_in);
 				switch(ch) {
 				case ';':
 					// discard the comment:
