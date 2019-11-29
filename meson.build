@@ -23,8 +23,6 @@ add_project_arguments(common_args, language: 'c',)
 replxx_proj = cmake.subproject('replxx', cmake_options: '-DREPLXX_BUILD_EXAMPLES=no')
 replxx_dep = replxx_proj.get_variable('replxx_dep')
 
-linenoise = dependency('linenoise')
-
 salmon_inc = include_directories('include')
 
 # subdir('include')

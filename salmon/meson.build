@@ -25,7 +25,7 @@ salmon_sources = files(
   )
 
 salmon_exe_deps = [
-  linenoise,
+  replxx_dep,
 ]
 
 executable(

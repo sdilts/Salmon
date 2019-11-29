@@ -3,9 +3,10 @@
 #include <stdlib.h>
 #include <string>
 #include <filesystem>
-#include <linenoise.h>
 
 #include <unistd.h>
+
+#include <replxx.hxx>
 
 #include <util/environment.hpp>
 #include <compiler/parser.hpp>
@@ -47,26 +48,26 @@ static void repl(const salmon::CompilerConfig& config) {
 	using namespace salmon;
 	const std::filesystem::path history_file = config.data_dir / "history.txt";
 
-	linenoiseHistoryLoad(history_file.string().c_str());
-	linenoiseHistorySetMaxLen(100);
+	replxx::Replxx rx;
+	rx.install_window_change_handler();
 
-	char *line;
-	while((line = linenoise(" > ")) != nullptr) {
+	rx.history_load(history_file.string());
+	rx.set_max_history_size(100);
+
+	char const* line{nullptr};
+	while((line = rx.input(" > ")) != nullptr) {
 		if(line[0] != '\0') {
-
 			try {
 			    auto token = compiler::read_from_string(line);
 				std::cout << "token: " << *token << std::endl;
-				linenoiseHistoryAdd(line);
+				rx.history_add(line);
 			} catch(const compiler::ParseException &error) {
 				std::cout << error.build_error_str() << std::endl;
 			}
 		}
-		free(line);
 	}
-	if(linenoiseHistorySave(history_file.string().c_str()) == -1) {
-		std::cerr << "Failed to save history" << std::endl;
-	}
+	std::cout << "\n";
+	rx.history_save(history_file);
 }
 
 int main(int argc ,char **argv) {
