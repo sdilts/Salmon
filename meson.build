@@ -2,6 +2,7 @@ project('salmon',
 	['cpp', 'c'],
 	version : '0.0.1',
 	license : 'MIT',
+	meson_version: '>=0.49.0',
 	default_options : [
 	  'cpp_std=c++17',
 	  'c_std=c17',
