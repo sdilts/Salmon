@@ -3,6 +3,7 @@
 
 #include <assert.h>
 #include <algorithm>
+#include <iostream>
 
 #include <compiler/vm/vm_ptr.hpp>
 #include <compiler/vm/memory.hpp>

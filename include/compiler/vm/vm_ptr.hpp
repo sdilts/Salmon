@@ -4,7 +4,6 @@
 #include <map>
 #include <vector>
 #include <functional>
-#include <iostream>
 #include <type_traits>
 
 #include <compiler/vm/allocateditem.hpp>

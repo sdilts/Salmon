@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <compiler/symbol.hpp>
 #include <compiler/package.hpp>
 
