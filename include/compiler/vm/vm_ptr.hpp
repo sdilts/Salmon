@@ -5,11 +5,16 @@
 #include <vector>
 #include <functional>
 #include <iostream>
+#include <type_traits>
+
+#include <compiler/vm/allocateditem.hpp>
 
 namespace salmon::vm {
 
 	template<typename T>
 	class vm_ptr {
+
+		static_assert(std::is_base_of<AllocatedItem, T>::value);
 
 	private:
 
