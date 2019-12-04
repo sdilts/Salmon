@@ -50,7 +50,7 @@ namespace salmon::vm {
 			}
 		}
 
-		vm_ptr(vm_ptr<T>&& moving) noexcept  {
+		vm_ptr(vm_ptr<T>&& moving) noexcept : ptr(nullptr)  {
 			moving.swap(*this);
 		}
 
