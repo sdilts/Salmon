@@ -87,7 +87,7 @@ namespace salmon::compiler {
 		GIVEN( "A package with an exported symbol") {
 			Package parent("parent", manager);
 			vm_ptr<Symbol> symb = parent.intern_symbol("test");
-			parent.export_symbol(*symb);
+			parent.export_symbol(symb);
 
 			WHEN( "The package is used") {
 				Package child = Package("Child", manager, { parent });

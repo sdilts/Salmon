@@ -46,7 +46,6 @@ namespace salmon::compiler {
 		if(interned_result == interned.end() || (*interned_result).second->name != name) {
 			vm_ptr<Symbol> new_symb = mem_manager.make_symbol(name);
 			new_symb->package = std::make_optional(this);
-			// Symbol new_symb = {name, std::make_optional(this)};
 			auto final_place = interned.insert(interned_result, {name, std::move(new_symb)});
 			assert((*final_place).second->name == name);
 			return (*final_place).second;
@@ -69,8 +68,8 @@ namespace salmon::compiler {
 		return std::nullopt;
 	}
 
-	void Package::export_symbol(Symbol &symbol) {
-		exported.insert({symbol.name, vm_ptr<Symbol>(&symbol)});
+	void Package::export_symbol(vm_ptr<Symbol> &symbol) {
+		exported.insert({(*symbol).name, std::move(vm_ptr(symbol))});
 	}
 
 	bool Package::is_exported(const Symbol &symbol) const {
