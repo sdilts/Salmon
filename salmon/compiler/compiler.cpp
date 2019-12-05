@@ -2,7 +2,8 @@
 
 namespace salmon::compiler {
 
-	Compiler::Compiler(const CompilerConfig &config) : config(config) {
+	Compiler::Compiler(const CompilerConfig &config) :
+		config{config}, vm{} {
 
 	}
 

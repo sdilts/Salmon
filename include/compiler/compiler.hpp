@@ -2,22 +2,16 @@
 #define SALMON_COMPILER_COMPILER
 
 #include <compiler/config.hpp>
-#include <compiler/vm/type.hpp>
-#include <compiler/vm/memory.hpp>
 
+#include <compiler/vm/vm.hpp>
 
 namespace salmon::compiler {
 
-	class Compiler {
-	public:
-
+	struct Compiler {
 		Compiler(const CompilerConfig &config);
-
-	private:
 		CompilerConfig config;
-		salmon::vm::TypeTable type_table;
 
-		salmon::vm::MemoryManager gc;
+		salmon::vm::VirtualMachine vm;
 	};
 }
 
