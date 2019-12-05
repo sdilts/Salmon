@@ -9,11 +9,9 @@
 
 #include <compiler/vm/vm_ptr.hpp>
 #include <compiler/vm/memory.hpp>
-#include <compiler/symbol.hpp>
+#include <compiler/vm/symbol.hpp>
 
-namespace salmon::compiler {
-
-	using namespace salmon::vm;
+namespace salmon::vm {
 
 	class Package {
 	public:

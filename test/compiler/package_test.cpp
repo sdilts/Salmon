@@ -1,17 +1,17 @@
 #include <iostream>
 
-#include <compiler/symbol.hpp>
-#include <compiler/package.hpp>
+#include <compiler/vm/symbol.hpp>
+#include <compiler/vm/package.hpp>
 
 #include <test/catch.hpp>
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	MemoryManager manager;
 
 	SCENARIO( "A symbol is interned", "[package]") {
 		GIVEN("A package with no symbols") {
-			salmon::compiler::Package package("find_symbol", manager);
+		    Package package("find_symbol", manager);
 			WHEN( "A symbol is interned" ) {
 				vm_ptr<Symbol> symbol = package.intern_symbol("test");
 				THEN( "it is found by find_symbol") {
@@ -28,7 +28,7 @@ namespace salmon::compiler {
 	SCENARIO( "Symbols are only interned once.", "[package]") {
 
 		GIVEN( "A package with no symbols" ) {
-			salmon::compiler::Package package("test", manager);
+		    Package package("test", manager);
 
 			REQUIRE(package.name == "test");
 

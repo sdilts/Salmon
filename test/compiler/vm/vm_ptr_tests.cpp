@@ -1,11 +1,9 @@
 #include <test/catch.hpp>
 
 #include <compiler/vm/vm_ptr.hpp>
-#include <compiler/box.hpp>
+#include <compiler/vm/box.hpp>
 
 namespace salmon::vm {
-
-	using namespace salmon::compiler;
 
     SCENARIO( "A single vm_ptr records its root correctly.", "[vm_ptr]") {
 

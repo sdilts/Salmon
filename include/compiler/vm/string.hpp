@@ -5,8 +5,8 @@
 
 #include <compiler/vm/allocateditem.hpp>
 
-namespace salmon::compiler {
-	struct StaticString : public salmon::vm::AllocatedItem {
+namespace salmon::vm {
+	struct StaticString : public AllocatedItem {
 		const std::string contents;
 		StaticString(const std::string &str);
 		StaticString() = delete;

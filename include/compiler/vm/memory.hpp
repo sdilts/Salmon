@@ -8,11 +8,10 @@
 #include <compiler/vm/allocateditem.hpp>
 #include <compiler/vm/vm_ptr.hpp>
 
-#include <compiler/box.hpp>
-#include <compiler/symbol.hpp>
+#include <compiler/vm/box.hpp>
+#include <compiler/vm/symbol.hpp>
 
 namespace salmon::vm {
-	using namespace salmon::compiler;
 
 	class MemoryManager {
 

@@ -3,10 +3,10 @@
 
 #include <assert.h>
 
-#include <compiler/symbol.hpp>
-#include <compiler/package.hpp>
+#include <compiler/vm/symbol.hpp>
+#include <compiler/vm/package.hpp>
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	Symbol::Symbol(const std::string &name, const std::optional<Package*> &package)
 		: name{name}, package{package} {

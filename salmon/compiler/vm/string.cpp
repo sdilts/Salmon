@@ -1,6 +1,6 @@
-#include <compiler/string.hpp>
+#include <compiler/vm/string.hpp>
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	StaticString::StaticString(const std::string &str) :
 		contents{str} { }

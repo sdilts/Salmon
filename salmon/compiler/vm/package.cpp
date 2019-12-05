@@ -1,8 +1,8 @@
 #include <assert.h>
 
-#include <compiler/package.hpp>
+#include <compiler/vm/package.hpp>
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	Package::Package(const std::string &name, MemoryManager &mem_manager)
 		: name(name),

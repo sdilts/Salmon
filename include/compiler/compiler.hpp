@@ -2,7 +2,7 @@
 #define SALMON_COMPILER_COMPILER
 
 #include <compiler/config.hpp>
-#include <compiler/type.hpp>
+#include <compiler/vm/type.hpp>
 #include <compiler/vm/memory.hpp>
 
 
@@ -15,7 +15,7 @@ namespace salmon::compiler {
 
 	private:
 		CompilerConfig config;
-		TypeTable type_table;
+		salmon::vm::TypeTable type_table;
 
 		salmon::vm::MemoryManager gc;
 	};

@@ -7,11 +7,11 @@
 
 #include <compiler/vm/allocateditem.hpp>
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	class Package;
 
-	struct Symbol : public salmon::vm::AllocatedItem {
+	struct Symbol : public AllocatedItem {
 		const std::string name;
 		std::optional<Package*> package;
 

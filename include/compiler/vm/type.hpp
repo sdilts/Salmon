@@ -10,11 +10,11 @@
 
 #include <stdlib.h>
 
-#include <compiler/box.hpp>
+#include <compiler/vm/box.hpp>
 #include <compiler/vm/memory.hpp>
 
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	/**
 	 * An instance of this struct represents the cannonical metadata

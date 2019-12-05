@@ -1,8 +1,8 @@
 #include <assert.h>
 
-#include <compiler/type.hpp>
+#include <compiler/vm/type.hpp>
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	const Type &TypeTable::get_type(const std::string &name) const {
 		const auto &item = this->table.find(name);

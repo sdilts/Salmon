@@ -1,7 +1,7 @@
-#include <compiler/box.hpp>
+#include <compiler/vm/box.hpp>
 
 
-namespace salmon::compiler {
+namespace salmon::vm {
 	Box::~Box() {
 
 	}

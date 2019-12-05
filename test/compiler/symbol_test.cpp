@@ -1,10 +1,10 @@
-#include <compiler/symbol.hpp>
+#include <compiler/vm/symbol.hpp>
 #include <compiler/vm/memory.hpp>
-#include <compiler/package.hpp>
+#include <compiler/vm/package.hpp>
 
 #include <test/catch.hpp>
 
-namespace salmon::compiler {
+namespace salmon::vm {
 
 	SCENARIO("Symbol equality functions work.", "[package]") {
 		MemoryManager mem_manager;
