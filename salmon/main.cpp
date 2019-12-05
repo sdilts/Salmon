@@ -59,12 +59,15 @@ static void repl(const salmon::CompilerConfig& config) {
 		if(line[0] != '\0') {
 			try {
 			    auto token = compiler::read_from_string(line);
-				std::cout << "token: " << *token << std::endl;
+				if(token) {
+					std::cout << "token: " << *token << std::endl;
+				}
 				rx.history_add(line);
 			} catch(const compiler::ParseException &error) {
 				std::cout << error.build_error_str() << std::endl;
 			}
 		}
+		line = "";
 	}
 	std::cout << "\n";
 	rx.history_save(history_file);
