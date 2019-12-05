@@ -69,7 +69,7 @@ namespace salmon::compiler {
 	}
 
 	void Package::export_symbol(vm_ptr<Symbol> &symbol) {
-		exported.insert({(*symbol).name, std::move(vm_ptr(symbol))});
+		exported.insert({(*symbol).name, vm_ptr(symbol)});
 	}
 
 	bool Package::is_exported(const Symbol &symbol) const {
