@@ -11,8 +11,8 @@
 #include <stdlib.h>
 
 #include <compiler/vm/box.hpp>
-#include <compiler/vm/memory.hpp>
-
+#include <compiler/vm/symbol.hpp>
+#include <compiler/vm/vm_ptr.hpp>
 
 namespace salmon::vm {
 
@@ -23,9 +23,9 @@ namespace salmon::vm {
 	 * of the type.
 	 **/
 	struct Type {
-		std::string name;
+	    vm_ptr<Symbol> name;
 		//! the potential metadata for an instance of the type with documentation
-		const std::map<std::string, std::pair<const Type *const, std::string>> meta;
+		const std::map<vm_ptr<Symbol>, std::pair<const Type *const, std::string>> meta;
 		std::string documentation;
 	};
 

@@ -21,7 +21,6 @@ namespace salmon::vm {
 
 		~Symbol();
 		void operator=(const Symbol&) = delete;
-
 	};
 
 	bool operator<(const std::string &first, const Symbol &second);

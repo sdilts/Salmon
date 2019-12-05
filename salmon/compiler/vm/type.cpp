@@ -21,12 +21,12 @@ namespace salmon::vm {
 	}
 
 	std::ostream &operator<<(std::ostream &stream, const Type &type) {
-		stream << "<TYPE: \"" << type.name << "\"";
+		stream << "<TYPE: \"" << *type.name << "\"";
 		bool print_meta = !type.meta.empty();
 		if(print_meta) {
 			stream << " (:meta";
 			for(const auto &item : type.meta) {
-				stream << " " << item.first;
+				stream << " " << *item.first;
 			}
 			stream << ")";
 		}
