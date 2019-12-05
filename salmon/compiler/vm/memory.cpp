@@ -11,23 +11,17 @@
 
 namespace salmon::vm {
 
-	template<>
-	std::map<Symbol*,unsigned int> vm_ptr<Symbol>::instances = {};
-
-	template<>
-	std::map<Box*,unsigned int> vm_ptr<Box>::instances = {};
-
 	vm_ptr<Box> MemoryManager::make_box() {
 		Box *chunk = new Box();
 		this->allocated.insert(chunk);
-		vm_ptr<Box> box(chunk);
+		vm_ptr<Box> box(chunk, roots);
 		return box;
 	}
 
 	vm_ptr<Symbol> MemoryManager::make_symbol(const std::string &name) {
 		Symbol *chunk = new Symbol(name, std::nullopt);
 		this->allocated.insert(chunk);
-		vm_ptr<Symbol> symb(chunk);
+		vm_ptr<Symbol> symb(chunk, roots);
 		return symb;
 	}
 
@@ -37,10 +31,7 @@ namespace salmon::vm {
 	void MemoryManager::do_gc() {
 		std::cerr << "Before GC: " << allocated.size() << "\n";
 		std::unordered_set<AllocatedItem*> marked = {};
-		for(Box* root : vm_ptr<Box>::get_instances()) {
-			marked.insert(root);
-		}
-		for(Symbol* root : vm_ptr<Symbol>::get_instances()) {
+		for(auto [root, count] : roots) {
 			marked.insert(root);
 		}
 		std::vector<AllocatedItem*> to_delete;

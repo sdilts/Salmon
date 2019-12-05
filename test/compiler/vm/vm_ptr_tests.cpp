@@ -9,23 +9,23 @@ namespace salmon::vm {
 
     SCENARIO( "A single vm_ptr records its root correctly.", "[vm_ptr]") {
 
+		std::unordered_map<AllocatedItem*,unsigned int> instances;
+
 		GIVEN( "A vm_ptr with a non-null pointer to keep track of") {
 			Box *item = new Box();
-			vm_ptr<Box>* ptr = new vm_ptr<Box>(item);
+			vm_ptr<Box>* ptr = new vm_ptr<Box>(item, instances);
 
 			THEN( "The box and only the box is shown in vm_ptr::get_instances()") {
-				std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 				REQUIRE(!instances.empty());
 				REQUIRE(instances.size() == 1);
-				REQUIRE(instances[0] == item);
+				REQUIRE(instances[item] == 1);
 				delete ptr;
 			}
 
 			WHEN( "The vm_ptr is deleted") {
 				delete ptr;
 				THEN( "The box is not in vm_ptr::get_instances()") {
-					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 					REQUIRE(instances.empty());
 				}
 			}
@@ -34,17 +34,18 @@ namespace salmon::vm {
 	}
 
 	SCENARIO( "Two vm_ptrs work correctly when created with the same Box pointer", "[vm_ptr]") {
+		std::unordered_map<AllocatedItem*,unsigned int> instances;
+
 		GIVEN( "Two vm_ptrs created with the same Box pointer") {
 			Box *item = new Box();
-			vm_ptr<Box>* ptr1 = new vm_ptr<Box>(item);
-			vm_ptr<Box>* ptr2 = new vm_ptr<Box>(item);
+			vm_ptr<Box>* ptr1 = new vm_ptr<Box>(item, instances);
+			vm_ptr<Box>* ptr2 = new vm_ptr<Box>(item, instances);
 
 			THEN( "The box and only the box is shown in vm_ptr::get_instances()") {
-				std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 				REQUIRE(!instances.empty());
 				REQUIRE(instances.size() == 1);
-				REQUIRE(instances[0] == item);
+				REQUIRE(instances[item] == 2);
 
 				delete ptr1;
 				delete ptr2;
@@ -54,11 +55,10 @@ namespace salmon::vm {
 				delete ptr2;
 
 				THEN( "The box is still in vm_ptr::get_instances") {
-					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(!instances.empty());
 					REQUIRE(instances.size() == 1);
-					REQUIRE(instances[0] == item);
+					REQUIRE(instances[item] == 1);
 				}
 				delete ptr1;
 			}
@@ -68,7 +68,6 @@ namespace salmon::vm {
 				delete ptr2;
 
 				THEN( "The vm_ptr::get_instances is empty") {
-					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(instances.empty());
 				}
@@ -77,9 +76,11 @@ namespace salmon::vm {
 		}
 	}
 	SCENARIO( "Copying an vm_ptr should behave correctly", "[vm_ptr]") {
+		std::unordered_map<AllocatedItem*,unsigned int> instances;
+
 		GIVEN("A vm_ptr managing a Box and a copy of the vm_ptr") {
 			Box *item = new Box();
-			vm_ptr<Box>* ptr = new vm_ptr<Box>(item);
+			vm_ptr<Box>* ptr = new vm_ptr<Box>(item, instances);
 			vm_ptr<Box>* copy = new vm_ptr<Box>(*ptr);
 
 			THEN("The copy points to the same object") {
@@ -94,10 +95,9 @@ namespace salmon::vm {
 					delete copy;
 				}
 				THEN("The item is still in the instances list.") {
-					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(!instances.empty());
-					REQUIRE(instances[0] == item);
+					REQUIRE(instances[item] == 1);
 					delete copy;
 				}
 			}
@@ -107,7 +107,6 @@ namespace salmon::vm {
 				delete copy;
 
 				THEN( "The vm_ptr::get_instances is empty") {
-					std::vector<Box*> instances = vm_ptr<Box>::get_instances();
 
 					REQUIRE(instances.empty());
 				}
@@ -117,11 +116,12 @@ namespace salmon::vm {
 	}
 
 	SCENARIO("Assigning vm_ptrs using operator= functions correctly", "[vm_ptr]") {
+		std::unordered_map<AllocatedItem*,unsigned int> instances;
 		Box *item = new Box();
-		vm_ptr ptr(item);
+		vm_ptr ptr(item, instances);
 
 		WHEN("An empty vm_ptr is assigned to") {
-			vm_ptr<Box> other(nullptr);
+			vm_ptr<Box> other(nullptr, instances);
 			other = ptr;
 			THEN("Both pointers point to the same object.") {
 				REQUIRE(other.get() == ptr.get());
@@ -131,14 +131,14 @@ namespace salmon::vm {
 
 		WHEN("An non-empty vm_ptr is assigned to") {
 			Box *other_box = new Box();
-			vm_ptr other(other_box);
+			vm_ptr other(other_box, instances);
+			REQUIRE(instances[other_box] == 1);
 
 			other = ptr;
 			THEN("The pointer it used to contain is freed.") {
-				std::vector<Box*> instances = vm_ptr<Box>::get_instances();
-
 				REQUIRE(!instances.empty());
-				REQUIRE(instances[0] == item);
+				auto pos = instances.find(other_box);
+				REQUIRE(pos == instances.end());
 				REQUIRE(instances.size() == 1);
 			}
 			delete other_box;
@@ -147,7 +147,8 @@ namespace salmon::vm {
 	}
 
 	SCENARIO("vm_ptrs initialized with nullptr still function", "[vm_ptr]") {
-		vm_ptr<Box> *ptr = new vm_ptr<Box>(nullptr);
+		std::unordered_map<AllocatedItem*,unsigned int> instances;
+		vm_ptr<Box> *ptr = new vm_ptr<Box>(nullptr, instances);
 
 		WHEN("The pointer is deleted") {
 			THEN("Nothing bad happens") {

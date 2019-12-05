@@ -1,7 +1,7 @@
 #ifndef SALMON_COMPILER_VM_VM_PTR
 #define SALMON_COMPILER_VM_VM_PTR
 
-#include <map>
+#include <unordered_map>
 #include <vector>
 #include <functional>
 #include <type_traits>
@@ -17,51 +17,46 @@ namespace salmon::vm {
 
 	private:
 
-		static typename std::map<T*,unsigned int> instances;
-
+	    std::unordered_map<AllocatedItem*,unsigned int> *instances;
 		T *ptr;
 
 	public:
 
-		// TODO: this could be costly, we should just return a const reference to the map:
-		static std::vector<T*> get_instances()  {
-			std::vector<T*> things;
-			for(const auto [key, value] : vm_ptr<T>::instances) {
-				things.push_back(key);
-			}
-			return things;
-		}
-
-		explicit vm_ptr(T *box) : ptr(box) {
-			auto [pos, newly_added] = vm_ptr<T>::instances.insert({box, 1});
+		explicit vm_ptr(T *thing, std::unordered_map<AllocatedItem*, unsigned int> &table) :
+		    instances{&table},
+			ptr(thing) {
+			auto [pos, newly_added] = instances->insert({ptr, 1});
 			if(!newly_added) {
 				pos->second += 1;
 			}
 		}
 
-		vm_ptr(std::nullptr_t) : ptr(nullptr) {}
+		vm_ptr(std::nullptr_t,  std::unordered_map<AllocatedItem*, unsigned int> &table) :
+			instances{&table}, ptr(nullptr) {}
 
 		vm_ptr(const vm_ptr<T>& other) :
+			instances{other.instances},
 			ptr(other.ptr) {
 			// Unless we point to something, don't do anything:
 			if(ptr) {
-				auto pos = vm_ptr<T>::instances.find(ptr);
+				auto pos = instances->find(ptr);
 				pos->second += 1;
 			}
 		}
 
-		vm_ptr(vm_ptr<T>&& moving) noexcept : ptr(nullptr)  {
+		vm_ptr(vm_ptr<T>&& moving) noexcept :
+			instances{nullptr},
+			ptr(nullptr) {
 			moving.swap(*this);
 		}
 
 		~vm_ptr()  {
 			// Unless we point to something, don't do anything:
 			if(ptr) {
-				auto pos = vm_ptr<T>::instances.find(ptr);
+				auto pos = instances->find(ptr);
 				pos->second -= 1;
 				if(pos->second == 0) {
-					vm_ptr<T>::instances.erase(pos);
-					// position = vm_ptr<T>::instances.end();
+					instances->erase(pos);
 				}
 			}
 		}
@@ -107,6 +102,7 @@ namespace salmon::vm {
 
 		void swap(vm_ptr<T>& other) noexcept  {
 			std::swap(ptr, other.ptr);
+			std::swap(instances, other.instances);
 		}
 	};
 

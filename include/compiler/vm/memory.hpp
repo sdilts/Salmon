@@ -23,6 +23,7 @@ namespace salmon::vm {
 		void do_gc();
 	private:
 		std::unordered_set<AllocatedItem*> allocated;
+		std::unordered_map<AllocatedItem*, unsigned int> roots;
 	};
 }
 #endif
