@@ -25,6 +25,13 @@ namespace salmon::vm {
 		return symb;
 	}
 
+	vm_ptr<StaticString> MemoryManager::make_static_string(const std::string &str) {
+		StaticString *chunk = new StaticString(str);
+		this->allocated.insert(chunk);
+		vm_ptr<StaticString> string(chunk, roots);
+		return string;
+	}
+
 	/**
 	 * this functions implements mark and sweep garbage collection.
 	 **/

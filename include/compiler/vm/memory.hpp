@@ -19,6 +19,7 @@ namespace salmon::vm {
 	public:
 		vm_ptr<Box> make_box();
 		vm_ptr<Symbol> make_symbol(const std::string &name);
+		vm_ptr<StaticString> make_static_string(const std::string &str);
 
 		void do_gc();
 	private:
