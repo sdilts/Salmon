@@ -14,6 +14,7 @@ lib_compiler = static_library(
     'compiler/vm/string.cpp',
     'compiler/vm/symbol.cpp',
     'compiler/vm/type.cpp',
+    'compiler/vm/vm.cpp',
   ),
   include_directories: salmon_inc,
   dependencies: compiler_deps,
