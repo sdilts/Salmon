@@ -112,6 +112,16 @@ namespace salmon::vm {
 	}
 
 	template<typename T>
+	bool operator<(const vm_ptr<T> &lhs, const vm_ptr<T> &rhs) {
+		return lhs.get() < rhs.get();
+	}
+
+	template<typename T>
+	bool operator>(const vm_ptr<T> &lhs, const vm_ptr<T> &rhs) {
+		return lhs.get() > rhs.get();
+	}
+
+	template<typename T>
 	bool operator==(const vm_ptr<T>& lhs, const vm_ptr<T>& rhs) {
 			return lhs.get() == rhs.get();
 	}
