@@ -1,17 +1,20 @@
 #include <test/catch.hpp>
 
 #include <compiler/vm/vm_ptr.hpp>
-#include <compiler/vm/box.hpp>
 
 namespace salmon::vm {
+
+	struct test_struct : public AllocatedItem {
+		int foo;
+	};
 
     SCENARIO( "A single vm_ptr records its root correctly.", "[vm_ptr]") {
 
 		std::unordered_map<AllocatedItem*,unsigned int> instances;
 
 		GIVEN( "A vm_ptr with a non-null pointer to keep track of") {
-			Box *item = new Box();
-			vm_ptr<Box>* ptr = new vm_ptr<Box>(item, instances);
+			test_struct *item = new test_struct();
+			vm_ptr<test_struct>* ptr = new vm_ptr<test_struct>(item, instances);
 
 			THEN( "The box and only the box is shown in vm_ptr::get_instances()") {
 
@@ -31,13 +34,13 @@ namespace salmon::vm {
 		}
 	}
 
-	SCENARIO( "Two vm_ptrs work correctly when created with the same Box pointer", "[vm_ptr]") {
+	SCENARIO( "Two vm_ptrs work correctly when created with the same test_struct pointer", "[vm_ptr]") {
 		std::unordered_map<AllocatedItem*,unsigned int> instances;
 
-		GIVEN( "Two vm_ptrs created with the same Box pointer") {
-			Box *item = new Box();
-			vm_ptr<Box>* ptr1 = new vm_ptr<Box>(item, instances);
-			vm_ptr<Box>* ptr2 = new vm_ptr<Box>(item, instances);
+		GIVEN( "Two vm_ptrs created with the same test_struct pointer") {
+			test_struct *item = new test_struct();
+			vm_ptr<test_struct>* ptr1 = new vm_ptr<test_struct>(item, instances);
+			vm_ptr<test_struct>* ptr2 = new vm_ptr<test_struct>(item, instances);
 
 			THEN( "The box and only the box is shown in vm_ptr::get_instances()") {
 
@@ -76,10 +79,10 @@ namespace salmon::vm {
 	SCENARIO( "Copying an vm_ptr should behave correctly", "[vm_ptr]") {
 		std::unordered_map<AllocatedItem*,unsigned int> instances;
 
-		GIVEN("A vm_ptr managing a Box and a copy of the vm_ptr") {
-			Box *item = new Box();
-			vm_ptr<Box>* ptr = new vm_ptr<Box>(item, instances);
-			vm_ptr<Box>* copy = new vm_ptr<Box>(*ptr);
+		GIVEN("A vm_ptr managing a test_struct and a copy of the vm_ptr") {
+			test_struct *item = new test_struct();
+			vm_ptr<test_struct>* ptr = new vm_ptr<test_struct>(item, instances);
+			vm_ptr<test_struct>* copy = new vm_ptr<test_struct>(*ptr);
 
 			THEN("The copy points to the same object") {
 				REQUIRE(&**ptr == &**copy);
@@ -115,11 +118,11 @@ namespace salmon::vm {
 
 	SCENARIO("Assigning vm_ptrs using operator= functions correctly", "[vm_ptr]") {
 		std::unordered_map<AllocatedItem*,unsigned int> instances;
-		Box *item = new Box();
+		test_struct *item = new test_struct();
 		vm_ptr ptr(item, instances);
 
 		WHEN("An empty vm_ptr is assigned to") {
-			vm_ptr<Box> other(nullptr, instances);
+			vm_ptr<test_struct> other(nullptr, instances);
 			other = ptr;
 			THEN("Both pointers point to the same object.") {
 				REQUIRE(other.get() == ptr.get());
@@ -128,7 +131,7 @@ namespace salmon::vm {
 		}
 
 		WHEN("An non-empty vm_ptr is assigned to") {
-			Box *other_box = new Box();
+			test_struct *other_box = new test_struct();
 			vm_ptr other(other_box, instances);
 			REQUIRE(instances[other_box] == 1);
 
@@ -146,7 +149,7 @@ namespace salmon::vm {
 
 	SCENARIO("vm_ptrs initialized with nullptr still function", "[vm_ptr]") {
 		std::unordered_map<AllocatedItem*,unsigned int> instances;
-		vm_ptr<Box> *ptr = new vm_ptr<Box>(nullptr, instances);
+		vm_ptr<test_struct> *ptr = new vm_ptr<test_struct>(nullptr, instances);
 
 		WHEN("The pointer is deleted") {
 			THEN("Nothing bad happens") {
