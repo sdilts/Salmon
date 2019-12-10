@@ -31,6 +31,6 @@ namespace salmon::compiler {
 
 	std::optional<std::string> read(std::istream &input);
 
-	std::optional<std::string> read_from_string(std::string input);
+	std::optional<std::string> read_from_string(const std::string& input);
 
 }

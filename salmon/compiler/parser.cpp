@@ -30,7 +30,10 @@ namespace salmon::compiler {
 	};
 
 	ParseException::ParseException(const std::string &msg, const salmon::meta::position_info &start,
-								   const salmon::meta::position_info &end) : std::runtime_error(msg), expression_start(start), expression_end(end) {}
+								   const salmon::meta::position_info &end) :
+		std::runtime_error(msg),
+		expression_start(start),
+		expression_end(end) {}
 
 	std::string ParseException::build_error_str() const {
 		std::stringstream out;
@@ -330,7 +333,7 @@ namespace salmon::compiler {
 		}
 	}
 
-	std::optional<std::string> read_from_string(std::string input) {
+	std::optional<std::string> read_from_string(const std::string& input) {
 		std::istringstream input_stream(input);
 		return read(input_stream);
 	}
