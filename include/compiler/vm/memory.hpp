@@ -16,13 +16,13 @@ namespace salmon::vm {
 	class MemoryManager {
 
 	public:
-		vm_ptr<Box> make_box();
 		vm_ptr<Symbol> make_symbol(const std::string &name);
 		vm_ptr<StaticString> make_static_string(const std::string &str);
 
 		void do_gc();
 	private:
 		std::unordered_set<AllocatedItem*> allocated;
+		//! refrence count of allocated objects: kept track of using vm_ptrs
 		std::unordered_map<AllocatedItem*, unsigned int> roots;
 	};
 }

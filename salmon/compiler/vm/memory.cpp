@@ -11,13 +11,6 @@
 
 namespace salmon::vm {
 
-	vm_ptr<Box> MemoryManager::make_box() {
-		Box *chunk = new Box();
-		this->allocated.insert(chunk);
-		vm_ptr<Box> box(chunk, roots);
-		return box;
-	}
-
 	vm_ptr<Symbol> MemoryManager::make_symbol(const std::string &name) {
 		Symbol *chunk = new Symbol(name, std::nullopt);
 		this->allocated.insert(chunk);
