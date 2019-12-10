@@ -18,7 +18,7 @@ namespace salmon::vm {
 	private:
 
 	    std::unordered_map<AllocatedItem*,unsigned int> *instances;
-		T *ptr;
+	    T *ptr;
 
 	public:
 
@@ -110,13 +110,19 @@ namespace salmon::vm {
 	void swap(vm_ptr<T>& first, vm_ptr<T>& second) {
 		first.swap(second);
 	}
+
+	template<typename T>
+	bool operator==(const vm_ptr<T>& lhs, const vm_ptr<T>& rhs) {
+			return lhs.get() == rhs.get();
+	}
+
 }
 
 namespace std {
 	template<typename T>
 	struct hash<salmon::vm::vm_ptr<T>> {
-		size_t operator()(const salmon::vm::vm_ptr<T>& thing) {
-			return std::hash<T*>(thing.get());
+		size_t operator()(const salmon::vm::vm_ptr<T>& thing) const {
+			return std::hash<T*>{}(thing.get());
 		}
 	};
 }
