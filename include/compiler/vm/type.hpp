@@ -20,10 +20,11 @@ namespace salmon::vm {
 	 * An instance of this struct represents the cannonical metadata
 	 * for a salmon type. It holds the name of the type, as well as any
 	 * possible attributes or transformations that can be applied to an object
-	 * of the type.
+	 * of the type. This metadata applies to properties of an instance of an object,
+	 * i.e. the actual length of an array type.
 	 **/
 	struct Type {
-	    vm_ptr<Symbol> name;
+		vm_ptr<Symbol> name;
 		//! the potential metadata for an instance of the type with documentation
 		const std::map<vm_ptr<Symbol>, std::pair<const Type *const, std::string>> meta;
 		std::string documentation;
@@ -42,11 +43,11 @@ namespace salmon::vm {
 
 	class TypeTable {
 	public:
-		const Type &get_type(const std::string &name) const;
+		const Type &get_type(const vm_ptr<Symbol> &name) const;
 
-		bool insert(const std::string &name, const Type &type);
+		bool insert(const Type &type);
 	private:
-		std::map<const std::string, const Type> table;
+		std::unordered_map<vm_ptr<Symbol>, const Type> table;
 	};
 }
 

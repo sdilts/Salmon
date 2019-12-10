@@ -4,19 +4,19 @@
 
 namespace salmon::vm {
 
-	const Type &TypeTable::get_type(const std::string &name) const {
+	const Type &TypeTable::get_type(const vm_ptr<Symbol> &name) const {
 		const auto &item = this->table.find(name);
 		assert(item != this->table.end());
 		const Type &t = (*item).second;
 		return t;
 	}
 
-	bool TypeTable::insert(const std::string &name, const Type &type) {
-		const auto &item = this->table.find(name);
+	bool TypeTable::insert(const Type &type) {
+		const auto &item = this->table.find(type.name);
 		if(item != this->table.end()) {
 			return false;
 		}
-		this->table.emplace(std::make_pair(name, type));
+		this->table.emplace(std::make_pair(type.name, type));
 		return true;
 	}
 
