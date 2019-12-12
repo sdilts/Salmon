@@ -21,12 +21,13 @@ similar goals: [Carp](https://github.com/carp-lang/Carp).
 ## Building
 Build requirements:
 + `meson` + `ninja`
-+ `linenoise`
 
 Install instructions:
 ``` sh
 git clone https://github.com/sdilts/Salmon.git
 cd Salmon
+git submodule init
+git submodule update
 mkdir build
 cd build
 meson ..
