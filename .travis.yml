@@ -21,6 +21,11 @@ addons:
       - ninja
       - python3
       update: true
+ 
+matrix:
+  - exclude:
+    - os: osx
+      compiler: gcc
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo FROM sdilts/fedora-meson > Dockerfile; fi
