@@ -1,5 +1,7 @@
 # Salmon
-An experimental Lisp compiler
+An experimental Lisp compiler.
+
+[![Build Status](https://travis-ci.org/sdilts/Salmon.svg?branch=master)](https://travis-ci.org/sdilts/Salmon)
 
 <i> WARNING! This section describes what is goals of the project are, not what is actually present. To
 see what is actually present, see the [Progress Section](#Progress). </i>
@@ -27,8 +29,7 @@ Install instructions:
 git clone --recurse-submodules https://github.com/sdilts/Salmon.git
 cd Salmon
 meson build
-cd build
-ninja
+ninja -C build
 ```
 If you feel like running the tests, run them with `ninja test`
 
