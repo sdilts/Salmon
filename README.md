@@ -24,13 +24,10 @@ Build requirements:
 
 Install instructions:
 ``` sh
-git clone https://github.com/sdilts/Salmon.git
+git clone --recurse-submodules https://github.com/sdilts/Salmon.git
 cd Salmon
-git submodule init
-git submodule update
-mkdir build
+meson build
 cd build
-meson ..
 ninja
 ```
 If you feel like running the tests, run them with `ninja test`
