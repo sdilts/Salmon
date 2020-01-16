@@ -8,13 +8,17 @@ namespace salmon::compiler {
 		config{config}, vm{} {
 
 		// TODO: use C++ style assert with exceptions:
-		assert(current_package != nullptr);
+		assert(_current_package != nullptr);
+	}
+
+	salmon::vm::Package *Compiler::current_package() {
+		return _current_package;
 	}
 
 	bool Compiler::set_current_package(const std::string &name) {
 		auto internal_pkg = vm.packages.find(name);
 		if(internal_pkg != vm.packages.end()) {
-			this->current_package = &internal_pkg->second;
+			this->_current_package = &internal_pkg->second;
 			return true;
 		}
 		return false;

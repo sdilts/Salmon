@@ -11,10 +11,13 @@ namespace salmon::compiler {
 		Compiler(const CompilerConfig &config);
 		CompilerConfig config;
 
-		salmon::vm::Package *current_package;
 		salmon::vm::VirtualMachine vm;
 
+		salmon::vm::Package *current_package();
 		bool set_current_package(const std::string &name);
+
+	private:
+		salmon::vm::Package *_current_package;
 	};
 }
 
