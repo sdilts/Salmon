@@ -5,7 +5,7 @@
 namespace salmon::compiler {
 
 	Compiler::Compiler(const CompilerConfig &config) :
-		config{config}, vm{} {
+		config{config}, vm{"sal-int"} {
 
 		// TODO: use C++ style assert with exceptions:
 		assert(_current_package != nullptr);

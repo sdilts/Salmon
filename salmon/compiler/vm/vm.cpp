@@ -6,9 +6,9 @@ namespace salmon::vm {
 
 	// }
 
-	VirtualMachine::VirtualMachine() :
+	VirtualMachine::VirtualMachine(const std::string &base_package) :
 		mem_manager{}, type_table{}, packages{} {
-		// packages.insert(std::make_pair("salmon", Package("salmon", mem_manager)));
+		packages.emplace(std::string(base_package), Package(base_package, mem_manager));
 	}
 
 }

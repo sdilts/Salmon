@@ -12,14 +12,10 @@ namespace salmon::vm {
 
 	class VirtualMachine {
 	public:
-		VirtualMachine();
+		VirtualMachine(const std::string &base_package);
 
 		MemoryManager mem_manager;
 
-		Package& find_package(const std::string &name);
-		Package& find_package(const vm_ptr<Symbol> &package);
-
-	private:
 		TypeTable type_table;
 		std::unordered_map<std::string, Package> packages;
 	};
