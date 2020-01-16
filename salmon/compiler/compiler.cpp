@@ -7,6 +7,11 @@ namespace salmon::compiler {
 	Compiler::Compiler(const CompilerConfig &config) :
 		config{config}, vm{"sal-int"} {
 
+		// set the default current package to "sal":
+		auto internal_pkg = vm.packages.find("sal-int");
+		vm.packages.emplace(std::string("sal"), salmon::vm::Package("sal", vm.mem_manager,
+														{ internal_pkg->second }));
+		set_current_package("sal");
 		// TODO: use C++ style assert with exceptions:
 		assert(_current_package != nullptr);
 	}
