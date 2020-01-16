@@ -19,8 +19,8 @@ namespace salmon::vm {
 		Package(const std::string &name, MemoryManager &mem_manager,
 				const std::set<std::reference_wrapper<Package>> &used);
 
-		Package(const Package&) = delete;
-		void operator=(const Package&) = delete;
+		// Package(const Package&) = delete;
+		// void operator=(const Package&) = delete;
 
 		const std::string name;
 		salmon::vm::MemoryManager &mem_manager;
