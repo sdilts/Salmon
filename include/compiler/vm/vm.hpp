@@ -17,11 +17,7 @@ namespace salmon::vm {
 		std::optional<std::reference_wrapper<Package>> find_package(const std::string &name);
 		std::optional<std::reference_wrapper<Package>> find_package(const vm_ptr<Symbol> &name);
 
-		MemoryManager mem_manager;
-		TypeTable type_table;
-		std::unordered_map<std::string, Package> packages;
-
-		// These will be use often enough that it is work it to be able to access them
+		// These will be used often enough that it is worth it to be able to access them
 		// with a single method call.
 		Type *int32_type();
 		Type *float_type();
@@ -29,6 +25,9 @@ namespace salmon::vm {
 		Type *list_type();
 		Type *const_str_type();
 
+		MemoryManager mem_manager;
+		TypeTable type_table;
+		std::unordered_map<std::string, Package> packages;
 	private:
 		Type *_int32_type;
 		Type *_float_type;
