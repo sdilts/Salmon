@@ -169,7 +169,6 @@ namespace salmon::compiler {
 	}
 
 	static std::string parse_primitive(std::istream &input, Compiler &compiler) {
-		std::ignore = compiler
 		static const std::set<char> terminating_chars =
 			{ '(', ')', '[', ']', '{', '}', '"'};
 		std::ostringstream token;
@@ -194,7 +193,8 @@ namespace salmon::compiler {
 		} else if(isKeyword(toReturn)) {
 			// std::cerr << "Keyword found " << toReturn << std::endl;
 		} else {
-			// std::cerr << "Symbol found " << toReturn << std::endl;
+			auto symb = compiler.current_package()->intern_symbol(toReturn);
+			// std::cerr << "Symbol found " << *symb << std::endl;
 		}
 
 		return toReturn;
