@@ -30,7 +30,7 @@ namespace salmon::vm {
 		salmon::vm::MemoryManager &mem_manager;
 
 		/**
-		 * If a symbol doesn't exist in the package, create it an return the new symbol.
+		 * If a symbol doesn't exist in the package, create it and return the new symbol.
 		 * If it already exists, return that symbol
 		 * @param name the name of the new symbol.
 		 **/
