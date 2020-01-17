@@ -11,6 +11,12 @@ namespace salmon::vm {
 		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> symb_symb = base_package.intern_symbol("symbol");
 
+		base_package.export_symbol(str_symb);
+		base_package.export_symbol(list_symb);
+		base_package.export_symbol(int_symb);
+		base_package.export_symbol(double_symb);
+		base_package.export_symbol(symb_symb);
+
 		Type str =  { str_symb,  {}, "Constant string type used by the vm" };
 		Type list = { list_symb, {}, "Linked list used by the vm" };
 		Type int_type =    {int_symb, {}, "32 bit integer" };
@@ -28,7 +34,7 @@ namespace salmon::vm {
 		mem_manager{}, type_table{}, packages{} {
 		packages.emplace(std::string(base_package), Package(base_package, mem_manager));
 
-		auto base_pkg = packages.find(base_package)->second;
+		Package &base_pkg = packages.find(base_package)->second;
 	    init_types(base_pkg, type_table);
 
 		_int32_type = *type_table.get_type(*base_pkg.find_symbol("int-32"));
