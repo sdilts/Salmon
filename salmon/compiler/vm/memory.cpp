@@ -29,6 +29,18 @@ namespace salmon::vm {
 		return string;
 	}
 
+	static bool set_contains(const std::unordered_set<AllocatedItem*> &set, AllocatedItem* item) {
+		auto itr = set.find(item);
+		return itr != set.end();
+	}
+
+	static AllocatedItem* set_pop(std::unordered_set<AllocatedItem*> &set) {
+		auto itr = set.begin();
+		AllocatedItem *itm = *itr;
+		set.erase(itr);
+		return itm;
+	}
+
 	/**
 	 * this functions implements mark and sweep garbage collection.
 	 **/
@@ -36,7 +48,17 @@ namespace salmon::vm {
 		std::cerr << "Before GC: " << allocated.size() << "\n";
 		std::unordered_set<AllocatedItem*> marked = {};
 		for(auto [root, count] : roots) {
-			marked.insert(root);
+			if(!set_contains(marked, root)) {
+				AllocatedItem *cur = root;
+				std::unordered_set<AllocatedItem*> to_check;
+				do {
+					marked.insert(cur);
+					std::unordered_set<AllocatedItem*> children = cur->get_roots();
+					std::set_difference(children.begin(), children.end(), marked.begin(), marked.end(),
+										std::inserter(to_check, to_check.begin()));
+					cur = set_pop(to_check);
+				} while (!to_check.empty());
+			}
 		}
 		std::vector<AllocatedItem*> to_delete;
 		std::set_difference(allocated.begin(), allocated.end(), marked.begin(), marked.end(),
