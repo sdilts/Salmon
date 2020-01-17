@@ -8,6 +8,7 @@ lib_compiler = static_library(
     'config.cpp',
     'compiler/parser.cpp',
     'compiler/vm/allocateditem.cpp',
+    'compiler/vm/list.cpp',
     'compiler/vm/memory.cpp',
     'compiler/vm/package.cpp',
     'compiler/vm/string.cpp',

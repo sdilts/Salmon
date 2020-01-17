@@ -22,6 +22,13 @@ namespace salmon::vm {
 		return symb;
 	}
 
+	vm_ptr<List> MemoryManager::make_list(Box &itm) {
+		List *chunk = new List(itm);
+		this->allocated.insert(chunk);
+		vm_ptr<List> list(chunk, roots);
+		return list;
+	}
+
 	vm_ptr<StaticString> MemoryManager::make_static_string(const std::string &str) {
 		StaticString *chunk = new StaticString(str);
 		this->allocated.insert(chunk);
