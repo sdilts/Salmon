@@ -9,16 +9,19 @@ namespace salmon::vm {
 		vm_ptr<Symbol> list_symb = base_package.intern_symbol("list");
 		vm_ptr<Symbol> int_symb = base_package.intern_symbol("int-32");
 		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-32");
+		vm_ptr<Symbol> symb_symb = base_package.intern_symbol("symbol");
 
 		Type str =  { str_symb,  {}, "Constant string type used by the vm" };
 		Type list = { list_symb, {}, "Linked list used by the vm" };
 		Type int_type =    {int_symb, {}, "32 bit integer" };
 		Type double_type = {double_symb, {}, "32 bit floating point"};
+		Type symbol_type = {symb_symb, {}, "Symbol"};
 
 		t_table.insert(str);
 		t_table.insert(list);
 		t_table.insert(int_type);
 		t_table.insert(double_type);
+		t_table.insert(symbol_type);
 	}
 
 	VirtualMachine::VirtualMachine(const std::string &base_package) :
@@ -30,8 +33,12 @@ namespace salmon::vm {
 
 		_int32_type = *type_table.get_type(*base_pkg.find_symbol("int-32"));
 		_float_type = *type_table.get_type(*base_pkg.find_symbol("float-32"));
+		_list_type = *type_table.get_type(*base_pkg.find_symbol("list"));
+		_const_str_type = *type_table.get_type(*base_pkg.find_symbol("const-string"));
+		_symbol_type = *type_table.get_type(*base_pkg.find_symbol("symbol"));
 		// TODO: use C++ assertions with exceptions
-		assert(_int32_type != nullptr && _float_type != nullptr);
+		assert(_int32_type != nullptr && _float_type != nullptr && _list_type != nullptr
+			&& _const_str_type != nullptr && _symbol_type != nullptr);
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {
@@ -52,6 +59,18 @@ namespace salmon::vm {
 
 	Type *VirtualMachine::float_type() {
 		return _float_type;
+	}
+
+	Type *VirtualMachine::symbol_type() {
+		return _symbol_type;
+	}
+
+	Type *VirtualMachine::list_type() {
+		return _list_type;
+	}
+
+	Type *VirtualMachine::const_str_type() {
+		return _const_str_type;
 	}
 
 }

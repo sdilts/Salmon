@@ -200,9 +200,11 @@ namespace salmon::compiler {
 			switch(type) {
 			case NumberType::FLOAT:
 				box.elem = std::stof(chunk);
+				box.type = compiler.vm.float_type();
 				break;
 			case NumberType::INTEGER:
 				box.elem = std::stoi(chunk);
+				box.type = compiler.vm.int32_type();
 				break;
 			default:
 				assert(false);
@@ -210,9 +212,11 @@ namespace salmon::compiler {
 		} else if(isKeyword(chunk)) {
 			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
 			box.elem = symb;
+			box.type = compiler.vm.symbol_type();
 		} else {
 			auto symb = compiler.current_package()->intern_symbol(chunk);
 			box.elem = symb;
+			box.type = compiler.vm.symbol_type();
 		}
 
 		return chunk;

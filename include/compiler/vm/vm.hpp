@@ -25,10 +25,16 @@ namespace salmon::vm {
 		// with a single method call.
 		Type *int32_type();
 		Type *float_type();
+		Type *symbol_type();
+		Type *list_type();
+		Type *const_str_type();
 
 	private:
 		Type *_int32_type;
 		Type *_float_type;
+		Type *_symbol_type;
+		Type *_list_type;
+		Type *_const_str_type;
 	};
 }
 
