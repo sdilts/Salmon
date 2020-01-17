@@ -21,9 +21,9 @@ namespace salmon::compiler {
 	}
 
 	bool Compiler::set_current_package(const std::string &name) {
-		auto internal_pkg = vm.packages.find(name);
-		if(internal_pkg != vm.packages.end()) {
-			this->_current_package = &internal_pkg->second;
+		auto internal_pkg = vm.find_package(name);
+		if(internal_pkg) {
+			this->_current_package = &(*internal_pkg).get();
 			return true;
 		}
 		return false;

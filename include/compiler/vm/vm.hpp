@@ -14,8 +14,10 @@ namespace salmon::vm {
 	public:
 		VirtualMachine(const std::string &base_package);
 
-		MemoryManager mem_manager;
+		std::optional<std::reference_wrapper<Package>> find_package(const std::string &name);
+		std::optional<std::reference_wrapper<Package>> find_package(const vm_ptr<Symbol> &name);
 
+		MemoryManager mem_manager;
 		TypeTable type_table;
 		std::unordered_map<std::string, Package> packages;
 	};
