@@ -191,7 +191,8 @@ namespace salmon::compiler {
 		if(isNumber(toReturn)) {
 			//std::cerr << "Number found " << toReturn << std::endl;
 		} else if(isKeyword(toReturn)) {
-			// std::cerr << "Keyword found " << toReturn << std::endl;
+			auto symb = compiler.keyword_package()->intern_symbol(toReturn.substr(1));
+			std::cerr << "keyword found " << *symb << std::endl;
 		} else {
 			auto symb = compiler.current_package()->intern_symbol(toReturn);
 			// std::cerr << "Symbol found " << *symb << std::endl;
