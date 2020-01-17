@@ -11,6 +11,10 @@
 
 namespace salmon::vm {
 
+	MemoryManager::~MemoryManager() {
+		do_gc();
+	}
+
 	vm_ptr<Symbol> MemoryManager::make_symbol(const std::string &name) {
 		Symbol *chunk = new Symbol(name, std::nullopt);
 		this->allocated.insert(chunk);
