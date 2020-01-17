@@ -20,6 +20,15 @@ namespace salmon::vm {
 		MemoryManager mem_manager;
 		TypeTable type_table;
 		std::unordered_map<std::string, Package> packages;
+
+		// These will be use often enough that it is work it to be able to access them
+		// with a single method call.
+		Type *int32_type();
+		Type *float_type();
+
+	private:
+		Type *_int32_type;
+		Type *_float_type;
 	};
 }
 

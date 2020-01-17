@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include <compiler/vm/vm.hpp>
 
 namespace salmon::vm {
@@ -23,8 +25,13 @@ namespace salmon::vm {
 		mem_manager{}, type_table{}, packages{} {
 		packages.emplace(std::string(base_package), Package(base_package, mem_manager));
 
-		auto base_pkg_iter = packages.find(base_package);
-	    init_types(base_pkg_iter->second, type_table);
+		auto base_pkg = packages.find(base_package)->second;
+	    init_types(base_pkg, type_table);
+
+		_int32_type = *type_table.get_type(*base_pkg.find_symbol("int-32"));
+		_float_type = *type_table.get_type(*base_pkg.find_symbol("float-32"));
+		// TODO: use C++ assertions with exceptions
+		assert(_int32_type != nullptr && _float_type != nullptr);
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {
@@ -37,6 +44,14 @@ namespace salmon::vm {
 	}
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const vm_ptr<Symbol> &name) {
 		return find_package((*name).name);
+	}
+
+	Type *VirtualMachine::int32_type() {
+		return _int32_type;
+	}
+
+	Type *VirtualMachine::float_type() {
+		return _float_type;
 	}
 
 }
