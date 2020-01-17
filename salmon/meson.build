@@ -4,6 +4,7 @@ lib_compiler = static_library(
   'salmon_compiler',
   files(
     'compiler/CountingStream.cpp',
+    'compiler/vm/box.cpp',
     'compiler/compiler.cpp',
     'config.cpp',
     'compiler/parser.cpp',

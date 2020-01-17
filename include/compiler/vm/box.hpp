@@ -12,7 +12,8 @@ namespace salmon::vm {
 
 	struct List;
 
- 	struct Box {
+	struct Box : public AllocatedItem {
+		~Box();
 		struct Type *type;
 		std::variant<int32_t,
 					 float,
