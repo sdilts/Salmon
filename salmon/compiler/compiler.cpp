@@ -5,8 +5,8 @@
 namespace salmon::compiler {
 
 	static void create_default_packages(Compiler &compiler) {
-        // add the default current package to "sal":
-		auto internal_pkg = compiler.vm.find_package("sal-int");
+        // add the default current package to the default vm package:
+		auto internal_pkg = compiler.vm.find_package("salmon");
 		assert(internal_pkg);
 		compiler.vm.packages.emplace(std::string("sal"),
 									 salmon::vm::Package("sal", compiler.vm.mem_manager,
@@ -17,7 +17,7 @@ namespace salmon::compiler {
 	}
 
 	Compiler::Compiler(const Config &config) :
-		config{config}, vm{config, "sal-int"} {
+		config{config}, vm{config, "salmon"} {
 
 		// setup default packages:
 		create_default_packages(*this);
