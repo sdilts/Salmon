@@ -23,8 +23,14 @@ namespace salmon::vm {
 		// void operator=(const Package&) = delete;
 
 		const std::string name;
+		//! the memory manager that the package should use to allocate new symbols
 		salmon::vm::MemoryManager &mem_manager;
 
+		/**
+		 * If a symbol doesn't exist in the package, create it an return the new symbol.
+		 * If it already exists, return that symbol
+		 * @param name the name of the new symbol.
+		 **/
 		vm_ptr<Symbol> intern_symbol(const std::string &name);
 		std::optional<vm_ptr<Symbol>> find_symbol(const std::string &name) const;
 		bool is_exported(const Symbol &symbol) const;
