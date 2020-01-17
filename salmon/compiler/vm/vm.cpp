@@ -30,8 +30,11 @@ namespace salmon::vm {
 		t_table.insert(symbol_type);
 	}
 
-	VirtualMachine::VirtualMachine(const std::string &base_package) :
-		mem_manager{}, type_table{}, packages{} {
+	VirtualMachine::VirtualMachine(const Config &config, const std::string &base_package) :
+		mem_manager{},
+		type_table{},
+		packages{},
+		_config{config} {
 		packages.emplace(std::string(base_package), Package(base_package, mem_manager));
 
 		Package &base_pkg = packages.find(base_package)->second;

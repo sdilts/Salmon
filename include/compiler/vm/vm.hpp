@@ -7,12 +7,13 @@
 #include <compiler/vm/memory.hpp>
 #include <compiler/vm/type.hpp>
 #include <compiler/vm/package.hpp>
+#include <salmon/config.hpp>
 
 namespace salmon::vm {
 
 	class VirtualMachine {
 	public:
-		VirtualMachine(const std::string &base_package);
+		VirtualMachine(const Config &config, const std::string &base_package);
 
 		std::optional<std::reference_wrapper<Package>> find_package(const std::string &name);
 		std::optional<std::reference_wrapper<Package>> find_package(const vm_ptr<Symbol> &name);
@@ -29,6 +30,8 @@ namespace salmon::vm {
 		TypeTable type_table;
 		std::unordered_map<std::string, Package> packages;
 	private:
+		Config _config;
+
 		Type *_int32_type;
 		Type *_float_type;
 		Type *_symbol_type;
