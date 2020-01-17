@@ -62,7 +62,7 @@ namespace salmon::vm {
 		}
 
 		auto interned_result = this->interned.find(name);
-		if((*interned_result).second->name == name) {
+		if(interned_result != interned.end() && (*interned_result).second->name == name) {
 			return (*interned_result).second;
 		}
 		return std::nullopt;
