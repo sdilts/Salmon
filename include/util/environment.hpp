@@ -14,7 +14,7 @@ namespace salmon {
    * Returns the value of the given environment variable, or an empty string
    * if it is not set.
    **/
-  std::string read_env(const std::string &name);
+	std::optional<std::string> read_env(const std::string &name);
 
   /**
    * Get the path for the data directory as per the <a href="https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html">XDG spec</a>
