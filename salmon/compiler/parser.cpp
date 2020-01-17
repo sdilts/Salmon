@@ -104,7 +104,7 @@ namespace salmon::compiler {
 		std::ignore = compiler;
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
-		salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
 		salmon::meta::position_info end_info;
 
 		std::size_t num_quotes = 0;
@@ -224,7 +224,7 @@ namespace salmon::compiler {
 		Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
-		salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
 		salmon::meta::position_info end_info;
 
 		// consume the starting bracket/brace/etc.
@@ -328,7 +328,7 @@ namespace salmon::compiler {
 		std::istream inStream(&countStreamBuf);
 		assert(tracker_from_stream(inStream) == &countStreamBuf);
 
-		salmon::meta::position_info start_info = countStreamBuf.positionInfo();
+		const salmon::meta::position_info start_info = countStreamBuf.positionInfo();
 		salmon::meta::position_info end_info;
 
 		// if there is an error we need to have the first character, as read_next() consumes it.
