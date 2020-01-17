@@ -43,11 +43,11 @@ namespace salmon::vm {
 
 	class TypeTable {
 	public:
-		const Type &get_type(const vm_ptr<Symbol> &name) const;
+		std::optional<Type*> get_type(const vm_ptr<Symbol> &name);
 
 		bool insert(const Type &type);
 	private:
-		std::unordered_map<vm_ptr<Symbol>, const Type> table;
+		std::unordered_map<vm_ptr<Symbol>, Type> table;
 	};
 }
 

@@ -4,11 +4,12 @@
 
 namespace salmon::vm {
 
-	const Type &TypeTable::get_type(const vm_ptr<Symbol> &name) const {
-		const auto &item = this->table.find(name);
-		assert(item != this->table.end());
-		const Type &t = (*item).second;
-		return t;
+	std::optional<Type*> TypeTable::get_type(const vm_ptr<Symbol> &name) {
+		auto item = this->table.find(name);
+		if(item == this->table.end()) {
+			return std::nullopt;
+		}
+		return std::make_optional(&(*item).second);
 	}
 
 	bool TypeTable::insert(const Type &type) {
