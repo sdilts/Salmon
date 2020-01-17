@@ -19,8 +19,11 @@ namespace salmon::vm {
 		Package(const std::string &name, MemoryManager &mem_manager,
 				const std::set<std::reference_wrapper<Package>> &used);
 
-		// Package(const Package&) = delete;
-		// void operator=(const Package&) = delete;
+		// Class invariants mean that packages can be moved but not copied.
+		Package(const Package&) = delete;
+		Package& operator=(const Package&) = delete;
+
+		Package(Package&&) = default;
 
 		const std::string name;
 		//! the memory manager that the package should use to allocate new symbols

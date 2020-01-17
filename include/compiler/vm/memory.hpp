@@ -16,7 +16,11 @@ namespace salmon::vm {
 	class MemoryManager {
 
 	public:
+		MemoryManager() = default;
 		~MemoryManager();
+
+		// While it may be possible to copy a MemoryManager, the default implementation is wrong:
+		MemoryManager(const Package&) = delete;
 
 		vm_ptr<Symbol> make_symbol(const std::string &name);
 		vm_ptr<StaticString> make_static_string(const std::string &str);
