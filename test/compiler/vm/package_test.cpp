@@ -100,4 +100,16 @@ namespace salmon::vm {
 		}
 		manager.do_gc();
 	}
+
+	SCENARIO( "Searching for symbols", "[vm, package]") {
+		Package parent("parent", manager);
+		GIVEN( "A package with no symbols") {
+			WHEN("A symbol is searched for") {
+				auto symb = parent.find_symbol("foo");
+				THEN("Nothing should be found") {
+					REQUIRE(symb == std::nullopt);
+				}
+			}
+		}
+	}
 }
