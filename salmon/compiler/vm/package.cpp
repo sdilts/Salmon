@@ -6,7 +6,7 @@ namespace salmon::vm {
 
 	Package::Package(const std::string &name, MemoryManager &mem_manager)
 		: name(name),
-		  mem_manager(mem_manager),
+		  mem_manager{mem_manager},
 		  interned(),
 		  exported(),
 		  used() { }
@@ -14,7 +14,7 @@ namespace salmon::vm {
 	Package::Package(const std::string &name, MemoryManager &mem_manager,
 					 const std::set<std::reference_wrapper<Package>> &used)
 		: name(name),
-		  mem_manager(mem_manager),
+		  mem_manager{mem_manager},
 		  interned(),
 		  exported(),
 		  used(used) { }

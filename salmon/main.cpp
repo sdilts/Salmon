@@ -20,7 +20,7 @@ static salmon::CompilerConfig get_config() {
 	};
 }
 
-static void process_files(char **filenames, const int length, salmon::compiler::Compiler engine) {
+static void process_files(char **filenames, const int length, salmon::compiler::Compiler &engine) {
 	for(int i = 0; i < length; i++) {
 		std::filesystem::path filepath(filenames[i]);
 		if(std::filesystem::is_regular_file(filepath)) {

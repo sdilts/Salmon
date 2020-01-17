@@ -9,6 +9,8 @@ namespace salmon::compiler {
 
 	struct Compiler {
 		Compiler(const CompilerConfig &config);
+		Compiler(const Compiler&) = delete;
+
 		CompilerConfig config;
 
 		salmon::vm::VirtualMachine vm;
