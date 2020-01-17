@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <exception>
 #include <sstream>
+#include <optional>
 
 #include "util/environment.hpp"
 
@@ -10,12 +11,12 @@ namespace salmon {
 	 * Returns the value of the given environment variable, or an empty string
 	 * if it is not set.
 	 **/
-	std::string read_env(const std::string &name) {
-		char const* tmp = getenv(name.c_str());
+	std::optional<std::string> read_env(const std::string &name) {
+		char const* tmp = std::getenv(name.c_str());
 		if (tmp == nullptr) {
-			return std::string();
+			return std::nullopt;
 		} else {
-			return std::string(tmp);
+			return std::make_optional(std::string(tmp));
 		}
 	}
 
@@ -32,13 +33,13 @@ namespace salmon {
 	static std::filesystem::path env_or_string(const std::string &var_name,
 											   const std::string &other_path) {
 		std::filesystem::path target_dir;
-		std::string xdg_dir = read_env(var_name);
-		if(!xdg_dir.empty()) {
-			target_dir = xdg_dir;
+		std::optional<std::string> xdg_dir = read_env(var_name);
+		if(xdg_dir) {
+			target_dir = *xdg_dir;
 		} else {
-			std::string home_dir = read_env("HOME");
-			if (!home_dir.empty()) {
-				target_dir = home_dir;
+			std::optional<std::string> home_dir = read_env("HOME");
+			if (home_dir) {
+				target_dir = *home_dir;
 				target_dir /= other_path;
 			} else {
 				std::ostringstream error_message;

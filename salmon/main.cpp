@@ -10,11 +10,11 @@
 
 #include <util/environment.hpp>
 #include <compiler/parser.hpp>
-#include <compiler/config.hpp>
+#include <salmon/config.hpp>
 #include <compiler/compiler.hpp>
 
 
-static salmon::CompilerConfig get_config() {
+static salmon::Config get_config() {
 	return {
 		0, salmon::get_cache_dir(), salmon::get_config_dir(), salmon::get_data_dir()
 	};
@@ -90,10 +90,10 @@ int main(int argc ,char **argv) {
 			invalid_flag = true;
 			break;
 		case 'v':
-			if(verbosity_level < salmon::CompilerConfig::max_verbose_lvl) {
+			if(verbosity_level < salmon::Config::max_verbose_lvl) {
 				verbosity_level++;
 			} else {
-				std::cerr << "Warning: highest verbosity level possible is " << salmon::CompilerConfig::max_verbose_lvl << std::endl;
+				std::cerr << "Warning: highest verbosity level possible is " << salmon::Config::max_verbose_lvl << std::endl;
 			}
 			break;
 		default:
@@ -105,9 +105,9 @@ int main(int argc ,char **argv) {
 		return -1;
 	}
 
-	salmon::CompilerConfig config = get_config();
+	salmon::Config config = get_config();
 	config.verbosity_level = verbosity_level;
-	if(std::optional<std::error_code> errc = salmon::CompilerConfig::ensure_required_dirs(config)) {
+	if(std::optional<std::error_code> errc = salmon::Config::ensure_required_dirs(config)) {
 		std::cerr << "FATAL: Could not create required directories.\n";
 		return errc->value();
 	}

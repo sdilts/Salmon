@@ -16,7 +16,6 @@ namespace salmon::compiler {
 									 salmon::vm::Package("keyword", compiler.vm.mem_manager));
 	}
 
-
 	Compiler::Compiler(const Config &config) :
 		config{config}, vm{config, "sal-int"} {
 

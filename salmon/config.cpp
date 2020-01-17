@@ -1,4 +1,4 @@
-#include <compiler/config.hpp>
+#include <salmon/config.hpp>
 #include <system_error>
 #include <iostream>
 
@@ -20,7 +20,7 @@ namespace salmon {
 		return true;
 	}
 
-	std::optional<std::error_code> CompilerConfig::ensure_required_dirs(const CompilerConfig &config) {
+	std::optional<std::error_code> Config::ensure_required_dirs(const Config &config) {
 		std::error_code error;
 		if(!ensure_directory(config.data_dir, error)) {
 			std::cerr << "Could not create data directory: " << config.data_dir
@@ -32,7 +32,7 @@ namespace salmon {
 
 }
 
-std::ostream& operator<<(std::ostream &os, const salmon::CompilerConfig& config) {
+std::ostream& operator<<(std::ostream &os, const salmon::Config& config) {
 	return os << "Verbosity level: " << config.verbosity_level
 			  << "\nDirectory paths:"
 			  << "\n  Cache:  " << config.cache_dir
