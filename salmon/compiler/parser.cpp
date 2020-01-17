@@ -100,7 +100,8 @@ namespace salmon::compiler {
 		return static_cast<CountingStreamBuffer*>(stream.std::ios::rdbuf());
 	}
 
-	static std::string parse_string(std::istream &input) {
+	static std::string parse_string(std::istream &input, Compiler &compiler) {
+		std::ignore = compiler;
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
 		salmon::meta::position_info start_info = countStreamBuf->positionInfo();
@@ -167,7 +168,8 @@ namespace salmon::compiler {
 		return symbol[0] == ':';
 	}
 
-	static std::string parse_primitive(std::istream &input) {
+	static std::string parse_primitive(std::istream &input, Compiler &compiler) {
+		std::ignore = compiler
 		static const std::set<char> terminating_chars =
 			{ '(', ')', '[', ']', '{', '}', '"'};
 		std::ostringstream token;
@@ -198,9 +200,10 @@ namespace salmon::compiler {
 		return toReturn;
 	}
 
-	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input);
+	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input, Compiler &compiler);
 
-	static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator) {
+	static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator,
+		Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
 		salmon::meta::position_info start_info = countStreamBuf->positionInfo();
@@ -211,7 +214,7 @@ namespace salmon::compiler {
 
 		std::list<std::string> items;
 		{
-			auto [result, cur_item] = read_next(input);
+			auto [result, cur_item] = read_next(input, compiler);
 			while(result != terminator) {
 				if(result == ReadResult::ITEM) {
 					items.push_back(*cur_item);
@@ -225,7 +228,7 @@ namespace salmon::compiler {
 					throw ParseException(build_unmatched_error_str("Unexpected closing character: ",term_char),
 										 start_info, end_info);
 				}
-				std::tie(result, cur_item) = read_next(input);
+				std::tie(result, cur_item) = read_next(input, compiler);
 			}
 		}
 		return items;
@@ -233,32 +236,33 @@ namespace salmon::compiler {
 
 	// temporary function to put list items into a string:
 	static std::string read_thing(std::istream &input, char start, char end,
-								  ReadResult terminator) {
+								  ReadResult terminator, Compiler &compiler) {
 		std::ostringstream collected_items;
 		std::list<std::string> possible_output;
 
 		collected_items << start << " ";
 
-		possible_output = collect_list(input, terminator);
+		possible_output = collect_list(input, terminator, compiler);
 		std::copy(possible_output.begin(), possible_output.end(), std::ostream_iterator<std::string>(collected_items, " "));
 		collected_items << end;
 		std::string result = collected_items.str();
 		return result;
 	}
 
-	static std::string read_list(std::istream &input) {
-		return read_thing(input, '(', ')', ReadResult::R_PAREN);
+	static std::string read_list(std::istream &input, Compiler &compiler) {
+		return read_thing(input, '(', ')', ReadResult::R_PAREN, compiler);
 	}
 
-	static std::string read_array(std::istream &input) {
-		return read_thing(input, '[', ']', ReadResult::R_BRACKET);
+	static std::string read_array(std::istream &input, Compiler &compiler) {
+		return read_thing(input, '[', ']', ReadResult::R_BRACKET, compiler);
 	}
 
-	static std::string read_set(std::istream &input) {
-		return read_thing(input, '{', '}', ReadResult::R_BRACE);
+	static std::string read_set(std::istream &input, Compiler &compiler) {
+		return read_thing(input, '{', '}', ReadResult::R_BRACE, compiler);
 	}
 
-	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input) {
+	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input,
+																	   Compiler &compiler) {
 		do {
 			//consume any preceding whitespace:
 			trim_stream(input);
@@ -272,26 +276,26 @@ namespace salmon::compiler {
 					input.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 					break;
 				case '(':
-					return std::make_pair(ReadResult::ITEM, read_list(input));
+					return std::make_pair(ReadResult::ITEM, read_list(input, compiler));
 				case ')':
 					input.get();
 					return std::make_pair(ReadResult::R_PAREN, std::nullopt);
 				case '[':
-					return std::make_pair(ReadResult::ITEM, read_array(input));
+					return std::make_pair(ReadResult::ITEM, read_array(input, compiler));
 				case ']':
 					input.get();
 					return std::make_pair(ReadResult::R_BRACKET, std::nullopt);
 				case '{':
-					return std::make_pair(ReadResult::ITEM, read_set(input));
+					return std::make_pair(ReadResult::ITEM, read_set(input, compiler));
 				case '}':
 					input.get();
 					return std::make_pair(ReadResult::R_BRACE, std::nullopt);
 				case '#':
 					return std::make_pair(ReadResult::ITEM, reader_macro(input));
 				case '"':
-					return std::make_pair(ReadResult::ITEM, parse_string(input));
+					return std::make_pair(ReadResult::ITEM, parse_string(input, compiler));
 				default:
-					return std::make_pair(ReadResult::ITEM, parse_primitive(input));
+					return std::make_pair(ReadResult::ITEM, parse_primitive(input, compiler));
 				}
 			} else {
 				// push the stream so the eof bit is set
@@ -301,7 +305,7 @@ namespace salmon::compiler {
 		} while(true);
 	}
 
-	std::optional<std::string> read(std::istream &input) {
+	std::optional<std::string> read(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer countStreamBuf(input.rdbuf());
 		std::istream inStream(&countStreamBuf);
 		assert(tracker_from_stream(inStream) == &countStreamBuf);
@@ -312,7 +316,7 @@ namespace salmon::compiler {
 		// if there is an error we need to have the first character, as read_next() consumes it.
 		char first_char = inStream.peek();
 
-		const auto [result, item] = read_next(inStream);
+		const auto [result, item] = read_next(inStream, compiler);
 
 		switch(result) {
 		case ReadResult::R_PAREN:
@@ -333,8 +337,8 @@ namespace salmon::compiler {
 		}
 	}
 
-	std::optional<std::string> read_from_string(const std::string& input) {
+	std::optional<std::string> read_from_string(const std::string& input, Compiler &compiler) {
 		std::istringstream input_stream(input);
-		return read(input_stream);
+		return read(input_stream, compiler);
 	}
 }

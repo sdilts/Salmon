@@ -20,7 +20,7 @@ static salmon::CompilerConfig get_config() {
 	};
 }
 
-static void process_files(char **filenames, const int length) {
+static void process_files(char **filenames, const int length, salmon::compiler::Compiler engine) {
 	for(int i = 0; i < length; i++) {
 		std::filesystem::path filepath(filenames[i]);
 		if(std::filesystem::is_regular_file(filepath)) {
@@ -28,10 +28,10 @@ static void process_files(char **filenames, const int length) {
 			try {
 				std::ifstream file;
 				file.open(filepath);
-				auto token = salmon::compiler::read(file);
+				auto token = salmon::compiler::read(file, engine);
 				while(!file.eof()) {
 					std::cout << *token << "\n";
-					token = salmon::compiler::read(file);
+					token = salmon::compiler::read(file, engine);
 				}
 				file.close();
 			} catch(salmon::compiler::ParseException &error) {
@@ -44,9 +44,9 @@ static void process_files(char **filenames, const int length) {
 	}
 }
 
-static void repl(const salmon::CompilerConfig& config) {
+static void repl(salmon::compiler::Compiler& engine) {
 	using namespace salmon;
-	const std::filesystem::path history_file = config.data_dir / "history.txt";
+	const std::filesystem::path history_file = engine.config.data_dir / "history.txt";
 
 	replxx::Replxx rx;
 	rx.install_window_change_handler();
@@ -58,7 +58,7 @@ static void repl(const salmon::CompilerConfig& config) {
 	while((line = rx.input(" > ")) != nullptr) {
 		if(line[0] != '\0') {
 			try {
-			    auto token = compiler::read_from_string(line);
+			    auto token = compiler::read_from_string(line, engine);
 				if(token) {
 					std::cout << "token: " << *token << std::endl;
 				}
@@ -123,13 +123,13 @@ int main(int argc ,char **argv) {
 	const int num_to_process = argc - optind;
 
 	if(num_to_process) {
-		process_files(argv+optind, num_to_process);
+		process_files(argv+optind, num_to_process, engine);
 	} else if(!repl_flag) {
 		std::cout << "No files specified. Nothing to do.\n";
 	}
 
 	if (repl_flag) {
-		repl(config);
+		repl(engine);
 	}
 
 	return 0;

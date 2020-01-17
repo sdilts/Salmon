@@ -7,6 +7,7 @@
 #include <optional>
 
 #include <compiler/CountingStream.hpp>
+#include <compiler/compiler.hpp>
 
 namespace salmon::compiler {
 
@@ -29,8 +30,8 @@ namespace salmon::compiler {
 		std::optional<std::filesystem::path> source_file;
 	};
 
-	std::optional<std::string> read(std::istream &input);
+	std::optional<std::string> read(std::istream &input, Compiler &compiler);
 
-	std::optional<std::string> read_from_string(const std::string& input);
+	std::optional<std::string> read_from_string(const std::string& input, Compiler &compiler);
 
 }
