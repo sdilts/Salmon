@@ -195,7 +195,7 @@ namespace salmon::compiler {
 		std::string chunk = token.str();
 		assert(!chunk.empty());
 
-		salmon::vm::Box box;
+		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
 		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
 			switch(type) {
 			case NumberType::FLOAT:
@@ -211,11 +211,11 @@ namespace salmon::compiler {
 			}
 		} else if(isKeyword(chunk)) {
 			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
-			box.elem = symb;
+			box.elem = &*symb;
 			box.type = compiler.vm.symbol_type();
 		} else {
 			auto symb = compiler.current_package()->intern_symbol(chunk);
-			box.elem = symb;
+			box.elem = &*symb;
 			box.type = compiler.vm.symbol_type();
 		}
 

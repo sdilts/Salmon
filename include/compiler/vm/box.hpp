@@ -12,14 +12,30 @@ namespace salmon::vm {
 
 	struct List;
 
-	struct Box : public AllocatedItem {
-		~Box();
+	struct InternalBox {
 		struct Type *type;
 		std::variant<int32_t,
 					 float,
-					 vm_ptr<Symbol>,
-					 vm_ptr<StaticString>,
-					 vm_ptr<List>> elem;
+					 Symbol*,
+					 List*,
+					 StaticString*>
+					 elem;
+		std::unordered_set<AllocatedItem*> get_roots() const;
+	};
+
+	struct Box : public InternalBox, public AllocatedItem {
+
+		Box(std::unordered_map<AllocatedItem*, unsigned int> &table);
+		Box(const Box&);
+		Box(Box&&) = default;
+		Box() = delete;
+
+		~Box();
+
+		std::unordered_set<AllocatedItem*> get_roots() const override;
+
+	private:
+		std::unordered_map<AllocatedItem*,unsigned int> *instances;
 	};
 
 	struct List : public AllocatedItem {
@@ -27,7 +43,7 @@ namespace salmon::vm {
 		List() = delete;
 		~List() = default;
 
-		Box itm;
+		InternalBox itm;
 		List *next;
 
 		std::unordered_set<AllocatedItem*> get_roots() const override;

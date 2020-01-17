@@ -22,6 +22,7 @@ namespace salmon::vm {
 		// While it may be possible to copy a MemoryManager, the default implementation is wrong:
 		MemoryManager(const Package&) = delete;
 
+		Box make_box();
 		vm_ptr<Symbol> make_symbol(const std::string &name);
 		vm_ptr<StaticString> make_static_string(const std::string &str);
 		vm_ptr<List> make_list(Box &itm);
