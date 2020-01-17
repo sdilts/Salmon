@@ -6,7 +6,7 @@ lib_compiler = static_library(
     'compiler/CountingStream.cpp',
     'compiler/vm/box.cpp',
     'compiler/compiler.cpp',
-    'compiler/config.cpp',
+    'config.cpp',
     'compiler/parser.cpp',
     'compiler/vm/allocateditem.cpp',
     'compiler/vm/memory.cpp',

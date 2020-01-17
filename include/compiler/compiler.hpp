@@ -1,17 +1,17 @@
 #ifndef SALMON_COMPILER_COMPILER
 #define SALMON_COMPILER_COMPILER
 
-#include <compiler/config.hpp>
+#include <salmon/config.hpp>
 
 #include <compiler/vm/vm.hpp>
 
 namespace salmon::compiler {
 
 	struct Compiler {
-		Compiler(const CompilerConfig &config);
+		Compiler(const Config &config);
 		Compiler(const Compiler&) = delete;
 
-		CompilerConfig config;
+		Config config;
 
 		salmon::vm::VirtualMachine vm;
 
