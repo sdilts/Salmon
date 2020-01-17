@@ -146,21 +146,28 @@ namespace salmon::compiler {
 		return toReturn;
 	}
 
-	static bool isNumber(const std::string &symbol) {
-		bool found_decimal = false;
+	enum class NumberType {
+		NOT_A_NUM,
+		FLOAT,
+		INTEGER
+	};
+
+	static NumberType get_num_type(const std::string &symbol) {
+		NumberType num_type = NumberType::INTEGER;
 		for(size_t i = 0; i < symbol.length(); i++) {
 			auto c = symbol[i];
 			if(c == '.') {
-				if(!found_decimal) {
-					found_decimal = true;
+				if(num_type == NumberType::INTEGER) {
+				    num_type = NumberType::FLOAT;
 				} else {
-					return false;
+					// there are more than two '.', not a number
+					return NumberType::NOT_A_NUM;
 				}
 			} else if(!std::isdigit(static_cast<unsigned char>(c))) {
-				return false;
+				return NumberType::NOT_A_NUM;
 			}
 		}
-		return true;
+		return num_type;
 	}
 
 	static bool isKeyword(const std::string &symbol) {
@@ -185,20 +192,30 @@ namespace salmon::compiler {
 			}
 		}
 
-		std::string toReturn = token.str();
-		assert(!toReturn.empty());
+		std::string chunk = token.str();
+		assert(!chunk.empty());
 
-		if(isNumber(toReturn)) {
-			//std::cerr << "Number found " << toReturn << std::endl;
-		} else if(isKeyword(toReturn)) {
-			auto symb = compiler.keyword_package()->intern_symbol(toReturn.substr(1));
-			std::cerr << "keyword found " << *symb << std::endl;
+		salmon::vm::Box box;
+		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
+			switch(type) {
+			case NumberType::FLOAT:
+				box.elem = std::stof(chunk);
+				break;
+			case NumberType::INTEGER:
+				box.elem = std::stoi(chunk);
+				break;
+			default:
+				assert(false);
+			}
+		} else if(isKeyword(chunk)) {
+			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
+			box.elem = symb;
 		} else {
-			auto symb = compiler.current_package()->intern_symbol(toReturn);
-			// std::cerr << "Symbol found " << *symb << std::endl;
+			auto symb = compiler.current_package()->intern_symbol(chunk);
+			box.elem = symb;
 		}
 
-		return toReturn;
+		return chunk;
 	}
 
 	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input, Compiler &compiler);
