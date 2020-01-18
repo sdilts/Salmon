@@ -30,8 +30,8 @@ namespace salmon::compiler {
 		std::optional<std::filesystem::path> source_file;
 	};
 
-	std::optional<std::string> read(std::istream &input, Compiler &compiler);
+	std::optional<salmon::vm::Box> read(std::istream &input, Compiler &compiler);
 
-	std::optional<std::string> read_from_string(const std::string& input, Compiler &compiler);
+	std::optional<salmon::vm::Box> read_from_string(const std::string& input, Compiler &compiler);
 
 }

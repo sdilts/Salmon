@@ -27,10 +27,10 @@ namespace salmon::vm {
 
 		Box(std::unordered_map<AllocatedItem*, unsigned int> &table);
 		Box(const Box&);
-		Box(Box&&) = default;
 		Box() = delete;
-
 		~Box();
+
+		Box &operator=(const Box &);
 
 		std::unordered_set<AllocatedItem*> get_roots() const override;
 

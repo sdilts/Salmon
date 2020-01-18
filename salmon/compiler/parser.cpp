@@ -68,11 +68,11 @@ namespace salmon::compiler {
 		}
 	}
 
-	static std::string reader_macro(std::istream &input) {
+	static std::optional<salmon::vm::Box> reader_macro(std::istream &input) {
 		input.peek();
 		std::cerr << "Reader macros aren't implemented yet" << __FILE__ << ":" << __LINE__ << std::endl;
 		exit(-1);
-		return "";
+		return std::nullopt;
 	}
 
 	static char escape(std::istream &input) {
@@ -100,7 +100,7 @@ namespace salmon::compiler {
 		return static_cast<CountingStreamBuffer*>(stream.std::ios::rdbuf());
 	}
 
-	static std::string parse_string(std::istream &input, Compiler &compiler) {
+	static salmon::vm::Box parse_string(std::istream &input, Compiler &compiler) {
 		std::ignore = compiler;
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
@@ -146,8 +146,7 @@ namespace salmon::compiler {
 		box.type = compiler.vm.const_str_type();
 		box.elem = &*compiler.vm.mem_manager.make_static_string(token.str());
 
-		std::string toReturn = token.str();
-		return toReturn;
+		return box;
 	}
 
 	enum class NumberType {
@@ -179,7 +178,7 @@ namespace salmon::compiler {
 		return symbol[0] == ':';
 	}
 
-	static std::string parse_primitive(std::istream &input, Compiler &compiler) {
+	static salmon::vm::Box parse_primitive(std::istream &input, Compiler &compiler) {
 		static const std::set<char> terminating_chars =
 			{ '(', ')', '[', ']', '{', '}', '"'};
 		std::ostringstream token;
@@ -223,12 +222,13 @@ namespace salmon::compiler {
 			box.type = compiler.vm.symbol_type();
 		}
 
-		return chunk;
+		return box;
 	}
 
-	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input, Compiler &compiler);
+	static std::pair<ReadResult, std::optional<salmon::vm::Box>>
+	read_next(std::istream &input, Compiler &compiler);
 
-	static std::list<std::string> collect_list(std::istream &input, const ReadResult &terminator,
+	static std::list<salmon::vm::Box> collect_list(std::istream &input, const ReadResult &terminator,
 		Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
@@ -238,7 +238,7 @@ namespace salmon::compiler {
 		// consume the starting bracket/brace/etc.
 		input.get();
 
-		std::list<std::string> items;
+		std::list<salmon::vm::Box> items;
 		{
 			auto [result, cur_item] = read_next(input, compiler);
 			while(result != terminator) {
@@ -260,34 +260,27 @@ namespace salmon::compiler {
 		return items;
 	}
 
-	// temporary function to put list items into a string:
-	static std::string read_thing(std::istream &input, char start, char end,
-								  ReadResult terminator, Compiler &compiler) {
-		std::ostringstream collected_items;
-		std::list<std::string> possible_output;
-
-		collected_items << start << " ";
-
-		possible_output = collect_list(input, terminator, compiler);
-		std::copy(possible_output.begin(), possible_output.end(), std::ostream_iterator<std::string>(collected_items, " "));
-		collected_items << end;
-		std::string result = collected_items.str();
-		return result;
+	static std::optional<salmon::vm::Box> read_list(std::istream &input, Compiler &compiler) {
+		std::list<salmon::vm::Box> collected_items = collect_list(input, ReadResult::R_PAREN, compiler);
+		if (!collected_items.empty()) {
+			vm::Box first = collected_items.front();
+			vm::vm_ptr<vm::List> head = compiler.vm.mem_manager.make_list(first);
+			collected_items.pop_front();
+			vm::vm_ptr<vm::List> tail = head;
+			for(salmon::vm::Box &box : collected_items) {
+				vm::vm_ptr<vm::List> next = compiler.vm.mem_manager.make_list(box);
+				tail->next = &*next;
+				tail = next;
+			}
+			vm::Box box = compiler.vm.mem_manager.make_box();
+			box.elem = &*head;
+			box.type = compiler.vm.list_type();
+			return box;
+		}
+		return std::nullopt;
 	}
 
-	static std::string read_list(std::istream &input, Compiler &compiler) {
-		return read_thing(input, '(', ')', ReadResult::R_PAREN, compiler);
-	}
-
-	static std::string read_array(std::istream &input, Compiler &compiler) {
-		return read_thing(input, '[', ']', ReadResult::R_BRACKET, compiler);
-	}
-
-	static std::string read_set(std::istream &input, Compiler &compiler) {
-		return read_thing(input, '{', '}', ReadResult::R_BRACE, compiler);
-	}
-
-	static std::pair<ReadResult, std::optional<std::string>> read_next(std::istream &input,
+	static std::pair<ReadResult, std::optional<salmon::vm::Box>> read_next(std::istream &input,
 																	   Compiler &compiler) {
 		do {
 			//consume any preceding whitespace:
@@ -307,25 +300,29 @@ namespace salmon::compiler {
 					input.get();
 					return std::make_pair(ReadResult::R_PAREN, std::nullopt);
 				case '[':
-					std::cerr << "Reading arrays aren't implemented yet" << __FILE__ << ":" << __LINE__ << std::endl;
+					std::cerr << "Reading arrays aren't implemented yet"
+							  << __FILE__ << ":" << __LINE__ << std::endl;
 					exit(-1);
-					return std::nullopt;
+					return std::make_pair(ReadResult::L_BRACKET, std::nullopt);
 				case ']':
 					input.get();
 					return std::make_pair(ReadResult::R_BRACKET, std::nullopt);
 				case '{':
-					std::cerr << "Reading sets aren't implemented yet" << __FILE__ << ":" << __LINE__ << std::endl;
+					std::cerr << "Reading sets aren't implemented yet"
+							  << __FILE__ << ":" << __LINE__ << std::endl;
 					exit(-1);
-					return std::nullopt;
+					return std::make_pair(ReadResult::R_BRACE, std::nullopt);
 				case '}':
 					input.get();
 					return std::make_pair(ReadResult::R_BRACE, std::nullopt);
 				case '#':
 					return std::make_pair(ReadResult::ITEM, reader_macro(input));
 				case '"':
-					return std::make_pair(ReadResult::ITEM, parse_string(input, compiler));
+					return std::make_pair(ReadResult::ITEM,
+										  parse_string(input, compiler));
 				default:
-					return std::make_pair(ReadResult::ITEM, parse_primitive(input, compiler));
+					return std::make_pair(ReadResult::ITEM,
+										  parse_primitive(input, compiler));
 				}
 			} else {
 				// push the stream so the eof bit is set
@@ -335,7 +332,7 @@ namespace salmon::compiler {
 		} while(true);
 	}
 
-	std::optional<std::string> read(std::istream &input, Compiler &compiler) {
+	std::optional<salmon::vm::Box> read(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer countStreamBuf(input.rdbuf());
 		std::istream inStream(&countStreamBuf);
 		assert(tracker_from_stream(inStream) == &countStreamBuf);
@@ -367,7 +364,7 @@ namespace salmon::compiler {
 		}
 	}
 
-	std::optional<std::string> read_from_string(const std::string& input, Compiler &compiler) {
+	std::optional<salmon::vm::Box> read_from_string(const std::string& input, Compiler &compiler) {
 		std::istringstream input_stream(input);
 		return read(input_stream, compiler);
 	}
