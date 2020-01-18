@@ -61,20 +61,26 @@ namespace salmon::vm {
 		std::unordered_set<AllocatedItem*> marked = {};
 		for(auto [root, count] : roots) {
 			if(!set_contains(marked, root)) {
-				AllocatedItem *cur = root;
 				std::unordered_set<AllocatedItem*> to_check;
+				to_check.insert(root);
 				do {
+					AllocatedItem *cur = set_pop(to_check);
 					marked.insert(cur);
 					std::unordered_set<AllocatedItem*> children = cur->get_roots();
-					std::set_difference(children.begin(), children.end(), marked.begin(), marked.end(),
-										std::inserter(to_check, to_check.begin()));
-					cur = set_pop(to_check);
+					std::copy_if(children.begin(), children.end(),
+								 std::inserter(to_check, to_check.begin()),
+								 [&to_check] (AllocatedItem *needle) {
+									 return to_check.find(needle) == to_check.end();
+								 });
 				} while (!to_check.empty());
 			}
 		}
 		std::vector<AllocatedItem*> to_delete;
-		std::set_difference(allocated.begin(), allocated.end(), marked.begin(), marked.end(),
-							std::inserter(to_delete,to_delete.begin()));
+		std::copy_if(allocated.begin(), allocated.end(),
+					 std::inserter(to_delete, to_delete.begin()),
+					 [&marked] (AllocatedItem *needle) {
+									 return marked.find(needle) == marked.end();
+					 });
 
 		for(AllocatedItem *item : to_delete) {
 			allocated.erase(item);
