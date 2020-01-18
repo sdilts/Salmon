@@ -12,6 +12,7 @@ namespace salmon::vm {
 		StaticString() = delete;
 		~StaticString() = default;
 
+		void print_debug_info() const override;
 	};
 }
 

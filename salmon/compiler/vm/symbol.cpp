@@ -1,5 +1,6 @@
 #include <optional>
 #include <functional>
+#include <iostream>
 
 #include <assert.h>
 
@@ -14,6 +15,10 @@ namespace salmon::vm {
 	}
 
 	Symbol::~Symbol() { }
+
+	void Symbol::print_debug_info() const {
+		std::cerr << this << " " << *this << std::endl;
+	}
 
 	bool operator<(const std::string &first, const Symbol &second) {
 		return first < second.name;

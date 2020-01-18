@@ -16,6 +16,8 @@ namespace salmon::vm {
 		virtual std::unordered_set<AllocatedItem*> get_roots() const {
 			return {};
 		};
+
+		virtual void print_debug_info() const = 0;
 	};
 }
 

@@ -32,6 +32,7 @@ namespace salmon::vm {
 
 		Box &operator=(const Box &);
 
+		void print_debug_info() const override;
 		std::unordered_set<AllocatedItem*> get_roots() const override;
 
 	private:
@@ -46,6 +47,7 @@ namespace salmon::vm {
 		InternalBox itm;
 		List *next;
 
+		void print_debug_info() const override;
 		std::unordered_set<AllocatedItem*> get_roots() const override;
 	};
 }

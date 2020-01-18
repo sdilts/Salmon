@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include <compiler/vm/box.hpp>
 
 namespace salmon::vm {
@@ -8,7 +10,13 @@ namespace salmon::vm {
 
 	std::unordered_set<AllocatedItem*> List::get_roots() const {
 		auto children = itm.get_roots();
-		children.insert(next);
+		if (next != nullptr) {
+			children.insert(next);
+		}
 		return children;
+	}
+
+	void List::print_debug_info() const {
+		std::cerr << "List " << this << std::endl;
 	}
 }
