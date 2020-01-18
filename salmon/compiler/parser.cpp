@@ -142,6 +142,10 @@ namespace salmon::compiler {
 			throw ParseException("EOF reached while parsing string",
 								 start_info, end_info);
 		}
+		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
+		box.type = compiler.vm.const_str_type();
+		box.elem = &*compiler.vm.mem_manager.make_static_string(token.str());
+
 		std::string toReturn = token.str();
 		return toReturn;
 	}
