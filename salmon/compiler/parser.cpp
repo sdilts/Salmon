@@ -307,12 +307,16 @@ namespace salmon::compiler {
 					input.get();
 					return std::make_pair(ReadResult::R_PAREN, std::nullopt);
 				case '[':
-					return std::make_pair(ReadResult::ITEM, read_array(input, compiler));
+					std::cerr << "Reading arrays aren't implemented yet" << __FILE__ << ":" << __LINE__ << std::endl;
+					exit(-1);
+					return std::nullopt;
 				case ']':
 					input.get();
 					return std::make_pair(ReadResult::R_BRACKET, std::nullopt);
 				case '{':
-					return std::make_pair(ReadResult::ITEM, read_set(input, compiler));
+					std::cerr << "Reading sets aren't implemented yet" << __FILE__ << ":" << __LINE__ << std::endl;
+					exit(-1);
+					return std::nullopt;
 				case '}':
 					input.get();
 					return std::make_pair(ReadResult::R_BRACE, std::nullopt);
