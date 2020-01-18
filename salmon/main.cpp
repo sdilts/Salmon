@@ -63,6 +63,7 @@ static void repl(salmon::compiler::Compiler& engine) {
 					std::cout << "token: " << *token->type << std::endl;
 				}
 				rx.history_add(line);
+				engine.vm.mem_manager.do_gc();
 			} catch(const compiler::ParseException &error) {
 				std::cout << error.build_error_str() << std::endl;
 			}
