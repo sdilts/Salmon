@@ -7,6 +7,7 @@
 #include <compiler/vm/vm_ptr.hpp>
 #include <compiler/vm/symbol.hpp>
 #include <compiler/vm/string.hpp>
+#include <compiler/vm/empty.hpp>
 
 namespace salmon::vm {
 
@@ -16,6 +17,7 @@ namespace salmon::vm {
 		struct Type *type;
 		std::variant<int32_t,
 					 float,
+					 Empty,
 					 Symbol*,
 					 List*,
 					 StaticString*>

@@ -276,8 +276,13 @@ namespace salmon::compiler {
 			box.elem = &*head;
 			box.type = compiler.vm.list_type();
 			return box;
+		} else {
+			vm::Box box = compiler.vm.mem_manager.make_box();
+			vm::Empty empty;
+			box.type = compiler.vm.empty_type();
+			box.elem = empty;
+			return box;
 		}
-		return std::nullopt;
 	}
 
 	static std::pair<ReadResult, std::optional<salmon::vm::Box>> read_next(std::istream &input,

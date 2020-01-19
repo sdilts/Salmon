@@ -10,24 +10,28 @@ namespace salmon::vm {
 		vm_ptr<Symbol> int_symb = base_package.intern_symbol("int-32");
 		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> symb_symb = base_package.intern_symbol("symbol");
+		vm_ptr<Symbol> empty_symb = base_package.intern_symbol("empty");
 
 		base_package.export_symbol(str_symb);
 		base_package.export_symbol(list_symb);
 		base_package.export_symbol(int_symb);
 		base_package.export_symbol(double_symb);
 		base_package.export_symbol(symb_symb);
+		base_package.export_symbol(empty_symb);
 
 		Type str =  { str_symb,  {}, "Constant string type used by the vm" };
 		Type list = { list_symb, {}, "Linked list used by the vm" };
 		Type int_type =    {int_symb, {}, "32 bit integer" };
 		Type double_type = {double_symb, {}, "32 bit floating point"};
 		Type symbol_type = {symb_symb, {}, "Symbol"};
+		Type empty_type = {empty_symb, {}, "Type representing an object containing nothing."};
 
 		t_table.insert(str);
 		t_table.insert(list);
 		t_table.insert(int_type);
 		t_table.insert(double_type);
 		t_table.insert(symbol_type);
+		t_table.insert(empty_type);
 	}
 
 	VirtualMachine::VirtualMachine(const Config &config, const std::string &base_package) :
@@ -43,11 +47,12 @@ namespace salmon::vm {
 		_int32_type = *type_table.get_type(*base_pkg.find_symbol("int-32"));
 		_float_type = *type_table.get_type(*base_pkg.find_symbol("float-32"));
 		_list_type = *type_table.get_type(*base_pkg.find_symbol("list"));
+		_empty_type = *type_table.get_type(*base_pkg.find_symbol("empty"));
 		_const_str_type = *type_table.get_type(*base_pkg.find_symbol("const-string"));
 		_symbol_type = *type_table.get_type(*base_pkg.find_symbol("symbol"));
 		// TODO: use C++ assertions with exceptions
 		assert(_int32_type != nullptr && _float_type != nullptr && _list_type != nullptr
-			&& _const_str_type != nullptr && _symbol_type != nullptr);
+			&& _const_str_type != nullptr && _symbol_type != nullptr && _empty_type != nullptr);
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {
@@ -72,6 +77,10 @@ namespace salmon::vm {
 
 	Type *VirtualMachine::symbol_type() {
 		return _symbol_type;
+	}
+
+	Type *VirtualMachine::empty_type() {
+		return _empty_type;
 	}
 
 	Type *VirtualMachine::list_type() {
