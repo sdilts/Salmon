@@ -75,11 +75,12 @@ namespace salmon::vm {
 				} while (!to_check.empty());
 			}
 		}
+
 		std::vector<AllocatedItem*> to_delete;
 		std::copy_if(allocated.begin(), allocated.end(),
 					 std::inserter(to_delete, to_delete.begin()),
 					 [&marked] (AllocatedItem *needle) {
-									 return marked.find(needle) == marked.end();
+						 return marked.find(needle) == marked.end();
 					 });
 
 		for(AllocatedItem *item : to_delete) {

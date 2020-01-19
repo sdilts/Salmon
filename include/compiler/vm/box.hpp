@@ -17,6 +17,7 @@ namespace salmon::vm {
 		struct Type *type;
 		std::variant<int32_t,
 					 float,
+					 bool,
 					 Empty,
 					 Symbol*,
 					 List*,

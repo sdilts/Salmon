@@ -10,6 +10,7 @@ namespace salmon::vm {
 		vm_ptr<Symbol> int_symb = base_package.intern_symbol("int-32");
 		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> symb_symb = base_package.intern_symbol("symbol");
+		vm_ptr<Symbol> bool_symb = base_package.intern_symbol("boolean");
 		vm_ptr<Symbol> empty_symb = base_package.intern_symbol("empty");
 
 		base_package.export_symbol(str_symb);
@@ -17,6 +18,7 @@ namespace salmon::vm {
 		base_package.export_symbol(int_symb);
 		base_package.export_symbol(double_symb);
 		base_package.export_symbol(symb_symb);
+		base_package.export_symbol(bool_symb);
 		base_package.export_symbol(empty_symb);
 
 		Type str =  { str_symb,  {}, "Constant string type used by the vm" };
@@ -24,6 +26,7 @@ namespace salmon::vm {
 		Type int_type =    {int_symb, {}, "32 bit integer" };
 		Type double_type = {double_symb, {}, "32 bit floating point"};
 		Type symbol_type = {symb_symb, {}, "Symbol"};
+		Type bool_type = {bool_symb, {}, "True or false type"};
 		Type empty_type = {empty_symb, {}, "Type representing an object containing nothing."};
 
 		t_table.insert(str);
@@ -31,6 +34,7 @@ namespace salmon::vm {
 		t_table.insert(int_type);
 		t_table.insert(double_type);
 		t_table.insert(symbol_type);
+		t_table.insert(bool_type);
 		t_table.insert(empty_type);
 	}
 
