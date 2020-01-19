@@ -260,7 +260,7 @@ namespace salmon::compiler {
 		return items;
 	}
 
-	static std::optional<salmon::vm::Box> read_list(std::istream &input, Compiler &compiler) {
+	static salmon::vm::Box read_list(std::istream &input, Compiler &compiler) {
 		std::list<salmon::vm::Box> collected_items = collect_list(input, ReadResult::R_PAREN, compiler);
 		if (!collected_items.empty()) {
 			vm::Box first = collected_items.front();
