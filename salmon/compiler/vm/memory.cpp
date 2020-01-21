@@ -70,7 +70,8 @@ namespace salmon::vm {
 					std::copy_if(children.begin(), children.end(),
 								 std::inserter(to_check, to_check.begin()),
 								 [&to_check] (AllocatedItem *needle) {
-									 return to_check.find(needle) == to_check.end();
+									 return to_check.find(needle) == to_check.end()
+										 && marked.find(needle) == marked.end();
 								 });
 				} while (!to_check.empty());
 			}
