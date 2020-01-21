@@ -7,15 +7,15 @@
 
 namespace salmon::vm {
 
-	std::unordered_set<AllocatedItem*> InternalBox::get_roots() const {
+	std::vector<AllocatedItem*> InternalBox::get_roots() const {
 		return std::visit([](auto &&arg) {
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr (std::is_pointer<T>::value) {
-				std::unordered_set<AllocatedItem*> set = { dynamic_cast<AllocatedItem*>(arg) };
+				std::vector<AllocatedItem*> set = { dynamic_cast<AllocatedItem*>(arg) };
 				return set;
 			} else {
 				static_assert(!std::is_pointer<T>::value);
-				std::unordered_set<AllocatedItem*> set;
+				std::vector<AllocatedItem*> set;
 				return set;
 			} }, elem);
 	}
@@ -56,7 +56,7 @@ namespace salmon::vm {
 		std::cerr << this << "Box: " << *type << " " << std::endl;
 	};
 
-	std::unordered_set<AllocatedItem*> Box::get_roots() const {
+	std::vector<AllocatedItem*> Box::get_roots() const {
 		return InternalBox::get_roots();
 	};
 }

@@ -2,7 +2,7 @@
 #define SALMON_COMPILER_VM_ALLOCATED_ITEM
 
 #include <compiler/vm/allocateditem.hpp>
-#include <unordered_set>
+#include <vector>
 
 namespace salmon::vm {
 
@@ -13,7 +13,7 @@ namespace salmon::vm {
 		 * Return the immedeate roots of the item.
 		 * The return value may include items that also contain roots, and need to be searched.
 		 **/
-		virtual std::unordered_set<AllocatedItem*> get_roots() const {
+		virtual std::vector<AllocatedItem*> get_roots() const {
 			return {};
 		};
 

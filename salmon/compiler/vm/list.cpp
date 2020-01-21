@@ -8,10 +8,10 @@ namespace salmon::vm {
 
 	}
 
-	std::unordered_set<AllocatedItem*> List::get_roots() const {
+	std::vector<AllocatedItem*> List::get_roots() const {
 		auto children = itm.get_roots();
 		if (next != nullptr) {
-			children.insert(next);
+			children.push_back(next);
 		}
 		return children;
 	}

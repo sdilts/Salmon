@@ -23,7 +23,7 @@ namespace salmon::vm {
 					 List*,
 					 StaticString*>
 					 elem;
-		std::unordered_set<AllocatedItem*> get_roots() const;
+		std::vector<AllocatedItem*> get_roots() const;
 	};
 
 	struct Box : public InternalBox, public AllocatedItem {
@@ -36,10 +36,10 @@ namespace salmon::vm {
 		Box &operator=(const Box &);
 
 		void print_debug_info() const override;
-		std::unordered_set<AllocatedItem*> get_roots() const override;
+		std::vector<AllocatedItem*> get_roots() const;
 
 	private:
-		std::unordered_map<AllocatedItem*,unsigned int> *instances;
+		std::unordered_set<Box*> *instances;
 	};
 
 	struct List : public AllocatedItem {
@@ -51,7 +51,7 @@ namespace salmon::vm {
 		List *next;
 
 		void print_debug_info() const override;
-		std::unordered_set<AllocatedItem*> get_roots() const override;
+		std::vector<AllocatedItem*> get_roots() const override;
 	};
 }
 
