@@ -59,6 +59,7 @@ namespace salmon::vm {
 	void MemoryManager::do_gc() {
 		std::cerr << "Before GC: " << allocated.size() << "\n";
 		std::unordered_set<AllocatedItem*> marked = {};
+		// TODO: check if breadth-first search would be faster:
 		for(auto [root, count] : roots) {
 			if(!set_contains(marked, root)) {
 				std::unordered_set<AllocatedItem*> to_check;

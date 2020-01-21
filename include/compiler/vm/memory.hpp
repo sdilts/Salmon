@@ -30,7 +30,7 @@ namespace salmon::vm {
 		void do_gc();
 	private:
 		std::unordered_set<AllocatedItem*> allocated;
-		//! reference count of allocated objects: kept track of using vm_ptrs
+		//! reference count of allocated objects kept track of using vm_ptrs
 		std::unordered_map<AllocatedItem*, unsigned int> roots;
 	};
 }
