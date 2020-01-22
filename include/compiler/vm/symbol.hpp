@@ -22,6 +22,7 @@ namespace salmon::vm {
 		~Symbol();
 		void operator=(const Symbol&) = delete;
 
+		size_t allocated_size() const override;
 		void print_debug_info() const override;
 	};
 

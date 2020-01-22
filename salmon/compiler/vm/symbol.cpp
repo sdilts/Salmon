@@ -20,6 +20,10 @@ namespace salmon::vm {
 		std::cerr << this << " " << *this << std::endl;
 	}
 
+	size_t Symbol::allocated_size() const {
+		return sizeof(Symbol);
+	}
+
 	bool operator<(const std::string &first, const Symbol &second) {
 		return first < second.name;
 	}

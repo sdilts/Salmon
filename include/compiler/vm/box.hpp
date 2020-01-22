@@ -2,6 +2,7 @@
 #define SALMON_COMPILER_BOX
 
 #include <variant>
+#include <unordered_set>
 
 #include <compiler/vm/allocateditem.hpp>
 #include <compiler/vm/vm_ptr.hpp>
@@ -26,16 +27,15 @@ namespace salmon::vm {
 		std::vector<AllocatedItem*> get_roots() const;
 	};
 
-	struct Box : public InternalBox, public AllocatedItem {
+	struct Box : public InternalBox {
 
-		Box(std::unordered_map<AllocatedItem*, unsigned int> &table);
+		Box(std::unordered_set<Box*> &table);
 		Box(const Box&);
 		Box() = delete;
 		~Box();
 
 		Box &operator=(const Box &);
 
-		void print_debug_info() const override;
 		std::vector<AllocatedItem*> get_roots() const;
 
 	private:
@@ -52,6 +52,7 @@ namespace salmon::vm {
 
 		void print_debug_info() const override;
 		std::vector<AllocatedItem*> get_roots() const override;
+		size_t allocated_size() const override;
 	};
 }
 

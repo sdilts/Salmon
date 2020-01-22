@@ -20,9 +20,9 @@ namespace salmon::vm {
 			} }, elem);
 	}
 
-	Box::Box(std::unordered_map<AllocatedItem*, unsigned int> &table) :
+	Box::Box(std::unordered_set<Box*> &table) :
 		instances{&table} {
-	    auto [pos, newly_added] = instances->insert({this, 1});
+	    auto [pos, newly_added] = instances->insert(this);
 		assert(newly_added);
 	}
 
@@ -30,7 +30,7 @@ namespace salmon::vm {
 		InternalBox(other),
 		instances{other.instances}  {
 		assert(instances != nullptr);
-		auto [pos, newly_added] = instances->insert({this, 1});
+		auto [pos, newly_added] = instances->insert(this);
 		assert(newly_added);
 	}
 
@@ -44,17 +44,13 @@ namespace salmon::vm {
 	Box & Box::operator=(const Box &other) {
 		if(this != &other) {
 			// ensure the current box is registered:
-			instances->insert({this, 1});
+			instances->insert(this);
 			elem = other.elem;
 			type = other.type;
 			instances = other.instances;
 		}
 		return *this;
 	}
-
-	void Box::print_debug_info() const {
-		std::cerr << this << "Box: " << *type << " " << std::endl;
-	};
 
 	std::vector<AllocatedItem*> Box::get_roots() const {
 		return InternalBox::get_roots();

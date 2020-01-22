@@ -32,6 +32,8 @@ namespace salmon::vm {
 		std::unordered_set<AllocatedItem*> allocated;
 		//! reference count of allocated objects kept track of using vm_ptrs
 		std::unordered_map<AllocatedItem*, unsigned int> roots;
+		std::unordered_set<Box*> box_roots;
+		size_t total_allocated;
 	};
 }
 #endif

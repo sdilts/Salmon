@@ -13,6 +13,7 @@ namespace salmon::vm {
 		~StaticString() = default;
 
 		void print_debug_info() const override;
+		size_t allocated_size() const override;
 	};
 }
 

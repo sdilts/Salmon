@@ -7,9 +7,8 @@ namespace salmon::vm {
 	struct test_struct : public AllocatedItem {
 		int foo;
 
-		void print_debug_info() const {
-
-		}
+		void print_debug_info() const override { }
+		size_t allocated_size() const override { return sizeof(test_struct); }
 	};
 
     SCENARIO( "A single vm_ptr records its root correctly.", "[vm_ptr]") {

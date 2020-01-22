@@ -19,4 +19,8 @@ namespace salmon::vm {
 	void List::print_debug_info() const {
 		std::cerr << "List " << this << std::endl;
 	}
+
+	size_t List::allocated_size() const {
+		return sizeof(List);
+	}
 }

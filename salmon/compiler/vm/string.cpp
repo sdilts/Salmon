@@ -11,4 +11,7 @@ namespace salmon::vm {
 		std::cerr << "string: \"" << contents << "\"" << std::endl;
 	}
 
+	size_t StaticString::allocated_size() const {
+		return sizeof(StaticString);
+	}
 }

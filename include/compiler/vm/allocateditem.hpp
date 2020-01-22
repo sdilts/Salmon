@@ -18,6 +18,7 @@ namespace salmon::vm {
 		};
 
 		virtual void print_debug_info() const = 0;
+		virtual size_t allocated_size() const = 0;
 	};
 }
 
