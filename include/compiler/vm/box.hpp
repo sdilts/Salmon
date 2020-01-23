@@ -13,6 +13,7 @@
 namespace salmon::vm {
 
 	struct List;
+	struct Array;
 
 	struct InternalBox {
 		struct Type *type;
@@ -40,6 +41,16 @@ namespace salmon::vm {
 
 	private:
 		std::unordered_set<Box*> *instances;
+	};
+
+	struct Array : public AllocatedItem {
+		Array(int32_t size);
+
+		std::vector<InternalBox> items;
+
+		void print_debug_info() const override;
+		std::vector<AllocatedItem*> get_roots() const override;
+		size_t allocated_size() const override;
 	};
 
 	struct List : public AllocatedItem {

@@ -36,6 +36,14 @@ namespace salmon::vm {
 		return list;
 	}
 
+	vm_ptr<Array> MemoryManager::make_array(int32_t size) {
+		Array *chunk = new Array(size);
+		total_allocated += sizeof(Array);
+		this->allocated.insert(chunk);
+		vm_ptr<Array> arr(chunk, roots);
+		return arr;
+	}
+
 	vm_ptr<StaticString> MemoryManager::make_static_string(const std::string &str) {
 		StaticString *chunk = new StaticString(str);
 		total_allocated += sizeof(StaticString);

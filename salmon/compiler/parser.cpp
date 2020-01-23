@@ -285,6 +285,18 @@ namespace salmon::compiler {
 		}
 	}
 
+	static salmon::vm::Box read_array(std::istream &input, Compiler &compiler) {
+		std::list<salmon::vm::Box> collected_items = collect_list(input, ReadResult::R_BRACKET, compiler);
+		vm::vm_ptr<vm::Array> array = compiler.vm.mem_manager.make_array(collected_items.size());
+		for(salmon::vm::Box &box : collected_items) {
+			array->items.push_back(box);
+		}
+		vm::Box box = compiler.vm.mem_manager.make_box();
+		box.elem = &*array;
+		box.type = compiler.vm.dyn_array_type();
+		return box;
+	}
+
 	static std::pair<ReadResult, std::optional<salmon::vm::Box>> read_next(std::istream &input,
 																	   Compiler &compiler) {
 		do {
@@ -305,10 +317,7 @@ namespace salmon::compiler {
 					input.get();
 					return std::make_pair(ReadResult::R_PAREN, std::nullopt);
 				case '[':
-					std::cerr << "Reading arrays aren't implemented yet"
-							  << __FILE__ << ":" << __LINE__ << std::endl;
-					exit(-1);
-					return std::make_pair(ReadResult::L_BRACKET, std::nullopt);
+					return std::make_pair(ReadResult::ITEM, read_array(input, compiler));
 				case ']':
 					input.get();
 					return std::make_pair(ReadResult::R_BRACKET, std::nullopt);

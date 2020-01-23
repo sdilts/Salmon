@@ -7,6 +7,7 @@ namespace salmon::vm {
 	static void init_types(Package &base_package, TypeTable &t_table) {
 		vm_ptr<Symbol> str_symb = base_package.intern_symbol("const-string");
 		vm_ptr<Symbol> list_symb = base_package.intern_symbol("list");
+		vm_ptr<Symbol> dyn_arr_symb = base_package.intern_symbol("dyn-array");
 		vm_ptr<Symbol> int_symb = base_package.intern_symbol("int-32");
 		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> symb_symb = base_package.intern_symbol("symbol");
@@ -15,6 +16,7 @@ namespace salmon::vm {
 
 		base_package.export_symbol(str_symb);
 		base_package.export_symbol(list_symb);
+		base_package.export_symbol(dyn_arr_symb);
 		base_package.export_symbol(int_symb);
 		base_package.export_symbol(double_symb);
 		base_package.export_symbol(symb_symb);
@@ -23,6 +25,7 @@ namespace salmon::vm {
 
 		Type str =  { str_symb,  {}, "Constant string type used by the vm" };
 		Type list = { list_symb, {}, "Linked list used by the vm" };
+		Type dyn_arr = { dyn_arr_symb, {}, "Dynamic array used by the vm" };
 		Type int_type =    {int_symb, {}, "32 bit integer" };
 		Type double_type = {double_symb, {}, "32 bit floating point"};
 		Type symbol_type = {symb_symb, {}, "Symbol"};
@@ -31,6 +34,7 @@ namespace salmon::vm {
 
 		t_table.insert(str);
 		t_table.insert(list);
+		t_table.insert(dyn_arr);
 		t_table.insert(int_type);
 		t_table.insert(double_type);
 		t_table.insert(symbol_type);
@@ -51,12 +55,14 @@ namespace salmon::vm {
 		_int32_type = *type_table.get_type(*base_pkg.find_symbol("int-32"));
 		_float_type = *type_table.get_type(*base_pkg.find_symbol("float-32"));
 		_list_type = *type_table.get_type(*base_pkg.find_symbol("list"));
+		_dyn_array_type = *type_table.get_type(*base_pkg.find_symbol("dyn-array"));
 		_empty_type = *type_table.get_type(*base_pkg.find_symbol("empty"));
 		_const_str_type = *type_table.get_type(*base_pkg.find_symbol("const-string"));
 		_symbol_type = *type_table.get_type(*base_pkg.find_symbol("symbol"));
 		// TODO: use C++ assertions with exceptions
 		assert(_int32_type != nullptr && _float_type != nullptr && _list_type != nullptr
-			&& _const_str_type != nullptr && _symbol_type != nullptr && _empty_type != nullptr);
+		       && _dyn_array_type != nullptr && _const_str_type != nullptr
+		       && _symbol_type != nullptr && _empty_type != nullptr);
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {
@@ -90,6 +96,10 @@ namespace salmon::vm {
 	Type *VirtualMachine::list_type() {
 		return _list_type;
 	}
+
+  Type *VirtualMachine::dyn_array_type() {
+    return _dyn_array_type;
+  }
 
 	Type *VirtualMachine::const_str_type() {
 		return _const_str_type;

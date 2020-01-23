@@ -24,6 +24,7 @@ namespace salmon::vm {
 		Type *float_type();
 		Type *symbol_type();
 		Type *list_type();
+		Type *dyn_array_type();
 		Type *empty_type();
 		Type *const_str_type();
 
@@ -37,6 +38,7 @@ namespace salmon::vm {
 		Type *_float_type;
 		Type *_symbol_type;
 		Type *_list_type;
+		Type *_dyn_array_type;
 		Type *_empty_type;
 		Type *_const_str_type;
 	};
