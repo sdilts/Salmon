@@ -101,7 +101,6 @@ namespace salmon::compiler {
 	}
 
 	static salmon::vm::Box parse_string(std::istream &input, Compiler &compiler) {
-		std::ignore = compiler;
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
 		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
@@ -119,6 +118,11 @@ namespace salmon::compiler {
 
 		std::size_t curCount = 0;
 		std::ostringstream token;
+
+		if(num_quotes == 2) {
+			goto end;
+		}
+
 		int read_in;
 		while(curCount != num_quotes && (read_in = input.get()) != EOF) {
 			char ch = static_cast<char>(read_in);
@@ -142,6 +146,9 @@ namespace salmon::compiler {
 			throw ParseException("EOF reached while parsing string",
 								 start_info, end_info);
 		}
+
+	end:
+
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
 		box.type = compiler.vm.const_str_type();
 		box.elem = &*compiler.vm.mem_manager.make_static_string(token.str());
