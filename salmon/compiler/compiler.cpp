@@ -46,5 +46,4 @@ namespace salmon::compiler {
 		}
 		return false;
 	}
-
 }

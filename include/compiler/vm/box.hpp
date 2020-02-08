@@ -37,8 +37,6 @@ namespace salmon::vm {
 
 		Box &operator=(const Box &);
 
-		std::vector<AllocatedItem*> get_roots() const;
-
 	private:
 		std::unordered_set<Box*> *instances;
 	};

@@ -51,8 +51,4 @@ namespace salmon::vm {
 		}
 		return *this;
 	}
-
-	std::vector<AllocatedItem*> Box::get_roots() const {
-		return InternalBox::get_roots();
-	};
 }
