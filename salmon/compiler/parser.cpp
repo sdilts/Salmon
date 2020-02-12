@@ -68,13 +68,6 @@ namespace salmon::compiler {
 		}
 	}
 
-	static std::optional<salmon::vm::Box> reader_macro(std::istream &input) {
-		input.peek();
-		std::cerr << "Reader macros aren't implemented yet" << __FILE__ << ":" << __LINE__ << std::endl;
-		exit(-1);
-		return std::nullopt;
-	}
-
 	static char escape(std::istream &input) {
 		char ch = input.get();
 		switch(ch) {
@@ -180,12 +173,7 @@ namespace salmon::compiler {
 		return num_type;
 	}
 
-	static bool isKeyword(const std::string &symbol) {
-		assert(!symbol.empty());
-		return symbol[0] == ':';
-	}
-
-	static salmon::vm::Box parse_primitive(std::istream &input, Compiler &compiler) {
+	static std::string read_atom(std::istream &input) {
 		static const std::set<char> terminating_chars =
 			{ '(', ')', '[', ']', '{', '}', '"'};
 		std::ostringstream token;
@@ -201,8 +189,60 @@ namespace salmon::compiler {
 				input.get();
 			}
 		}
+		return token.str();
+	}
 
-		std::string chunk = token.str();
+	salmon::vm::Box read_uninterned_symbol(std::istream &input, Compiler &compiler) {
+		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
+
+		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+
+		std::string chunk = read_atom(input);
+
+		if(chunk.empty()) {
+			throw ParseException("Reached EOF while parsing reader macro #:",
+			 					 start_info, countStreamBuf->positionInfo());
+		} else if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
+			std::cerr << "Symbol is a number while reading #:\n";
+			throw ParseException("Encountered number while parsing reader macro #:",
+								 start_info, countStreamBuf->positionInfo());
+		} else if(chunk.find(':') != std::string::npos) {
+			throw ParseException("Encountered number while parsing reader macro #:",
+								 start_info, countStreamBuf->positionInfo());
+		} else {
+			salmon::vm::Box box = compiler.vm.mem_manager.make_box();
+			salmon::vm::vm_ptr<salmon::vm::Symbol> tmp_symb = compiler.vm.mem_manager.make_symbol(chunk);
+			box.type = compiler.vm.symbol_type();
+			box.elem = &*tmp_symb;
+			return box;
+		}
+	}
+
+	static salmon::vm::Box reader_macro(std::istream &input, Compiler &compiler) {
+		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
+
+		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+		// calling function doesn't consume '#' token:
+		input.get();
+
+		int ch = input.get();
+		switch(ch) {
+		case ':':
+			return read_uninterned_symbol(input, compiler);
+		default:
+			throw ParseException(build_unmatched_error_str("Unkown macro dispatch character: ", ch),
+								 start_info, countStreamBuf->positionInfo());
+		}
+	}
+
+	static bool isKeyword(const std::string &symbol) {
+		assert(!symbol.empty());
+		return symbol[0] == ':';
+	}
+
+	static salmon::vm::Box parse_primitive(std::istream &input, Compiler &compiler) {
+
+		std::string chunk = read_atom(input);
 		assert(!chunk.empty());
 
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
@@ -337,7 +377,7 @@ namespace salmon::compiler {
 					input.get();
 					return std::make_pair(ReadResult::R_BRACE, std::nullopt);
 				case '#':
-					return std::make_pair(ReadResult::ITEM, reader_macro(input));
+					return std::make_pair(ReadResult::ITEM, reader_macro(input, compiler));
 				case '"':
 					return std::make_pair(ReadResult::ITEM,
 										  parse_string(input, compiler));
