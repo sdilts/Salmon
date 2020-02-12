@@ -203,7 +203,6 @@ namespace salmon::compiler {
 			throw ParseException("Reached EOF while parsing reader macro #:",
 			 					 start_info, countStreamBuf->positionInfo());
 		} else if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
-			std::cerr << "Symbol is a number while reading #:\n";
 			throw ParseException("Encountered number while parsing reader macro #:",
 								 start_info, countStreamBuf->positionInfo());
 		} else if(chunk.find(':') != std::string::npos) {
