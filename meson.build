@@ -20,9 +20,12 @@ common_args = [
 add_project_arguments(common_args, language: 'cpp',)
 add_project_arguments(common_args, language: 'c',)
 
-
-replxx_proj = cmake.subproject('replxx', cmake_options: '-DREPLXX_BUILD_EXAMPLES=no')
-replxx_dep = replxx_proj.get_variable('replxx_dep')
+replxx_options = [
+  '-DREPLXX_BUILD_EXAMPLES=no',
+  '-DCMAKE_BUILD_TYPE=Release',
+]
+replxx_proj = cmake.subproject('replxx', cmake_options: replxx_options)
+replxx_dep = replxx_proj.dependency('replxx')
 
 salmon_inc = include_directories('include')
 
