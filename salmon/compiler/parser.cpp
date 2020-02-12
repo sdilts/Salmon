@@ -283,17 +283,19 @@ namespace salmon::compiler {
 		salmon::meta::position_info end_info;
 
 		// consume the starting bracket/brace/etc.
-		input.get();
+		int opening_char = input.get();
 
 		std::list<salmon::vm::Box> items;
 		{
 			auto [result, cur_item] = read_next(input, compiler);
 			while(result != terminator) {
 				if(result == ReadResult::ITEM) {
+					assert(cur_item != std::nullopt);
 					items.push_back(*cur_item);
 				} else if(result == ReadResult::END) {
 					end_info = countStreamBuf->positionInfo();
-					throw ParseException("EOF reached while parsing",
+					throw ParseException(build_unmatched_error_str("EOF reached while parsing ",
+																   opening_char),
 										 start_info, end_info);
 				} else {
 					char term_char = static_cast<char>(result);
