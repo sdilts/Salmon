@@ -1,0 +1,38 @@
+
+* VM layout:
+  + Constant table: stores Boxes that are loaded in as constants. Each
+    constant is indexed with an 4-byte unsigned integer value.
+  + Global table: a table that holds all of the global variables
+  + Instruction stream: The actual instructions for the program
+  + Stack: the stack of the VM.
+
+* VM instructions
+  | instruction | Args (num bytes) | Stack Change | Action                                                                        | Notes            |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | POP         |                0 |           -1 | Discard the value on the top of the stack                                     |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | POPN        |                1 |            N | Pop N entries off the stack                                                        |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | PUSHI       |                4 |           +1 | Push an immediate value onto the stack                                        |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | PUSHG       |                4 |           +1 | Push a global variable onto the stack                                         |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | SETG        |                4 |           -1 | Set a global variable to the value on top of the stack.                       |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | FUNCALL     |                0 |  -(num args) | Call the function object on the top of the stack and push its return          |                  |
+  |             |                  |              | value onto the stack                                                          |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | INVOKE      |                0 |  -(num args) | Call the symbol on the top of the stack as a function and push the function's | Use an immedeate |
+  |             |                  |              | return value onto the stack.                                                  | version instead? |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | AND         |                0 |           -1 | Pop the top two values off the stack and put the last value back if both      |                  |
+  |             |                  |              | values are true, place EMPTY on the stack otherwise.                          |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | NOT         |                0 |            0 | Negate the boolean on the top of the stack.                                   |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | OR          |                0 |           -1 | Pop the top two values off of the stack and put the first true value          |                  |
+  |             |                  |              | back. If no values are true, place EMPTY on the stack.                        |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | JMP_F       |                4 |            1 | Jump if the value on top of the stack is false                                |                  |
+  |-------------+------------------+--------------+-------------------------------------------------------------------------------+------------------|
+  | JMP         |                4 |            0 | Jump to the specified address.                                                |                  |
