@@ -21,7 +21,7 @@ namespace salmon::vm {
 	BuiltinFunction<Box&,Box&> func(func_name, {arg1, arg2}, std::nullopt, std::nullopt, foo);
 
 
-	SCENARIO("Builtin functions check their argument lengths", "[functions]") {
+	SCENARIO("Builtin functions check their argument lengths", "[vm, functions]") {
 
 		WHEN("The wrong number of arguments is given") {
 
@@ -40,7 +40,7 @@ namespace salmon::vm {
 		}
 	}
 
-	SCENARIO("Arity Exceptions report the correct info", "[vm, functions]") {
+	SCENARIO("ArityExceptions report the correct info", "[vm, functions]") {
 		try {
 			Box b = manager.make_box();
 			std::vector<Box> input = { b };
@@ -49,6 +49,9 @@ namespace salmon::vm {
 		} catch(const ArityException &err) {
 			REQUIRE(err.desired == 2);
 			REQUIRE(err.given == 1);
+			std::string err_str = err.what();
+			auto check_str = "Wrong number of arguments given to function #:foo (given 1, expected 2)";
+			REQUIRE(err_str == check_str);
 		}
 	}
 }

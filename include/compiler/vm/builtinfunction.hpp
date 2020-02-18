@@ -43,7 +43,7 @@ namespace salmon::vm {
 
 		Box unpack_vector(std::vector<Box>& vec) {
 			if (vec.size() != sizeof...(Args)) {
-				throw ArityException(lambda_list, vec.size(), sizeof...(Args));
+				throw ArityException::build(name, lambda_list, vec.size(), sizeof...(Args));
 			}
 			return unpack_vector(vec, std::make_index_sequence<sizeof...(Args)>());
 		}

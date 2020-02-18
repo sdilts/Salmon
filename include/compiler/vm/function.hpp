@@ -13,11 +13,20 @@ namespace salmon::vm {
 
 	struct ArityException : std::runtime_error {
 
-		ArityException(const std::vector<vm_ptr<Symbol>> &lambda_list,
-					   size_t num_given, size_t num_desired);
+		const vm_ptr<Symbol> func_name;
 		const std::vector<vm_ptr<Symbol>> lambda_list;
 		const size_t given;
 		const size_t desired;
+
+		static ArityException build(const vm_ptr<Symbol> &func_name,
+									const std::vector<vm_ptr<Symbol>> &lambda_list,
+									size_t num_given, size_t num_desired);
+
+	private:
+		ArityException(const std::string &msg,
+					   const vm_ptr<Symbol> &func_name,
+					   const std::vector<vm_ptr<Symbol>> &lambda_list,
+					   const size_t num_given, const size_t num_desired);
 	};
 
 	class VmFunction {
