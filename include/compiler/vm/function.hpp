@@ -36,7 +36,7 @@ namespace salmon::vm {
 		virtual Box operator()(std::vector<Box> &args) = 0;
 
 		virtual void describe() const = 0;
-	private:
+	protected:
 		std::vector<vm_ptr<Symbol>> lambda_list;
 
 		std::optional<std::string> documentation;
