@@ -5,10 +5,18 @@
 #include <filesystem>
 #include <optional>
 #include <memory>
+#include <exception>
 
 #include <compiler/vm/box.hpp>
 
 namespace salmon::vm {
+
+	struct ArityException : std::runtime_error {
+
+		ArityException(size_t num_given, size_t num_desired);
+		const size_t given;
+		const size_t desired;
+	};
 
 	class VmFunction {
 	public:
