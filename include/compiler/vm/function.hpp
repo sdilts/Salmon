@@ -13,7 +13,9 @@ namespace salmon::vm {
 
 	struct ArityException : std::runtime_error {
 
-		ArityException(size_t num_given, size_t num_desired);
+		ArityException(const std::vector<vm_ptr<Symbol>> &lambda_list,
+					   size_t num_given, size_t num_desired);
+		const std::vector<vm_ptr<Symbol>> lambda_list;
 		const size_t given;
 		const size_t desired;
 	};
