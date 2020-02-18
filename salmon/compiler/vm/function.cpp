@@ -8,4 +8,11 @@ namespace salmon::vm {
 		given(num_given),
 		desired(num_desired) {}
 
+	VmFunction::VmFunction(const vm_ptr<Symbol> &func_name, std::vector<vm_ptr<Symbol>> lambda_list) :
+		name(func_name),
+		lambda_list(lambda_list),
+		documentation{std::nullopt},
+		source_file{std::nullopt} { }
+
+	VmFunction::~VmFunction() {}
 }

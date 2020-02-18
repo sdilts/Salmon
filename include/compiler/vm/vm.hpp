@@ -19,12 +19,12 @@ namespace salmon::vm {
 		std::optional<std::reference_wrapper<Package>> find_package(const std::string &name);
 		std::optional<std::reference_wrapper<Package>> find_package(const vm_ptr<Symbol> &name);
 
-		//! Call function name with args args:
-		Box dispatch_function(vm_ptr<Symbol> &name, vm_ptr<List> &args);
-		//! register the function with the given name.
-		void register_function(vm_ptr<Symbol> &name, VmFunction &function);
-		//! register the interface with the given name and lambda list:
-		void register_interface(vm_ptr<Symbol> &name, InterfaceFunction &function);
+		// //! Call function name with args args:
+		// Box dispatch_function(vm_ptr<Symbol> &name, vm_ptr<List> &args);
+		// //! register the function with the given name.
+		// void register_function(vm_ptr<Symbol> &name, VmFunction &function);
+		// //! register the interface with the given name and lambda list:
+		// void register_interface(vm_ptr<Symbol> &name, InterfaceFunction &function);
 
 		// These will be used often enough that it is worth it to be able to access them
 		// with a single method call.
@@ -41,10 +41,10 @@ namespace salmon::vm {
 	private:
 		Config _config;
 
-		std::map<vm_ptr<Symbol>, std::unique_ptr<VmFunction>> func_table;
+		// std::map<vm_ptr<Symbol>, std::unique_ptr<VmFunction>> func_table;
 		// registering interface functions require different steps,
 		// and we want to avoid instanceof usage, so use a different table.
-		std::map<vm_ptr<Symbol>, InterfaceFunction> interface_table;
+		// std::map<vm_ptr<Symbol>, InterfaceFunction> interface_table;
 
 		Type *_int32_type;
 		Type *_float_type;
