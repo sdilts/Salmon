@@ -10,7 +10,7 @@ namespace salmon::vm {
 		virtual ~AllocatedItem() = 0;
 
 		/**
-		 * Return the immedeate roots of the item.
+		 * Return the immediate roots of the item.
 		 * The return value may include items that also contain roots, and need to be searched.
 		 **/
 		virtual std::vector<AllocatedItem*> get_roots() const {

@@ -40,10 +40,10 @@ namespace salmon::vm {
 		const vm_ptr<Symbol> name;
 
 		/**
-		 * Call the underlying function with the given arguments
+		 * Call the underlying function with the given arguments.
 		 *
-		 * Objects must be boxed
-		 **/
+		 * @throw ArityException if the vector is the incorrect length.
+		 */
 		virtual Box operator()(std::vector<Box> &args) = 0;
 
 		virtual void describe() const = 0;
