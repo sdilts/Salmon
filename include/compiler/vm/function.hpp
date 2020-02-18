@@ -21,7 +21,9 @@ namespace salmon::vm {
 	class VmFunction {
 	public:
 		VmFunction() = delete;
-		VmFunction(const vm_ptr<Symbol> &name,std::vector<vm_ptr<Symbol>>lambda_list);
+		VmFunction(const vm_ptr<Symbol> &name, std::vector<vm_ptr<Symbol>>lambda_list,
+				   std::optional<std::string> doc, std::optional<std::string> file,
+				   std::optional<vm_ptr<List>> source);
 		virtual ~VmFunction();
 
 		const vm_ptr<Symbol> name;

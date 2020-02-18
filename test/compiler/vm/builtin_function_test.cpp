@@ -18,7 +18,7 @@ namespace salmon::vm {
 	auto arg1 = manager.make_symbol("arg1");
 	auto arg2 = manager.make_symbol("arg2");
 
-	BuiltinFunction<Box&,Box&> func(func_name, {arg1, arg2}, foo);
+	BuiltinFunction<Box&,Box&> func(func_name, {arg1, arg2}, std::nullopt, std::nullopt, foo);
 
 
 	SCENARIO("Builtin functions check their argument lengths", "[functions]") {
@@ -40,7 +40,7 @@ namespace salmon::vm {
 		}
 	}
 
-	SCENARIO("Arity Exceptions report the correct info") {
+	SCENARIO("Arity Exceptions report the correct info", "[vm, functions]") {
 		try {
 			Box b = manager.make_box();
 			std::vector<Box> input = { b };

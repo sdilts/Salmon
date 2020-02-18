@@ -12,9 +12,12 @@ namespace salmon::vm {
 	public:
 		using FunctionType = Box(*)(Args ...);
 
-		BuiltinFunction(const vm_ptr<Symbol> &name, std::vector<vm_ptr<Symbol>> lambda_list,
+		BuiltinFunction(const vm_ptr<Symbol> &name,
+						std::vector<vm_ptr<Symbol>> lambda_list,
+						std::optional<std::string> docs,
+						std::optional<std::string> file,
 						FunctionType fn) :
-			VmFunction(name, lambda_list),
+			VmFunction(name, lambda_list, docs, file, std::nullopt),
 			actual_function(fn) {
 			// TODO: use C++ style assert with exceptions
 			assert(lambda_list.size() == arg_count);
