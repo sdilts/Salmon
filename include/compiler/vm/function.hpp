@@ -6,6 +6,7 @@
 #include <memory>
 #include <vector>
 #include <exception>
+#include <iostream>
 
 #include <compiler/vm/box.hpp>
 
@@ -46,8 +47,11 @@ namespace salmon::vm {
 		 */
 		virtual Box operator()(std::vector<Box> &args) = 0;
 
-		virtual void describe() const = 0;
+		virtual void describe(std::ostream &stream=std::cout) const = 0;
 	protected:
+		void describe_helper(const std::string &fn_type, std::ostream &stream) const;
+
+		// TODO: use boxed object instead?:
 		std::vector<vm_ptr<Symbol>> lambda_list;
 
 		std::optional<std::string> documentation;

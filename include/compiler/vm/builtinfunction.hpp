@@ -30,7 +30,9 @@ namespace salmon::vm {
 			return unpack_vector(args);
 		}
 
-		void describe() const override { }
+		void describe(std::ostream &stream) const override {
+		    describe_helper("builtin", stream);
+		}
 
 	private:
 

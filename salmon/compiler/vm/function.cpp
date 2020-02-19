@@ -32,7 +32,33 @@ namespace salmon::vm {
 		documentation{doc},
 		source_file{file},
 		source_form{source}
-	{ }
+	{}
 
 	VmFunction::~VmFunction() {}
+
+	void VmFunction::describe_helper(const std::string &fn_type, std::ostream &stream) const {
+		stream << *name << "names a " << fn_type << " function.\n";
+		stream << "  Lambda-list: [";
+		// TODO: use array print function instead
+		if(lambda_list.size() > 0) {
+			stream << *lambda_list[0];
+			for(size_t i = 1; i < lambda_list.size(); ++i) {
+				stream << " " << *lambda_list[i];
+			}
+		}
+		stream << "]\n";
+		if(documentation) {
+			stream << "  Documentation\n";
+			stream << "  " << *documentation << "\n";
+		}
+		if(source_form) {
+			// TODO: acutally print this out
+			stream << "  Source form\n";
+		}
+		if(source_file) {
+			stream << "  Source file: " << *source_file << "\n";
+		}
+		stream << std::endl;
+	}
+
 }
