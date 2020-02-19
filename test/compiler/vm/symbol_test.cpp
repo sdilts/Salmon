@@ -9,7 +9,7 @@ namespace salmon::vm {
 	SCENARIO("Symbol equality functions work.", "[package]") {
 		MemoryManager mem_manager;
 
-		GIVEN( "Two symbols from a different package") {
+		GIVEN( "Two symbols from a different package with the same name") {
 			Package pkg1 = Package("Test1",mem_manager);
 			Package pkg2 = Package("Test2", mem_manager);
 			const Symbol foo_symb("Foo", &pkg1);
@@ -18,13 +18,41 @@ namespace salmon::vm {
 			THEN( "The two symbols are not reported as equal") {
 				REQUIRE(foo_symb != bar_symb);
 			}
+			THEN("The correct one is greater than the other.") {
+				REQUIRE(foo_symb < bar_symb);
+			}
+			THEN("The correct one is less than the other.") {
+				REQUIRE(!(foo_symb > bar_symb));
+			}
 		}
+
+		GIVEN( "Two symbols from the same package with a different name") {
+			Package pkg1 = Package("Test1",mem_manager);
+			const Symbol foo_symb("achoo", &pkg1);
+			const Symbol bar_symb("boo", &pkg1);
+
+			THEN( "The two symbols are not reported as equal") {
+				REQUIRE(foo_symb != bar_symb);
+			}
+			THEN("The correct one is greater than the other.") {
+				REQUIRE(foo_symb < bar_symb);
+			}
+			THEN("The correct one is less than the other.") {
+				REQUIRE(!(foo_symb > bar_symb));
+			}
+		}
+
 		GIVEN( "Two symbols with the same name but not interned") {
 			const Symbol foo_symb("foo", std::nullopt);
 			const Symbol bar_symb("foo", std::nullopt);
 
 			THEN( "The two symbols aren't equal") {
 				REQUIRE(foo_symb != bar_symb);
+			}
+
+			THEN("They are neither greater or less than each other") {
+				REQUIRE(!(foo_symb > bar_symb));
+				REQUIRE(!(foo_symb < bar_symb));
 			}
 		}
 		GIVEN( "A symbol without a package") {

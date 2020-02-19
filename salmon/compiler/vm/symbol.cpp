@@ -47,6 +47,21 @@ namespace salmon::vm {
 		return first.name < second.name;
 	}
 
+	bool operator>(const Symbol &first, const Symbol &second) {
+		if(first.package && second.package) {
+			if (*first.package == *second.package) {
+				return first.name > second.name;
+			}
+			// std::optional uses the package comparison operators under the hood:
+			return first.package > second.package;
+		} else if(first.package) {
+			return true;
+		} else if (second.package) {
+			return false;
+		}
+		return first.name > second.name;
+	}
+
 	bool operator==(const Symbol &first, const Symbol &second) {
 		return &first == &second;
 	}

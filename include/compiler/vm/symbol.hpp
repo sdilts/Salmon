@@ -28,6 +28,7 @@ namespace salmon::vm {
 
 	bool operator<(const std::string &first, const Symbol &second);
 	bool operator<(const Symbol &first, const std::string &second);
+	bool operator>(const Symbol &first, const Symbol &second);
 
 	bool operator<(const Symbol &first, const Symbol &second);
 	bool operator==(const Symbol &first, const Symbol &second);
