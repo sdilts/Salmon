@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-#include <compiler/vm/function.hpp>
+#include <vm/function.hpp>
 
 namespace salmon::vm {
 

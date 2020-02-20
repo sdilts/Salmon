@@ -5,8 +5,8 @@
 #include <algorithm>
 #include <iostream>
 
-#include <compiler/vm/vm_ptr.hpp>
-#include <compiler/vm/memory.hpp>
+#include <vm/vm_ptr.hpp>
+#include <vm/memory.hpp>
 
 
 namespace salmon::vm {

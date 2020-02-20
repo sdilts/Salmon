@@ -1,7 +1,7 @@
 #ifndef SALMON_COMPILER_VM_ALLOCATED_ITEM
 #define SALMON_COMPILER_VM_ALLOCATED_ITEM
 
-#include <compiler/vm/allocateditem.hpp>
+#include <vm/allocateditem.hpp>
 #include <vector>
 
 namespace salmon::vm {

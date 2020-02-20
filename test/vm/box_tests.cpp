@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <compiler/vm/box.hpp>
+#include <vm/box.hpp>
 
 #include <test/catch.hpp>
 

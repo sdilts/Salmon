@@ -1,7 +1,7 @@
 #include <iostream>
 
-#include <compiler/vm/symbol.hpp>
-#include <compiler/vm/package.hpp>
+#include <vm/symbol.hpp>
+#include <vm/package.hpp>
 
 #include <test/catch.hpp>
 

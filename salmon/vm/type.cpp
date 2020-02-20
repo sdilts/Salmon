@@ -1,6 +1,6 @@
 #include <assert.h>
 
-#include <compiler/vm/type.hpp>
+#include <vm/type.hpp>
 
 namespace salmon::vm {
 

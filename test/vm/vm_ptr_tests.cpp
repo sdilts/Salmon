@@ -1,6 +1,6 @@
 #include <test/catch.hpp>
 
-#include <compiler/vm/vm_ptr.hpp>
+#include <vm/vm_ptr.hpp>
 
 namespace salmon::vm {
 

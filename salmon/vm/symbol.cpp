@@ -4,8 +4,8 @@
 
 #include <assert.h>
 
-#include <compiler/vm/symbol.hpp>
-#include <compiler/vm/package.hpp>
+#include <vm/symbol.hpp>
+#include <vm/package.hpp>
 
 namespace salmon::vm {
 

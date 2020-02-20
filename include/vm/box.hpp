@@ -4,11 +4,11 @@
 #include <variant>
 #include <unordered_set>
 
-#include <compiler/vm/allocateditem.hpp>
-#include <compiler/vm/vm_ptr.hpp>
-#include <compiler/vm/symbol.hpp>
-#include <compiler/vm/string.hpp>
-#include <compiler/vm/empty.hpp>
+#include <vm/allocateditem.hpp>
+#include <vm/vm_ptr.hpp>
+#include <vm/symbol.hpp>
+#include <vm/string.hpp>
+#include <vm/empty.hpp>
 
 namespace salmon::vm {
 

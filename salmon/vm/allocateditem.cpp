@@ -1,4 +1,4 @@
-#include <compiler/vm/allocateditem.hpp>
+#include <vm/allocateditem.hpp>
 
 namespace salmon::vm {
 

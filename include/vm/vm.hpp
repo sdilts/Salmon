@@ -4,10 +4,10 @@
 #include <unordered_map>
 #include <string>
 
-#include <compiler/vm/memory.hpp>
-#include <compiler/vm/type.hpp>
-#include <compiler/vm/package.hpp>
-#include <compiler/vm/function.hpp>
+#include <vm/memory.hpp>
+#include <vm/type.hpp>
+#include <vm/package.hpp>
+#include <vm/function.hpp>
 #include <salmon/config.hpp>
 
 namespace salmon::vm {

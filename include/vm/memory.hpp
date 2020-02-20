@@ -5,11 +5,10 @@
 
 #include <unordered_set>
 
-#include <compiler/vm/allocateditem.hpp>
-#include <compiler/vm/vm_ptr.hpp>
-
-#include <compiler/vm/box.hpp>
-#include <compiler/vm/symbol.hpp>
+#include <vm/allocateditem.hpp>
+#include <vm/vm_ptr.hpp>
+#include <vm/box.hpp>
+#include <vm/symbol.hpp>
 
 namespace salmon::vm {
 

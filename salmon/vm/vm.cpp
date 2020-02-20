@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include <compiler/vm/vm.hpp>
+#include <vm/vm.hpp>
 
 namespace salmon::vm {
 

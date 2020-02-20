@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <compiler/vm/box.hpp>
+#include <vm/box.hpp>
 
 namespace salmon::vm {
 	List::List(Box &itm) :

@@ -2,8 +2,8 @@
 
 #include <cassert>
 
-#include <compiler/vm/box.hpp>
-#include <compiler/vm/type.hpp>
+#include <vm/box.hpp>
+#include <vm/type.hpp>
 
 namespace salmon::vm {
 

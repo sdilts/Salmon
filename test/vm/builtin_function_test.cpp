@@ -2,8 +2,8 @@
 
 #include <test/catch.hpp>
 
-#include <compiler/vm/memory.hpp>
-#include <compiler/vm/builtinfunction.hpp>
+#include <vm/memory.hpp>
+#include <vm/builtinfunction.hpp>
 
 namespace salmon::vm {
 

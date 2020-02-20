@@ -7,9 +7,9 @@
 #include <optional>
 #include <functional>
 
-#include <compiler/vm/vm_ptr.hpp>
-#include <compiler/vm/memory.hpp>
-#include <compiler/vm/symbol.hpp>
+#include <vm/vm_ptr.hpp>
+#include <vm/memory.hpp>
+#include <vm/symbol.hpp>
 
 namespace salmon::vm {
 

@@ -10,9 +10,9 @@
 
 #include <stdlib.h>
 
-#include <compiler/vm/box.hpp>
-#include <compiler/vm/symbol.hpp>
-#include <compiler/vm/vm_ptr.hpp>
+#include <vm/box.hpp>
+#include <vm/symbol.hpp>
+#include <vm/vm_ptr.hpp>
 
 namespace salmon::vm {
 

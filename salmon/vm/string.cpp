@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include <compiler/vm/string.hpp>
+#include <vm/string.hpp>
 
 namespace salmon::vm {
 

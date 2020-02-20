@@ -6,7 +6,7 @@
 #include <functional>
 #include <type_traits>
 
-#include <compiler/vm/allocateditem.hpp>
+#include <vm/allocateditem.hpp>
 
 namespace salmon::vm {
 
