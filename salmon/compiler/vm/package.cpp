@@ -81,6 +81,10 @@ namespace salmon::vm {
 		return first.name < second.name;
 	}
 
+	bool operator>(const Package &first, const Package &second) {
+		return first.name > second.name;
+	}
+
 	std::ostream& operator<<(std::ostream &os, const Package &package) {
 		return os << "#<PACKAGE: \"" << package.name << "\">";
 	}

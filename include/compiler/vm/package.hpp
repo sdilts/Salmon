@@ -51,6 +51,7 @@ namespace salmon::vm {
 	};
 
 	bool operator<(const Package &first, const Package &second);
+	bool operator>(const Package &first, const Package &second);
 
 	std::ostream& operator<<(std::ostream &os, const Package &package);
 
