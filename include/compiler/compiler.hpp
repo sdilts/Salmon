@@ -3,7 +3,7 @@
 
 #include <salmon/config.hpp>
 
-#include <compiler/vm/vm.hpp>
+#include <vm/vm.hpp>
 
 namespace salmon::compiler {
 
