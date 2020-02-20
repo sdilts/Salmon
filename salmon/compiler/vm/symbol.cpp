@@ -37,8 +37,7 @@ namespace salmon::vm {
 			if (*first.package == *second.package) {
 				return first.name < second.name;
 			}
-			// std::optional uses the package comparison operators under the hood:
-			return first.package < second.package;
+			return **first.package < **second.package;
 		} else if(first.package) {
 			return false;
 		} else if (second.package) {
@@ -52,8 +51,7 @@ namespace salmon::vm {
 			if (*first.package == *second.package) {
 				return first.name > second.name;
 			}
-			// std::optional uses the package comparison operators under the hood:
-			return first.package > second.package;
+			return **first.package > **second.package;
 		} else if(first.package) {
 			return true;
 		} else if (second.package) {
