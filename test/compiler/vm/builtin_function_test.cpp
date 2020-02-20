@@ -7,7 +7,7 @@
 
 namespace salmon::vm {
 
-	Box foo(Box &one, Box &two) {
+	static Box foo(Box &one, Box &two) {
 		std::ignore = two;
 		return one;
 	}
