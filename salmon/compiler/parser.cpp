@@ -206,7 +206,7 @@ namespace salmon::compiler {
 			throw ParseException("Encountered number while parsing reader macro #:",
 								 start_info, countStreamBuf->positionInfo());
 		} else if(chunk.find(':') != std::string::npos) {
-			throw ParseException("Encountered number while parsing reader macro #:",
+			throw ParseException("Encountered package prefix or keyword while parsing reader macro #:",
 								 start_info, countStreamBuf->positionInfo());
 		} else {
 			salmon::vm::Box box = compiler.vm.mem_manager.make_box();
