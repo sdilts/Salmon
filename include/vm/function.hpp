@@ -14,18 +14,15 @@ namespace salmon::vm {
 
 	struct ArityException : std::runtime_error {
 
-		const vm_ptr<Symbol> func_name;
 		const std::vector<vm_ptr<Symbol>> lambda_list;
 		const size_t given;
 		const size_t desired;
 
-		static ArityException build(const vm_ptr<Symbol> &func_name,
-									const std::vector<vm_ptr<Symbol>> &lambda_list,
+		static ArityException build(const std::vector<vm_ptr<Symbol>> &lambda_list,
 									size_t num_given, size_t num_desired);
 
 	private:
 		ArityException(const std::string &msg,
-					   const vm_ptr<Symbol> &func_name,
 					   const std::vector<vm_ptr<Symbol>> &lambda_list,
 					   const size_t num_given, const size_t num_desired);
 	};
@@ -33,12 +30,10 @@ namespace salmon::vm {
 	class VmFunction {
 	public:
 		VmFunction() = delete;
-		VmFunction(const vm_ptr<Symbol> &name, std::vector<vm_ptr<Symbol>>lambda_list,
+		VmFunction(std::vector<vm_ptr<Symbol>>lambda_list,
 				   std::optional<std::string> doc, std::optional<std::string> file,
 				   std::optional<vm_ptr<List>> source);
 		virtual ~VmFunction();
-
-		const vm_ptr<Symbol> name;
 
 		/**
 		 * Call the underlying function with the given arguments.

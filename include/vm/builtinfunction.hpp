@@ -12,12 +12,11 @@ namespace salmon::vm {
 	public:
 		using FunctionType = Box(*)(Args ...);
 
-		BuiltinFunction(const vm_ptr<Symbol> &name,
-						std::vector<vm_ptr<Symbol>> lambda_list,
+		BuiltinFunction(std::vector<vm_ptr<Symbol>> lambda_list,
 						std::optional<std::string> docs,
 						std::optional<std::string> file,
 						FunctionType fn) :
-			VmFunction(name, lambda_list, docs, file, std::nullopt),
+			VmFunction(lambda_list, docs, file, std::nullopt),
 			actual_function(fn) {
 			// TODO: use C++ style assert with exceptions
 			assert(lambda_list.size() == arg_count);
@@ -45,7 +44,7 @@ namespace salmon::vm {
 
 		Box unpack_vector(std::vector<Box>& vec) {
 			if (vec.size() != sizeof...(Args)) {
-				throw ArityException::build(name, lambda_list, vec.size(), sizeof...(Args));
+				throw ArityException::build(lambda_list, vec.size(), sizeof...(Args));
 			}
 			return unpack_vector(vec, std::make_index_sequence<sizeof...(Args)>());
 		}

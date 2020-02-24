@@ -18,7 +18,7 @@ namespace salmon::vm {
 	auto arg1 = manager.make_symbol("arg1");
 	auto arg2 = manager.make_symbol("arg2");
 
-	BuiltinFunction<Box&,Box&> func(func_name, {arg1, arg2}, std::nullopt, std::nullopt, foo);
+	BuiltinFunction<Box&,Box&> func({arg1, arg2}, std::nullopt, std::nullopt, foo);
 
 
 	SCENARIO("Builtin functions check their argument lengths", "[vm, functions]") {
@@ -50,7 +50,7 @@ namespace salmon::vm {
 			REQUIRE(err.desired == 2);
 			REQUIRE(err.given == 1);
 			std::string err_str = err.what();
-			auto check_str = "Wrong number of arguments given to function #:foo (given 1, expected 2)";
+			auto check_str = "Wrong number of arguments given to function (given 1, expected 2)";
 			REQUIRE(err_str == check_str);
 		}
 	}
