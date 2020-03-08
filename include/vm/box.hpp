@@ -32,7 +32,6 @@ namespace salmon::vm {
 
 		Box(std::unordered_set<Box*> &table);
 		Box(const Box&);
-		Box(Box&& other) = default;
 		Box() = delete;
 		~Box();
 
