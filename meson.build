@@ -8,6 +8,8 @@ project('salmon',
 	  'c_std=c17',
 	  'werror=true',
 	  'warning_level=2',
+	  'buildtype=debugoptimized',
+	  'b_ndebug=if-release',
 	])
 
 cmake = import('cmake')
