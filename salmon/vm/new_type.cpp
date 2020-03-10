@@ -28,16 +28,17 @@ namespace salmon::vm {
 		return true;
 	}
 
-	static std::unordered_map<vm_ptr<Symbol>, std::vector<size_t>>
+	static std::map<vm_ptr<Symbol>, std::vector<size_t>>
 	get_unspecified_types(const std::vector<TypeSpecification::ItemMask> &types) {
-		std::unordered_map<vm_ptr<Symbol>, std::vector<size_t>> unspecified_types;
+		std::map<vm_ptr<Symbol>, std::vector<size_t>> unspecified_types;
 		size_t index = 0;
 		for(const auto &item : types) {
 			auto symbol = std::get_if<vm_ptr<Symbol>>(&item);
 			if(symbol) {
 				auto loc = unspecified_types.find(*symbol);
 				if(loc == unspecified_types.end()) {
-					unspecified_types.insert(std::make_pair(*symbol, index));
+					std::vector<size_t> tmp = { index };
+					unspecified_types.insert(std::make_pair(*symbol, std::move(tmp)));
 				} else {
 					auto &vec = std::get<std::vector<size_t>>(*loc);
 				    vec.push_back(index);
