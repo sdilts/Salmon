@@ -21,7 +21,7 @@ namespace salmon::vm {
 
 	Box::Box(std::unordered_set<Box*> &table) :
 		instances{&table} {
-	    auto [pos, newly_added] = instances->insert(this);
+	    [[maybe_unused]] auto [pos, newly_added] = instances->insert(this);
 		salmon_check(newly_added, "Box wasn't added to the box table");
 	}
 
@@ -29,7 +29,7 @@ namespace salmon::vm {
 		InternalBox(other),
 		instances{other.instances}  {
 		salmon_check(instances != nullptr, "Box constructor expects a valid table");
-		auto [pos, newly_added] = instances->insert(this);
+		[[maybe_unused]] auto [pos, newly_added] = instances->insert(this);
 		salmon_check(newly_added, "Box wasn't added to the box table");
 	}
 
