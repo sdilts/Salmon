@@ -9,6 +9,7 @@
 #include <replxx.hxx>
 
 #include <util/environment.hpp>
+#include <util/assert.hpp>
 #include <compiler/parser.hpp>
 #include <salmon/config.hpp>
 #include <compiler/compiler.hpp>
@@ -98,7 +99,7 @@ int main(int argc ,char **argv) {
 			}
 			break;
 		default:
-			abort();
+			salmon_abort("Unknown option in getopt");
 		}
 	}
 

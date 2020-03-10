@@ -3,6 +3,8 @@ compiler_deps = []
 lib_compiler = static_library(
   'salmon_compiler',
   files(
+    'util/assert.cpp',
+
     'compiler/CountingStream.cpp',
     'compiler/compiler.cpp',
     'compiler/parser.cpp',
