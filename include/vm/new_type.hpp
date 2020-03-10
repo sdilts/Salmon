@@ -33,7 +33,7 @@ namespace salmon::vm {
 		/**
 		 * Return a TypeSpecification with the unrealized types filled in.
 		 *
-		 * You can partially realize the type by using std::nullopt where the type
+		 * You can partially realize the specification by using std::nullopt where the type
 		 * isn't yet known.
 		 */
 		TypeSpecification *concretize(const std::vector<std::optional<Type*>> type);
@@ -43,7 +43,7 @@ namespace salmon::vm {
 		bool operator==(const TypeSpecification &other) const;
 		bool operator!=(const TypeSpecification &other) const;
 
-		std::ostream &operator<<(std::ostream &out);
+		std::ostream &operator<<(std::ostream &out) const;
 
 	private:
 		const std::vector<ItemMask> specification;
