@@ -71,6 +71,30 @@ namespace salmon::vm {
 		concrete_types(get_concrete_indices(types)),
 		is_concrete(spec_is_concrete(types)) { }
 
+	bool TypeSpecification::matches(const std::vector<std::shared_ptr<const Type>> &type_list) const {
+		if(type_list.size() != specification.size()) {
+			return false;
+		}
+		// Check to make sure the unspecified types match where they should:
+		for(const auto &[symb, indicies] : unspecified_types) {
+			std::shared_ptr<const Type> type = type_list[indicies[0]];
+
+			for(size_t index = 1; index < indicies.size(); index++) {
+				if(type != type_list[indicies[index]]) {
+					return false;
+				}
+			}
+		}
+		// Now check that the specified types match the given types:
+		for(size_t index : concrete_types) {
+			auto type = std::get_if<std::shared_ptr<const Type>>(&specification[index]);
+			if(*type != type_list[index]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	TypeInterface::~TypeInterface() {}
 
 	PrimitiveType::PrimitiveType(const vm_ptr<Symbol> &name, const std::string &documentation,
@@ -94,6 +118,14 @@ namespace salmon::vm {
 		std::ignore = type;
 		//TODO: throw exception, return this, etc.
 		return std::shared_ptr<const Type>();
+	}
+
+	bool PrimitiveType::operator==(const PrimitiveType &other) const {
+		return name == other.name;
+	}
+
+	bool PrimitiveType::operator!=(const PrimitiveType &other) const {
+		return !(*this == other);
 	}
 
 	bool TypeSpecification::concrete() const {
@@ -122,5 +154,13 @@ namespace salmon::vm {
 		return std::visit([types](auto &&arg) {
 			return arg.concretize(types);
 		}, type);
+	}
+
+	bool Type::operator==(const Type &other) const {
+		return type == other.type;
+	}
+
+	bool Type::operator!=(const Type &other) const {
+		return type != other.type;
 	}
 }

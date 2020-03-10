@@ -61,4 +61,81 @@ namespace salmon::vm {
 		}
 	}
 
+	SCENARIO("TypeSpecification objects match the correct type lists") {
+		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
+		Type::TypeVar variant = ptype;
+		Type::TypeVar v_i32 = p_i32;
+
+		std::shared_ptr<const Type> f32_type(new Type(variant));
+		std::shared_ptr<const Type> i32_type(new Type(v_i32));
+
+		using ItemMask = TypeSpecification::ItemMask;
+		ItemMask a_symb_variant = base_package.intern_symbol("a");
+		ItemMask b_symb_variant = base_package.intern_symbol("b");
+		ItemMask f32_type_variant = f32_type;
+
+		WHEN("A Specification is matched with a type list with a different number of elements") {
+			std::vector<ItemMask> mask = {b_symb_variant, a_symb_variant };
+			TypeSpecification spec(std::move(mask));
+
+			THEN("The list doesn't match") {
+				std::vector<std::shared_ptr<const Type>> lst;
+				REQUIRE(spec.matches(lst) == false);
+			}
+		}
+
+		GIVEN("The specification (A (Type float-32) A)") {
+			std::vector<ItemMask> mask = {a_symb_variant, f32_type_variant, a_symb_variant };
+			TypeSpecification spec(std::move(mask));
+
+			THEN("The type list (float-32 float-32 float-32) matches") {
+				std::vector<std::shared_ptr<const Type>> lst = {
+					f32_type, f32_type, f32_type
+				};
+				REQUIRE(spec.matches(lst) == true);
+			}
+
+			THEN("The type list (int-32 float-32 int-32) matches") {
+				std::vector<std::shared_ptr<const Type>> lst = {
+					i32_type, f32_type, i32_type
+				};
+				REQUIRE(spec.matches(lst) == true);
+			}
+
+			THEN("The type list (float-32 int-32 float-32) doesn't match.") {
+				std::vector<std::shared_ptr<const Type>> lst = {
+					f32_type, i32_type, f32_type
+				};
+				REQUIRE(spec.matches(lst) == false);
+			}
+
+			THEN("The type list (int-32 int-32 float-32) doesn't match.") {
+				std::vector<std::shared_ptr<const Type>> lst = {
+					i32_type, i32_type, f32_type
+				};
+				REQUIRE(spec.matches(lst) == false);
+			}
+		}
+
+		GIVEN("The specification (A B)") {
+			std::vector<ItemMask> mask = {a_symb_variant, b_symb_variant };
+			TypeSpecification spec(std::move(mask));
+
+			THEN("The type list (float-32 int-32) matches") {
+				std::vector<std::shared_ptr<const Type>> lst = {
+					f32_type, i32_type
+				};
+				REQUIRE(spec.matches(lst) == true);
+			}
+
+			THEN("The type list (float-32 float-32) matches") {
+				std::vector<std::shared_ptr<const Type>> lst = {
+					f32_type, f32_type
+				};
+				REQUIRE(spec.matches(lst) == true);
+			}
+		}
+	}
+
 }
