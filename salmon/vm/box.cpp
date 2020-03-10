@@ -1,7 +1,6 @@
 #include <iostream>
 
-#include <cassert>
-
+#include <util/assert.hpp>
 #include <vm/box.hpp>
 #include <vm/type.hpp>
 
@@ -23,21 +22,21 @@ namespace salmon::vm {
 	Box::Box(std::unordered_set<Box*> &table) :
 		instances{&table} {
 	    auto [pos, newly_added] = instances->insert(this);
-		assert(newly_added);
+		salmon_check(newly_added, "Box wasn't added to the box table");
 	}
 
 	Box::Box(const Box &other) :
 		InternalBox(other),
 		instances{other.instances}  {
-		assert(instances != nullptr);
+		salmon_check(instances != nullptr, "Box constructor expects a valid table");
 		auto [pos, newly_added] = instances->insert(this);
-		assert(newly_added);
+		salmon_check(newly_added, "Box wasn't added to the box table");
 	}
 
 	Box::~Box() {
-		assert(instances != nullptr);
+		salmon_check(instances != nullptr, "Box constructor should have a valid table");
 		auto pos = instances->find(this);
-		assert(pos != instances->end());
+		salmon_check(pos != instances->end(), "Deleted box isn't in the box table");
 		instances->erase(pos);
 	}
 

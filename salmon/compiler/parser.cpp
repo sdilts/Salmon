@@ -6,11 +6,11 @@
 #include <limits>
 #include <set>
 #include <list>
-#include <cassert>
 #include <iterator>
 #include <utility>
 #include <optional>
 
+#include <util/assert.hpp>
 #include <compiler/parser.hpp>
 #include <compiler/CountingStream.hpp>
 
@@ -235,14 +235,14 @@ namespace salmon::compiler {
 	}
 
 	static bool isKeyword(const std::string &symbol) {
-		assert(!symbol.empty());
+		salmon_check(!symbol.empty(), "Symbol isn't supposed to be empty");
 		return symbol[0] == ':';
 	}
 
 	static salmon::vm::Box parse_primitive(std::istream &input, Compiler &compiler) {
 
 		std::string chunk = read_atom(input);
-		assert(!chunk.empty());
+		salmon_check(!chunk.empty(), "Atom shouldn't be empty");
 
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
 		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
@@ -255,8 +255,8 @@ namespace salmon::compiler {
 				box.elem = std::stoi(chunk);
 				box.type = compiler.vm.int32_type();
 				break;
-			default:
-				assert(false);
+			case NumberType::NOT_A_NUM:
+				salmon_abort("Primitive type should always be a number");
 			}
 		} else if(isKeyword(chunk)) {
 			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
@@ -289,7 +289,7 @@ namespace salmon::compiler {
 			auto [result, cur_item] = read_next(input, compiler);
 			while(result != terminator) {
 				if(result == ReadResult::ITEM) {
-					assert(cur_item != std::nullopt);
+					salmon_check(cur_item != std::nullopt, "Unexpected std::nullopt");
 					items.push_back(*cur_item);
 				} else if(result == ReadResult::END) {
 					end_info = countStreamBuf->positionInfo();
@@ -397,7 +397,7 @@ namespace salmon::compiler {
 	std::optional<salmon::vm::Box> read(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer countStreamBuf(input.rdbuf());
 		std::istream inStream(&countStreamBuf);
-		assert(tracker_from_stream(inStream) == &countStreamBuf);
+		salmon_check(tracker_from_stream(inStream) == &countStreamBuf, "tracker_from_stream works");
 
 		const salmon::meta::position_info start_info = countStreamBuf.positionInfo();
 		salmon::meta::position_info end_info;

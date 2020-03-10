@@ -1,4 +1,4 @@
-#include <cassert>
+#include <util/assert.hpp>
 
 #include <vm/vm.hpp>
 
@@ -59,10 +59,11 @@ namespace salmon::vm {
 		_empty_type = *type_table.get_type(*base_pkg.find_symbol("empty"));
 		_const_str_type = *type_table.get_type(*base_pkg.find_symbol("const-string"));
 		_symbol_type = *type_table.get_type(*base_pkg.find_symbol("symbol"));
-		// TODO: use C++ assertions with exceptions
-		assert(_int32_type != nullptr && _float_type != nullptr && _list_type != nullptr
-		       && _dyn_array_type != nullptr && _const_str_type != nullptr
-		       && _symbol_type != nullptr && _empty_type != nullptr);
+
+		salmon_check(_int32_type != nullptr && _float_type != nullptr && _list_type != nullptr
+					 && _dyn_array_type != nullptr && _const_str_type != nullptr
+					 && _symbol_type != nullptr && _empty_type != nullptr,
+			"VM type initialization failed");
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {
