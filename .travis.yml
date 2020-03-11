@@ -1,5 +1,6 @@
 os:
   - linux
+  - osx
 
 language: cpp
 
@@ -11,15 +12,24 @@ services:
   - docker
 
 before_install:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew upgrade; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ninja; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then pip3 install meson; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker pull sdilts/fedora-meson; fi
+
+addons:
+  homebrew:
+    - packages:
+      - meson
+      - ninja
+      - python3
+      update: true
+ 
+matrix:
+  - exclude:
+    - os: osx
+      compiler: gcc
 
 script:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo FROM sdilts/fedora-meson > Dockerfile; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then echo ADD . /root >> Dockerfile; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker build -t withgit .; fi
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then docker run withgit /bin/sh -c "cd /root && TRAVIS=true CC=$CC CXX=$CXX meson builddir && ninja -C builddir test"; fi
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then SDKROOT=$(xcodebuild -version -sdk macosx Path) meson builddir && ninja -C builddir test; fi
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then meson builddir && ninja -C builddir test; fi
