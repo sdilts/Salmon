@@ -222,10 +222,17 @@ namespace salmon::compiler {
 	struct HexTable {
 		unsigned int tab[128];
 		constexpr HexTable() : tab {} {
-			tab['1'] = 1; tab['2'] = 2; tab['3'] = 3; tab['4'] = 4; tab['5'] = 5; tab['6'] = 6;
-			tab['7'] = 7; tab['8'] = 8; tab['9'] = 9; tab['a'] = 10; tab['A'] = 10;
-			tab['b'] = 11; tab['B'] = 11; tab['c'] = 12; tab['C'] = 12; tab['d'] = 13;
-			tab['D'] = 13; tab['e'] = 14; tab['E'] = 14; tab['f'] = 15; tab['F'] = 15;
+			tab[static_cast<int>('1')] = 1; tab[static_cast<int>('2')] = 2;
+			tab[static_cast<int>('3')] = 3; tab[static_cast<int>('4')] = 4;
+			tab[static_cast<int>('5')] = 5; tab[static_cast<int>('6')] = 6;
+			tab[static_cast<int>('7')] = 7; tab[static_cast<int>('8')] = 8;
+			tab[static_cast<int>('9')] = 9; tab[static_cast<int>('a')] = 10;
+			tab[static_cast<int>('A')] = 10; tab[static_cast<int>('b')] = 11;
+			tab[static_cast<int>('B')] = 11; tab[static_cast<int>('c')] = 12;
+			tab[static_cast<int>('C')] = 12; tab[static_cast<int>('d')] = 13;
+			tab[static_cast<int>('D')] = 13; tab[static_cast<int>('e')] = 14;
+			tab[static_cast<int>('E')] = 14; tab[static_cast<int>('f')] = 15;
+			tab[static_cast<int>('F')] = 15;
 		}
 		constexpr unsigned int operator[](char const idx) const {
 			return tab[static_cast<std::size_t>(idx)];
