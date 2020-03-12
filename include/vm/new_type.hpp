@@ -29,17 +29,7 @@ namespace salmon::vm {
 
 		//! checks to see if this specification can be synthesised
 		bool concrete() const;
-		// TODO: wrap return val with std::shared_ptr or a custom smart pointer
-		/**
-		 * Return a TypeSpecification with the unrealized types filled in.
-		 *
-		 * You can partially realize the specification by using std::nullopt where the type
-		 * isn't yet known.
-		 */
-		TypeSpecification *concretize(const std::vector<std::optional<Type*>> type);
 
-		bool operator>(const TypeSpecification &other) const;
-		bool operator<(const TypeSpecification &other) const;
 		bool operator==(const TypeSpecification &other) const;
 		bool operator!=(const TypeSpecification &other) const;
 
@@ -82,9 +72,6 @@ namespace salmon::vm {
 		virtual size_t size() const = 0;
 		//! Check if the type can be instantiated
 		virtual bool concrete() const = 0;
-		//! Return a type that can be instantiated
-		virtual std::shared_ptr<const Type>
-		concretize(const std::vector<std::optional<Type*>> type) const = 0;
 	};
 
 	struct PrimitiveType : TypeInterface {
@@ -99,7 +86,6 @@ namespace salmon::vm {
 
 		size_t size() const;
 		bool concrete() const;
-		std::shared_ptr<const Type> concretize(const std::vector<std::optional<Type*>> type) const;
 
 		bool operator==(const PrimitiveType &other) const;
 		bool operator!=(const PrimitiveType &other) const;
@@ -161,7 +147,6 @@ namespace salmon::vm {
 
 		size_t size() const;
 		bool concrete() const;
-		std::shared_ptr<const Type> concretize(const std::vector<std::optional<Type*>> type) const;
 
 		bool operator==(const Type &other) const;
 		bool operator!=(const Type &other) const;

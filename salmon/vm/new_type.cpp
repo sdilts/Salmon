@@ -113,13 +113,6 @@ namespace salmon::vm {
 		return true;
 	}
 
-	std::shared_ptr<const Type>
-	PrimitiveType::concretize(const std::vector<std::optional<Type*>> type) const {
-		std::ignore = type;
-		//TODO: throw exception, return this, etc.
-		return std::shared_ptr<const Type>();
-	}
-
 	bool PrimitiveType::operator==(const PrimitiveType &other) const {
 		return name == other.name;
 	}
@@ -146,13 +139,6 @@ namespace salmon::vm {
 	bool Type::concrete() const {
 		return std::visit([](auto &&arg) {
 			return arg.concrete();
-		}, type);
-	}
-
-	std::shared_ptr<const Type>
-	Type::concretize(const std::vector<std::optional<Type*>> types) const {
-		return std::visit([types](auto &&arg) {
-			return arg.concretize(types);
 		}, type);
 	}
 
