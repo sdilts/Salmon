@@ -4,11 +4,13 @@
 #include <iostream>
 #include <streambuf>
 #include <limits>
+#include <climits>
 #include <set>
 #include <list>
 #include <iterator>
 #include <utility>
 #include <optional>
+#include <algorithm>
 
 #include <util/assert.hpp>
 #include <compiler/parser.hpp>
@@ -217,6 +219,68 @@ namespace salmon::compiler {
 		}
 	}
 
+	struct HexTable {
+		unsigned int tab[128];
+		constexpr HexTable() : tab {} {
+			tab['1'] = 1; tab['2'] = 2; tab['3'] = 3; tab['4'] = 4; tab['5'] = 5; tab['6'] = 6;
+			tab['7'] = 7; tab['8'] = 8; tab['9'] = 9; tab['a'] = 10; tab['A'] = 10;
+			tab['b'] = 11; tab['B'] = 11; tab['c'] = 12; tab['C'] = 12; tab['d'] = 13;
+			tab['D'] = 13; tab['e'] = 14; tab['E'] = 14; tab['f'] = 15; tab['F'] = 15;
+		}
+		constexpr unsigned int operator[](char const idx) const {
+			return tab[static_cast<std::size_t>(idx)];
+		}
+	} constexpr table;
+
+	constexpr unsigned int hextoint(char number) {
+		return table[(std::size_t)number];
+	}
+
+	salmon::vm::Box read_hex_atom(std::istream &input, Compiler &compiler) {
+		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
+
+		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+
+		std::string chunk = read_atom(input);
+
+		if(chunk.empty()) {
+			throw ParseException("Reached EOF while parsing reader macro #x",
+			 					 start_info, countStreamBuf->positionInfo());
+		}
+
+		bool is_valid_hex = std::all_of(chunk.begin(), chunk.end(), [](const auto c) {
+			salmon_check(c != EOF, "Character in string is EOF char");
+			return std::isxdigit(static_cast<unsigned char>(c));
+		});
+		if(!is_valid_hex)  {
+			// TODO: implement error handling here.
+			std::cerr << "Invalid hex string: " << chunk << '\n';
+			std::cerr << "Implement error handling at " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(-1);
+		}
+
+		// FIXME: check if it needs more than 32 bytes and use the smallest possible type
+		if(chunk.size() > 8) {
+			// value is too big!
+			std::cerr << "Hex string is too big to fit into a 32 bit integer: #x" << chunk << '\n';
+			std::cerr << "Implement error handling at " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(-1);
+		}
+		uint32_t sum = 0;
+		for(const auto c : chunk) {
+		    uint32_t digit = table[static_cast<std::size_t>(c)];
+			sum <<= 4;
+			sum |= digit;
+		}
+		std::cout << "Hex string " << chunk << " = " << sum << "\n";
+
+		// TODO: add unsigned integers:
+		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
+		box.elem = static_cast<int32_t>(sum);
+		box.type = compiler.vm.int32_type();
+		return box;
+	}
+
 	static salmon::vm::Box reader_macro(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
@@ -228,6 +292,8 @@ namespace salmon::compiler {
 		switch(ch) {
 		case ':':
 			return read_uninterned_symbol(input, compiler);
+		case 'x':
+			return read_hex_atom(input, compiler);
 		default:
 			throw ParseException(build_unmatched_error_str("Unkown macro dispatch character: ", ch),
 								 start_info, countStreamBuf->positionInfo());
