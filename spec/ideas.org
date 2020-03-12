@@ -6,10 +6,12 @@
 ** Seamless C interop for simple memory usage
    + Support automatic collection of pointers to arbitray c objects
    + Support finalizers
-   + Don't support explicit malloc and free.
 ** Multi-value namespace
    Seperate namespaces for functions and variables
 ** Error handling
+   Static salmon: Sum types
+
+   Dynamic salmon:
    + Resumable execptions
    + inheretable exceptions
 ** Macros
