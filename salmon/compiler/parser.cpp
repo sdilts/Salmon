@@ -272,7 +272,6 @@ namespace salmon::compiler {
 			sum <<= 4;
 			sum |= digit;
 		}
-		std::cout << "Hex string " << chunk << " = " << sum << "\n";
 
 		// TODO: add unsigned integers:
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
