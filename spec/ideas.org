@@ -134,8 +134,10 @@
     (case <variable>
 	  (:is <value>
 	     <expressions>)
-	  (:else <value
-	     <expressions>))
+	  (:is {<value1> <value2>}
+	     <expressions>)
+	   (:else
+             <expressions>))
 
     (cond
        (<test1> <expressions>)
@@ -181,11 +183,10 @@
 ** Variable declarations
    #+BEGIN_EXAMPLE
      ;; specifying the type is optional
-     ;; unless an initial value is not set
-     ;; or the type isn't the default:
+     ;; unless the type isn't the default:
      (let ((a 10)
 	   (b 20 :long)
-	   (c :float))
+	   (c 0 :float))
        <expressions>)
 
      ;; bind a and b to the multiple values returned from a function:
@@ -199,6 +200,8 @@
      ;; same form for the variable's value as a let binding
      ;; here:
      (defglobal (a 10))
+     (defglobal (b 1 :float)
+                (c 10 :long))
    #+END_EXAMPLE
 ** Variable assignment
    #+BEGIN_EXAMPLE
