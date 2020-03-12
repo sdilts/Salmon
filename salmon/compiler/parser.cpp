@@ -289,11 +289,18 @@ namespace salmon::compiler {
 		input.get();
 
 		int ch = input.get();
+
 		switch(ch) {
 		case ':':
 			return read_uninterned_symbol(input, compiler);
 		case 'x':
 			return read_hex_atom(input, compiler);
+		case '\n':
+			throw ParseException("Reached EOF while parsing reader macro",
+								 start_info, countStreamBuf->positionInfo());
+		case EOF:
+			throw ParseException("Reached EOF while parsing reader macro",
+								 start_info, countStreamBuf->positionInfo());
 		default:
 			throw ParseException(build_unmatched_error_str("Unkown macro dispatch character: ", ch),
 								 start_info, countStreamBuf->positionInfo());
