@@ -138,6 +138,43 @@ namespace salmon::vm {
 		}
 	}
 
+	SCENARIO("When types match, they inferr the correct types") {
+		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
+		Type::TypeVar variant = ptype;
+		Type::TypeVar v_i32 = p_i32;
+
+		std::shared_ptr<const Type> f32_type(new Type(variant));
+		std::shared_ptr<const Type> i32_type(new Type(v_i32));
+
+		using ItemMask = TypeSpecification::ItemMask;
+		ItemMask a_symb_variant = base_package.intern_symbol("a");
+		ItemMask b_symb_variant = base_package.intern_symbol("b");
+		ItemMask f32_type_variant = f32_type;
+
+		GIVEN("The spec (A B) and the typelist [f32, i32]") {
+			std::vector<ItemMask> mask = {a_symb_variant, b_symb_variant };
+			TypeSpecification spec(std::move(mask));
+
+			WHEN("spec is matched with the type list") {
+				std::vector<std::shared_ptr<const Type>> lst = {
+					f32_type, i32_type
+				};
+				auto opt_table = spec.match_symbols(lst);
+				THEN("The types should match") {
+					REQUIRE(static_cast<bool>(opt_table));
+				}
+				auto symb_table = *opt_table;
+				THEN("A should match to f32") {
+					REQUIRE(symb_table[base_package.intern_symbol("a")] == f32_type);
+				}
+				THEN("B should match to i32") {
+					REQUIRE(symb_table[base_package.intern_symbol("b")] == i32_type);
+				}
+			}
+		}
+	}
+
 	SCENARIO("Type specification object equality functions work") {
 		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
 		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));

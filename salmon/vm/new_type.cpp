@@ -71,6 +71,33 @@ namespace salmon::vm {
 		concrete_types(get_concrete_indices(types)),
 		is_concrete(spec_is_concrete(types)) { }
 
+	std::optional<std::map<vm_ptr<Symbol>,std::shared_ptr<const Type>>>
+	TypeSpecification::match_symbols(const std::vector<std::shared_ptr<const Type>> &type_list) const {
+		if(type_list.size() != specification.size()) {
+			return std::nullopt;
+		}
+		std::map<vm_ptr<Symbol>,std::shared_ptr<const Type>> symb_table;
+		// Check to make sure the unspecified types match where they should:
+		for(const auto &[symb, indicies] : unspecified_types) {
+			std::shared_ptr<const Type> type = type_list[indicies[0]];
+
+			for(size_t index = 1; index < indicies.size(); index++) {
+				if(type != type_list[indicies[index]]) {
+					return std::nullopt;
+				}
+			}
+			symb_table.insert(std::make_pair(symb, std::move(type)));
+		}
+		// Now check that the specified types match the given types:
+		for(size_t index : concrete_types) {
+			auto type = std::get_if<std::shared_ptr<const Type>>(&specification[index]);
+			if(*type != type_list[index]) {
+				return std::nullopt;
+			}
+		}
+		return std::make_optional(symb_table);
+	}
+
 	bool TypeSpecification::matches(const std::vector<std::shared_ptr<const Type>> &type_list) const {
 		if(type_list.size() != specification.size()) {
 			return false;

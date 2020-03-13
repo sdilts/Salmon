@@ -14,6 +14,7 @@
 #include <vm/box.hpp>
 #include <vm/symbol.hpp>
 #include <vm/vm_ptr.hpp>
+#include <optional>
 
 namespace salmon::vm {
 
@@ -25,6 +26,10 @@ namespace salmon::vm {
 
 		//! Check if the given types conform to the specifictation
 		bool matches(const std::vector<std::shared_ptr<const Type>> &type_list) const;
+
+		std::optional<std::map<vm_ptr<Symbol>,std::shared_ptr<const Type>>>
+		match_symbols(const std::vector<std::shared_ptr<const Type>> &type_list) const;
+
 		std::string str() const;
 
 		//! checks to see if this specification can be synthesised
