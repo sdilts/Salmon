@@ -123,33 +123,6 @@ namespace salmon::vm {
 		TypeSpecification ret_spec;
 	};
 
-	// // TODO: Can the record types ProductType and SumType be merged/have a common interface?
-	// struct ProductType : TypeInterface {
-	// 	~ProductType();
-
-	// 	const vm_ptr<Symbol> name;
-	// 	std::string documentation;
-
-	// 	std::vector<FieldEntry> fields;
-
-	// 	size_t size() const;
-	// 	bool concrete() const;
-	// 	Type *concretize(const std::vector<st::optional<Type*>> type) const;
-	// };
-
-	// struct SumType : TypeInterface {
-	// 	~SumType();
-
-	// 	const vm_ptr<Symbol> name;
-	// 	std::string documentation;
-
-	// 	std::vector<FieldEntry> fields;
-
-	// 	size_t size() const;
-	// 	bool concrete() const;
-	// 	Type *concretize(const std::vector<st::optional<Type*>> type) const;
-	// };
-
 	struct Type {
 		using TypeVar = std::variant<PrimitiveType,
 						   // ProductType,
