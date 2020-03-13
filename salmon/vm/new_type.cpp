@@ -2,6 +2,7 @@
 
 #include <vm/symbol.hpp>
 #include <vm/new_type.hpp>
+#include <util/assert.hpp>
 
 namespace salmon::vm {
 
@@ -273,5 +274,34 @@ namespace salmon::vm {
 
 	bool Type::operator!=(const Type &other) const {
 		return type != other.type;
+	}
+
+	std::optional<TypePtr> TypeTable::get_named(const vm_ptr<Symbol> &name) {
+		auto place = named_types.find(name);
+		if(place == named_types.end()) {
+			return std::nullopt;
+		} else {
+			return std::get<TypePtr>(*place);
+		}
+	}
+
+	bool TypeTable::make_alias(const vm_ptr<Symbol> &alias, TypePtr &type) {
+		auto place = named_types.find(alias);
+		if(place != named_types.end()) {
+			return false;
+		}
+		named_types.insert({alias, type});
+		return true;
+	}
+
+	TypePtr
+	TypeTable::make_primitive(const vm_ptr<Symbol> &name, std::string &doc, std::size_t size) {
+		auto place = named_types.find(name);
+		salmon_check(place == named_types.end(),
+					 "We shouldn't be overwriting primitive types with `make_primitive`");
+		PrimitiveType tmp(name, doc,size);
+		auto type_ptr = std::make_shared<Type>(std::move(tmp));
+		named_types.insert({name, type_ptr});
+		return type_ptr;
 	}
 }

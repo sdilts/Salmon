@@ -167,38 +167,21 @@ namespace salmon::vm {
 		bool operator!=(const Type &other) const;
 	};
 	std::ostream &operator<<(std::ostream &out, const Type &type);
+	using TypePtr = std::shared_ptr<const Type>;
 
-	// class TypeTable {
-	// public:
-	// 	std::optional<Type*> get_named(const vm_ptr<Symbol> &name);
-	// 	Type *get_fn(std::vector<Type*> arg_types, std::vector<Type*> ret_types);
+	class TypeTable {
+	public:
+		std::optional<TypePtr> get_named(const vm_ptr<Symbol> &name);
+		// TypePtr get_fn(std::vector<TypePtr> arg_types, std::vector<TypePtr> ret_types);
 
-	// 	void make_alias(const vm_ptr<Symbol> &alias, Type *type);
+		bool make_alias(const vm_ptr<Symbol> &alias, TypePtr &type);
 
-	// 	Type *make_primitive(const vm_ptr<Symbol> &name);
-	// 	Type *make_primitive(const vm_ptr<Symbol> &name, std::optional<std::string> &doc);
+		TypePtr make_primitive(const vm_ptr<Symbol> &name, std::string &doc, std::size_t size);
 
-	// 	Type *make_sumtype(const vm_ptr<Symbol> &name, std::vector<FieldEntry> fields);
-	// 	Type *make_sumtype(const vm_ptr<Symbol> &name, std::vector<FieldEntry> fields,
-	// 					   std::optional<std::string> doc);
-
-	// 	Type *make_producttype(const vm_ptr<Symbol> &name, std::vector<FieldEntry> fields);
-	// 	Type *make_producttype(const vm_ptr<Symbol> &name, std::vector<FieldEntry> fields,
-	// 					   std::optional<std::string> doc);
-
-	// 	class FuncSpec {
-	// 		TypeSpecification args;
-	// 		TypeSpecification return_values;
-
-	// 		bool operator>(const FuncSpec &other);
-	// 		bool operator<(const FuncSpec &other);
-	// 		bool operator==(const TypeMask &other);
-	// 		bool operator!=(const TypeMask &other);
-	// 	};
-	// private:
-	// 	std::unordered_map<vm_ptr<Symbol>, Type> named_types;
-	// 	std::map<FuncSpec,FunctionType> functions;
-	// };
+	private:
+		std::unordered_map<vm_ptr<Symbol>, TypePtr> named_types;
+		std::map<FuncSpec,FunctionType> functions;
+	};
 }
 
 #endif
