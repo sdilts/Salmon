@@ -160,6 +160,68 @@ namespace salmon::vm {
 
 	TypeInterface::~TypeInterface() {}
 
+	FunctionType::FunctionType(const TypeSpecification &ret_spec, const TypeSpecification &arg_spec) :
+		arg_spec(arg_spec),
+		ret_spec(ret_spec) { }
+	FunctionType::FunctionType(const std::vector<TypeSpecification::ItemMask> &ret_types,
+							   const std::vector<TypeSpecification::ItemMask> &arg_types) :
+		arg_spec(arg_types),
+		ret_spec(ret_types) { }
+
+	FunctionType::~FunctionType() {}
+
+	bool
+	FunctionType::match(const std::vector<std::shared_ptr<const Type>> &type_list) const {
+		const std::vector<std::shared_ptr<const Type>> ret_list(type_list.begin(),
+																type_list.begin() + arg_spec.num_types());
+		const std::vector<std::shared_ptr<const Type>> arg_list(type_list.begin() + arg_spec.num_types(),
+																type_list.end());
+		auto arg_opt = arg_spec.match_symbols(arg_list);
+		if(!arg_opt) {
+			return false;
+		}
+		auto arg_matches = *arg_opt;
+		auto ret_opt = ret_spec.match_symbols(ret_list);
+		if(!ret_opt) {
+			return false;
+		}
+		auto ret_matches = *ret_opt;
+		// The ret unspecified types should be a subset of the argument types:
+		return std::all_of(ret_matches.begin(), ret_matches.end(),
+						   [&arg_matches](const auto &pair) {
+							   auto symb = std::get<0>(pair);
+							   const auto iter = arg_matches.find(symb);
+							   if(iter != arg_matches.end()) {
+								   return *iter == pair;
+							   } else return false;
+						   });
+	}
+
+	int FunctionType::arity() const {
+		return arg_spec.num_types();
+	}
+
+	size_t FunctionType::size() const {
+		// TODO: change to allow cross-compiling
+		return sizeof(void*);
+	}
+
+	bool FunctionType::concrete() const {
+		return arg_spec.concrete() && ret_spec.concrete();
+	}
+
+	bool FunctionType::operator==(const FunctionType &other) const {
+		bool arg_same = arg_spec == other.arg_spec;
+		if(arg_same) {
+			return ret_spec == other.ret_spec;
+		}
+		return false;
+	}
+
+	bool FunctionType::operator!=(const FunctionType &other) const {
+		return !(*this == other);
+	}
+
 	PrimitiveType::PrimitiveType(const vm_ptr<Symbol> &name, const std::string &documentation,
 								 const size_t size) :
 		name{name},

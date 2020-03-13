@@ -99,6 +99,30 @@ namespace salmon::vm {
 		bool operator!=(const PrimitiveType &other) const;
 	};
 
+	struct FunctionType : TypeInterface {
+		FunctionType(const TypeSpecification &ret_spec, const TypeSpecification &arg_spec);
+		FunctionType(const std::vector<TypeSpecification::ItemMask> &ret_types,
+					 const std::vector<TypeSpecification::ItemMask> &arg_types);
+		~FunctionType();
+
+		//! Return the arity of the function.
+		int arity() const;
+		//! Match the return types and the arguments. Order is return types, then args.
+		bool match(const std::vector<std::shared_ptr<const Type>> &type_list) const;
+		//! Just match the arguments
+		bool match_args(const std::vector<std::shared_ptr<const Type>> &type_list) const;
+
+
+		size_t size() const;
+		bool concrete() const;
+
+		bool operator==(const FunctionType &other) const;
+		bool operator!=(const FunctionType &other) const;
+	private:
+		TypeSpecification arg_spec;
+		TypeSpecification ret_spec;
+	};
+
 	// // TODO: Can the record types ProductType and SumType be merged/have a common interface?
 	// struct ProductType : TypeInterface {
 	// 	~ProductType();
@@ -126,28 +150,11 @@ namespace salmon::vm {
 	// 	Type *concretize(const std::vector<st::optional<Type*>> type) const;
 	// };
 
-	// struct FunctionType : TypeInterface {
-	// 	~FunctionType();
-
-	// 	std::vector<InstanceType> arg_types;
-	// 	std::vector<InstanceType> ret_types;
-
-	// 	/**
-	// 	 * Return the arity of the function.
-	// 	 **/
-	// 	int arity();
-
-	// 	size_t size() const;
-	// 	bool concrete() const;
-	// 	Type *concretize(const std::vector<std::optional<Type*>> type) const;
-	// };
-
 	struct Type {
-		using TypeVar = std::variant<PrimitiveType //,
+		using TypeVar = std::variant<PrimitiveType,
 						   // ProductType,
 						   // SumType,
-						   // FunctionType
-						   >;
+									 FunctionType>;
 
 		Type(const TypeVar &type);
 
