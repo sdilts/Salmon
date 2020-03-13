@@ -198,6 +198,11 @@ namespace salmon::vm {
 						   });
 	}
 
+	bool
+	FunctionType::match_args(const std::vector<std::shared_ptr<const Type>> &type_list) const {
+		return arg_spec.matches(type_list);
+	}
+
 	int FunctionType::arity() const {
 		return arg_spec.num_types();
 	}
