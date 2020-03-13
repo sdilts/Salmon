@@ -155,6 +155,46 @@ namespace salmon::vm {
 		return false;
 	}
 
+	bool TypeSpecification::operator>(const TypeSpecification &other) const {
+		if(specification.size() > other.specification.size()) {
+			return true;
+		}
+		auto this_iter = specification.begin();
+		auto other_iter = other.specification.begin();
+		while(this_iter != specification.end()) {
+			const auto &this_item = *this_iter;
+			const auto &other_item = *other_iter;
+			// TODO: use spaceship operator
+			if(this_item > other_item) {
+				return true;
+			} else if(this_item < other_item) {
+				return false;
+			}
+		}
+		// They are equal:
+		return false;
+	}
+
+	bool TypeSpecification::operator<(const TypeSpecification &other) const {
+		if(specification.size() < other.specification.size()) {
+			return true;
+		}
+		auto this_iter = specification.begin();
+		auto other_iter = other.specification.begin();
+		while(this_iter != specification.end()) {
+			const auto &this_item = *this_iter;
+			const auto &other_item = *other_iter;
+			// TODO: use spaceship operator
+			if(this_item < other_item) {
+				return true;
+			} else if(this_item > other_item) {
+				return false;
+			}
+		}
+		// They are equal:
+		return false;
+	}
+
 	bool TypeSpecification::operator!=(const TypeSpecification &other) const {
 		return !(*this == other);
 	}
@@ -228,6 +268,24 @@ namespace salmon::vm {
 		return !(*this == other);
 	}
 
+	bool FunctionType::operator<(const FunctionType &other) const {
+		bool arg_smaller = arg_spec < other.arg_spec;
+		if(arg_smaller) {
+			return true;
+		} else {
+			return ret_spec < other.ret_spec;
+		}
+	}
+
+	bool FunctionType::operator>(const FunctionType &other) const {
+		bool arg_bigger = arg_spec > other.arg_spec;
+		if(arg_bigger) {
+			return true;
+		} else {
+			return ret_spec > other.ret_spec;
+		}
+	}
+
 	PrimitiveType::PrimitiveType(const vm_ptr<Symbol> &name, const std::string &documentation,
 								 const size_t size) :
 		name{name},
@@ -250,6 +308,14 @@ namespace salmon::vm {
 
 	bool PrimitiveType::operator!=(const PrimitiveType &other) const {
 		return !(*this == other);
+	}
+
+	bool PrimitiveType::operator>(const PrimitiveType &other) const {
+		return *name > *other.name;
+	}
+
+	bool PrimitiveType::operator<(const PrimitiveType &other) const {
+		return *name < *other.name;
 	}
 
 	bool TypeSpecification::concrete() const {
@@ -279,6 +345,14 @@ namespace salmon::vm {
 
 	bool Type::operator!=(const Type &other) const {
 		return type != other.type;
+	}
+
+	bool Type::operator>(const Type &other) const {
+		return type > other.type;
+	}
+
+	bool Type::operator<(const Type &other) const {
+		return type < other.type;
 	}
 
 	std::optional<TypePtr> TypeTable::get_named(const vm_ptr<Symbol> &name) {

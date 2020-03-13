@@ -40,6 +40,8 @@ namespace salmon::vm {
 
 		bool operator==(const TypeSpecification &other) const;
 		bool operator!=(const TypeSpecification &other) const;
+		bool operator>(const TypeSpecification &other) const;
+		bool operator<(const TypeSpecification &other) const;
 
 		std::ostream &operator<<(std::ostream &out) const;
 
@@ -97,6 +99,8 @@ namespace salmon::vm {
 
 		bool operator==(const PrimitiveType &other) const;
 		bool operator!=(const PrimitiveType &other) const;
+		bool operator>(const PrimitiveType &other) const;
+		bool operator<(const PrimitiveType &other) const;
 	};
 
 	struct FunctionType : TypeInterface {
@@ -118,6 +122,9 @@ namespace salmon::vm {
 
 		bool operator==(const FunctionType &other) const;
 		bool operator!=(const FunctionType &other) const;
+		bool operator>(const FunctionType &other) const;
+		bool operator<(const FunctionType &other) const;
+
 	private:
 		TypeSpecification arg_spec;
 		TypeSpecification ret_spec;
@@ -138,6 +145,8 @@ namespace salmon::vm {
 
 		bool operator==(const Type &other) const;
 		bool operator!=(const Type &other) const;
+		bool operator>(const Type &other) const;
+		bool operator<(const Type &other) const;
 	};
 	std::ostream &operator<<(std::ostream &out, const Type &type);
 	using TypePtr = std::shared_ptr<const Type>;
