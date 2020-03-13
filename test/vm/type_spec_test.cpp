@@ -138,4 +138,42 @@ namespace salmon::vm {
 		}
 	}
 
+	SCENARIO("Type specification object equality functions work") {
+		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
+		Type::TypeVar variant = ptype;
+		Type::TypeVar v_i32 = p_i32;
+
+		std::shared_ptr<const Type> f32_type(new Type(variant));
+		std::shared_ptr<const Type> i32_type(new Type(v_i32));
+
+		using ItemMask = TypeSpecification::ItemMask;
+		ItemMask a_symb_variant = base_package.intern_symbol("a");
+		ItemMask b_symb_variant = base_package.intern_symbol("b");
+		ItemMask f32_type_variant = f32_type;
+
+		GIVEN("Two identical objects") {
+			std::vector<ItemMask> mask = {a_symb_variant, b_symb_variant };
+			TypeSpecification spec(std::move(mask));
+
+			mask = {a_symb_variant, b_symb_variant };
+			TypeSpecification other(std::move(mask));
+
+			THEN("They should be equal") {
+				REQUIRE(spec == other);
+			}
+		}
+
+		GIVEN("Two specs with different sizes") {
+			std::vector<ItemMask> mask = {a_symb_variant, b_symb_variant };
+			TypeSpecification spec(std::move(mask));
+
+			mask = {a_symb_variant };
+			TypeSpecification other(std::move(mask));
+
+			THEN("They should be equal") {
+				REQUIRE(spec != other);
+			}
+		}
+	}
 }

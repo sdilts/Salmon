@@ -95,6 +95,42 @@ namespace salmon::vm {
 		return true;
 	}
 
+	int TypeSpecification::num_types() const {
+		return specification.size();
+	}
+
+	bool TypeSpecification::operator==(const TypeSpecification &other) const {
+		if(specification.size() == other.specification.size()) {
+			auto this_iter = specification.begin();
+			auto other_iter = other.specification.begin();
+			while(this_iter != specification.end()) {
+				const auto &this_item = *this_iter;
+				const auto &other_item = *other_iter;
+				auto this_symb = std::get_if<vm_ptr<Symbol>>(&this_item);
+				auto other_symb = std::get_if<vm_ptr<Symbol>>(&other_item);
+				if(this_symb && other_symb) {
+					return **this_symb == **other_symb;
+				} else {
+					auto this_type = std::get_if<std::shared_ptr<const Type>>(&this_item);
+					auto other_type = std::get_if<std::shared_ptr<const Type>>(&other_item);
+					if(this_type && other_type) {
+						return **this_type == **other_type;
+					} else {
+						return false;
+					}
+				}
+				++this_iter;
+				++other_iter;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	bool TypeSpecification::operator!=(const TypeSpecification &other) const {
+		return !(*this == other);
+	}
+
 	TypeInterface::~TypeInterface() {}
 
 	PrimitiveType::PrimitiveType(const vm_ptr<Symbol> &name, const std::string &documentation,

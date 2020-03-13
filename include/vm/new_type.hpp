@@ -30,6 +30,9 @@ namespace salmon::vm {
 		//! checks to see if this specification can be synthesised
 		bool concrete() const;
 
+		//! Get the number of types:
+		int num_types() const;
+
 		bool operator==(const TypeSpecification &other) const;
 		bool operator!=(const TypeSpecification &other) const;
 
