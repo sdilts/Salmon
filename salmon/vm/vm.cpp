@@ -58,9 +58,8 @@ namespace salmon::vm {
 		_const_str_type = *type_table.get_named(*base_pkg.find_symbol("const-string"));
 		_symbol_type =    *type_table.get_named(*base_pkg.find_symbol("symbol"));
 		// TODO: use C++ assertions with exceptions
-		assert(_int32_type != nullptr && _float_type != nullptr && _list_type != nullptr
-		       && _dyn_array_type != nullptr && _const_str_type != nullptr
-		       && _symbol_type != nullptr && _empty_type != nullptr);
+		assert(_int32_type && _float_type && _list_type && _dyn_array_type
+			   && _const_str_type && _symbol_type && _empty_type);
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {
