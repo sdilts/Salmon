@@ -138,7 +138,7 @@ namespace salmon::vm {
 		}
 	}
 
-	SCENARIO("When types match, they inferr the correct types") {
+	SCENARIO("When types match, they infer the correct types") {
 		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
 		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
 		Type::TypeVar variant = ptype;
@@ -208,7 +208,7 @@ namespace salmon::vm {
 			mask = {a_symb_variant };
 			TypeSpecification other(std::move(mask));
 
-			THEN("They should be equal") {
+			THEN("They shouldn't be equal") {
 				REQUIRE(spec != other);
 			}
 		}
