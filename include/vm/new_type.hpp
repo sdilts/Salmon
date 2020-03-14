@@ -158,7 +158,7 @@ namespace salmon::vm {
 
 		bool make_alias(const vm_ptr<Symbol> &alias, TypePtr &type);
 
-		TypePtr make_primitive(const vm_ptr<Symbol> &name, std::string &doc, std::size_t size);
+		TypePtr make_primitive(const vm_ptr<Symbol> &name, const std::string &doc, std::size_t size);
 
 	private:
 		struct cmpUnderlyingType {

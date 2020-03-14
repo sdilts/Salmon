@@ -374,7 +374,7 @@ namespace salmon::vm {
 	}
 
 	TypePtr
-	TypeTable::make_primitive(const vm_ptr<Symbol> &name, std::string &doc, std::size_t size) {
+	TypeTable::make_primitive(const vm_ptr<Symbol> &name, const std::string &doc, std::size_t size) {
 		auto place = named_types.find(name);
 		salmon_check(place == named_types.end(),
 					 "We shouldn't be overwriting primitive types with `make_primitive`");
