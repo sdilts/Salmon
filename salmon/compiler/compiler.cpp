@@ -1,5 +1,5 @@
-#include <cassert>
 
+#include <util/assert.hpp>
 #include <compiler/compiler.hpp>
 
 namespace salmon::compiler {
@@ -7,7 +7,8 @@ namespace salmon::compiler {
 	static void create_default_packages(Compiler &compiler) {
         // add the default current package to the default vm package:
 		auto internal_pkg = compiler.vm.find_package("salmon");
-		assert(internal_pkg);
+		salmon_check(internal_pkg, "Default compiler package not found");
+
 		compiler.vm.packages.emplace(std::string("sal"),
 									 salmon::vm::Package("sal", compiler.vm.mem_manager,
 														 { *internal_pkg }));
@@ -23,11 +24,12 @@ namespace salmon::compiler {
 		create_default_packages(*this);
 		set_current_package("sal");
 		auto keyword_pkg = vm.find_package("keyword");
-		assert(keyword_pkg);
+
+		salmon_check(keyword_pkg, "Keyword package not initialized");
+
 		_keyword_package = &(*keyword_pkg).get();
 
-		// TODO: use C++ style assert with exceptions:
-		assert(_current_package != nullptr && _keyword_package != nullptr);
+		salmon_check(_current_package != nullptr, "Packages not initialized");
 	}
 
 	salmon::vm::Package *Compiler::current_package() {

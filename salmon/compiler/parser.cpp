@@ -4,13 +4,15 @@
 #include <iostream>
 #include <streambuf>
 #include <limits>
+#include <climits>
 #include <set>
 #include <list>
-#include <cassert>
 #include <iterator>
 #include <utility>
 #include <optional>
+#include <algorithm>
 
+#include <util/assert.hpp>
 #include <compiler/parser.hpp>
 #include <compiler/CountingStream.hpp>
 
@@ -217,6 +219,74 @@ namespace salmon::compiler {
 		}
 	}
 
+	struct HexTable {
+		unsigned int tab[128];
+		constexpr HexTable() : tab {} {
+			tab[static_cast<int>('1')] = 1; tab[static_cast<int>('2')] = 2;
+			tab[static_cast<int>('3')] = 3; tab[static_cast<int>('4')] = 4;
+			tab[static_cast<int>('5')] = 5; tab[static_cast<int>('6')] = 6;
+			tab[static_cast<int>('7')] = 7; tab[static_cast<int>('8')] = 8;
+			tab[static_cast<int>('9')] = 9; tab[static_cast<int>('a')] = 10;
+			tab[static_cast<int>('A')] = 10; tab[static_cast<int>('b')] = 11;
+			tab[static_cast<int>('B')] = 11; tab[static_cast<int>('c')] = 12;
+			tab[static_cast<int>('C')] = 12; tab[static_cast<int>('d')] = 13;
+			tab[static_cast<int>('D')] = 13; tab[static_cast<int>('e')] = 14;
+			tab[static_cast<int>('E')] = 14; tab[static_cast<int>('f')] = 15;
+			tab[static_cast<int>('F')] = 15;
+		}
+		constexpr unsigned int operator[](char const idx) const {
+			return tab[static_cast<std::size_t>(idx)];
+		}
+	} constexpr table;
+
+	constexpr unsigned int hextoint(char number) {
+		return table[(std::size_t)number];
+	}
+
+	salmon::vm::Box read_hex_atom(std::istream &input, Compiler &compiler) {
+		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
+
+		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+
+		std::string chunk = read_atom(input);
+
+		if(chunk.empty()) {
+			throw ParseException("Reached EOF while parsing reader macro #x",
+			 					 start_info, countStreamBuf->positionInfo());
+		}
+
+		bool is_valid_hex = std::all_of(chunk.begin(), chunk.end(), [](const auto c) {
+			salmon_check(c != EOF, "Character in string is EOF char");
+			return std::isxdigit(static_cast<unsigned char>(c));
+		});
+		if(!is_valid_hex)  {
+			// TODO: implement error handling here.
+			std::cerr << "Invalid hex string: " << chunk << '\n';
+			std::cerr << "Implement error handling at " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(-1);
+		}
+
+		// FIXME: check if it needs more than 32 bytes and use the smallest possible type
+		if(chunk.size() > 8) {
+			// value is too big!
+			std::cerr << "Hex string is too big to fit into a 32 bit integer: #x" << chunk << '\n';
+			std::cerr << "Implement error handling at " << __FILE__ << ":" << __LINE__ << std::endl;
+			exit(-1);
+		}
+		uint32_t sum = 0;
+		for(const auto c : chunk) {
+		    uint32_t digit = table[static_cast<std::size_t>(c)];
+			sum <<= 4;
+			sum |= digit;
+		}
+
+		// TODO: add unsigned integers:
+		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
+		box.elem = static_cast<int32_t>(sum);
+		box.type = compiler.vm.int32_type();
+		return box;
+	}
+
 	static salmon::vm::Box reader_macro(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
@@ -225,9 +295,18 @@ namespace salmon::compiler {
 		input.get();
 
 		int ch = input.get();
+
 		switch(ch) {
 		case ':':
 			return read_uninterned_symbol(input, compiler);
+		case 'x':
+			return read_hex_atom(input, compiler);
+		case '\n':
+			throw ParseException("Reached EOF while parsing reader macro",
+								 start_info, countStreamBuf->positionInfo());
+		case EOF:
+			throw ParseException("Reached EOF while parsing reader macro",
+								 start_info, countStreamBuf->positionInfo());
 		default:
 			throw ParseException(build_unmatched_error_str("Unkown macro dispatch character: ", ch),
 								 start_info, countStreamBuf->positionInfo());
@@ -235,14 +314,14 @@ namespace salmon::compiler {
 	}
 
 	static bool isKeyword(const std::string &symbol) {
-		assert(!symbol.empty());
+		salmon_check(!symbol.empty(), "Symbol isn't supposed to be empty");
 		return symbol[0] == ':';
 	}
 
 	static salmon::vm::Box parse_primitive(std::istream &input, Compiler &compiler) {
 
 		std::string chunk = read_atom(input);
-		assert(!chunk.empty());
+		salmon_check(!chunk.empty(), "Atom shouldn't be empty");
 
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
 		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
@@ -255,8 +334,8 @@ namespace salmon::compiler {
 				box.elem = std::stoi(chunk);
 				box.type = compiler.vm.int32_type();
 				break;
-			default:
-				assert(false);
+			case NumberType::NOT_A_NUM:
+				salmon_abort("Primitive type should always be a number");
 			}
 		} else if(isKeyword(chunk)) {
 			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
@@ -289,7 +368,7 @@ namespace salmon::compiler {
 			auto [result, cur_item] = read_next(input, compiler);
 			while(result != terminator) {
 				if(result == ReadResult::ITEM) {
-					assert(cur_item != std::nullopt);
+					salmon_check(cur_item != std::nullopt, "Unexpected std::nullopt");
 					items.push_back(*cur_item);
 				} else if(result == ReadResult::END) {
 					end_info = countStreamBuf->positionInfo();
@@ -397,7 +476,7 @@ namespace salmon::compiler {
 	std::optional<salmon::vm::Box> read(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer countStreamBuf(input.rdbuf());
 		std::istream inStream(&countStreamBuf);
-		assert(tracker_from_stream(inStream) == &countStreamBuf);
+		salmon_check(tracker_from_stream(inStream) == &countStreamBuf, "tracker_from_stream works");
 
 		const salmon::meta::position_info start_info = countStreamBuf.positionInfo();
 		salmon::meta::position_info end_info;
