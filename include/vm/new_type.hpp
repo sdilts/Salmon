@@ -153,16 +153,22 @@ namespace salmon::vm {
 
 	class TypeTable {
 	public:
-		// TypePtr get_fn(std::vector<TypePtr> arg_types, std::vector<TypePtr> ret_types);
 		std::optional<TypePtr> get_named(const vm_ptr<Symbol> &name) const;
+		TypePtr get_fn_type(const TypeSpecification &arg_types, const TypeSpecification &ret_types);
 
 		bool make_alias(const vm_ptr<Symbol> &alias, TypePtr &type);
 
 		TypePtr make_primitive(const vm_ptr<Symbol> &name, std::string &doc, std::size_t size);
 
 	private:
+		struct cmpUnderlyingType {
+			bool operator()(const std::shared_ptr<const Type>& a,
+							const std::shared_ptr<const Type>& b) const {
+				return *a < *b;
+			}
+		};
 		std::unordered_map<vm_ptr<Symbol>, TypePtr> named_types;
-		std::map<FuncSpec,FunctionType> functions;
+		std::set<TypePtr, cmpUnderlyingType> functions;
 	};
 }
 

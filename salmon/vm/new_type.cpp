@@ -383,4 +383,16 @@ namespace salmon::vm {
 		named_types.insert({name, type_ptr});
 		return type_ptr;
 	}
+
+	TypePtr
+	TypeTable::get_fn_type(const TypeSpecification &arg_types, const TypeSpecification &ret_types) {
+		FunctionType fn_t(ret_types, arg_types);
+		auto fn_ptr = std::make_shared<Type>(std::move(fn_t));
+		auto place = functions.lower_bound(fn_ptr);
+		if(place == functions.end() || (*place) != fn_ptr) {
+			functions.insert(place, fn_ptr);
+			return fn_ptr;
+		}
+		return *place;
+	}
 }
