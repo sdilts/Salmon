@@ -20,7 +20,6 @@ lib_compiler = static_library(
     'vm/symbol.cpp',
     'vm/type.cpp',
     'vm/vm.cpp',
-    'vm/new_type.cpp',
   ),
   include_directories: salmon_inc,
   dependencies: compiler_deps,

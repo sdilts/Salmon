@@ -28,13 +28,13 @@ namespace salmon::vm {
 
 		// These will be used often enough that it is worth it to be able to access them
 		// with a single method call.
-		Type *int32_type();
-		Type *float_type();
-		Type *symbol_type();
-		Type *list_type();
-		Type *dyn_array_type();
-		Type *empty_type();
-		Type *const_str_type();
+		TypePtr int32_type();
+		TypePtr float_type();
+		TypePtr symbol_type();
+		TypePtr list_type();
+		TypePtr dyn_array_type();
+		TypePtr empty_type();
+		TypePtr const_str_type();
 
 		MemoryManager mem_manager;
 		TypeTable type_table;
@@ -47,13 +47,13 @@ namespace salmon::vm {
 		// and we want to avoid instanceof usage, so use a different table.
 		// std::map<vm_ptr<Symbol>, InterfaceFunction> interface_table;
 
-		Type *_int32_type;
-		Type *_float_type;
-		Type *_symbol_type;
-		Type *_list_type;
-		Type *_dyn_array_type;
-		Type *_empty_type;
-		Type *_const_str_type;
+		TypePtr _int32_type;
+		TypePtr _float_type;
+		TypePtr _symbol_type;
+		TypePtr _list_type;
+		TypePtr _dyn_array_type;
+		TypePtr _empty_type;
+		TypePtr _const_str_type;
 	};
 }
 

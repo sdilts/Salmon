@@ -2,7 +2,7 @@
 
 #include <vm/memory.hpp>
 #include <vm/package.hpp>
-#include <vm/new_type.hpp>
+#include <vm/type.hpp>
 
 namespace salmon::vm {
 

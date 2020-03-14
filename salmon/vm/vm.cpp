@@ -23,23 +23,21 @@ namespace salmon::vm {
 		base_package.export_symbol(bool_symb);
 		base_package.export_symbol(empty_symb);
 
-		Type str =  { str_symb,  {}, "Constant string type used by the vm" };
-		Type list = { list_symb, {}, "Linked list used by the vm" };
-		Type dyn_arr = { dyn_arr_symb, {}, "Dynamic array used by the vm" };
-		Type int_type =    {int_symb, {}, "32 bit integer" };
-		Type double_type = {double_symb, {}, "32 bit floating point"};
-		Type symbol_type = {symb_symb, {}, "Symbol"};
-		Type bool_type = {bool_symb, {}, "True or false type"};
-		Type empty_type = {empty_symb, {}, "Type representing an object containing nothing."};
-
-		t_table.insert(str);
-		t_table.insert(list);
-		t_table.insert(dyn_arr);
-		t_table.insert(int_type);
-		t_table.insert(double_type);
-		t_table.insert(symbol_type);
-		t_table.insert(bool_type);
-		t_table.insert(empty_type);
+		TypePtr str =  t_table.make_primitive(str_symb, "Constant string type used by the vm",
+											  sizeof(vm_ptr<Symbol>));
+		TypePtr list = t_table.make_primitive(list_symb, "Linked list used by the vm",
+											  sizeof(vm_ptr<Symbol>));
+		TypePtr dyn_arr = t_table.make_primitive(dyn_arr_symb, "Dynamic array used by the vm",
+												 sizeof(vm_ptr<Symbol>));
+		TypePtr int_type = t_table.make_primitive(int_symb,"32 bit integer", sizeof(vm_ptr<Symbol>));
+		TypePtr double_type = t_table.make_primitive(double_symb, "32 bit floating point",
+													 sizeof(vm_ptr<Symbol>));
+		TypePtr symbol_type = t_table.make_primitive(symb_symb, "Symbol",
+													 sizeof(vm_ptr<Symbol>));
+		TypePtr bool_type = t_table.make_primitive(bool_symb, "True or false type",
+												   sizeof(vm_ptr<Symbol>));
+		TypePtr empty_type = t_table.make_primitive(empty_symb, "Type representing the empty object.",
+													sizeof(vm_ptr<Symbol>));
 	}
 
 	VirtualMachine::VirtualMachine(const Config &config, const std::string &base_package) :
@@ -52,13 +50,13 @@ namespace salmon::vm {
 		Package &base_pkg = packages.find(base_package)->second;
 	    init_types(base_pkg, type_table);
 
-		_int32_type = *type_table.get_type(*base_pkg.find_symbol("int-32"));
-		_float_type = *type_table.get_type(*base_pkg.find_symbol("float-32"));
-		_list_type = *type_table.get_type(*base_pkg.find_symbol("list"));
-		_dyn_array_type = *type_table.get_type(*base_pkg.find_symbol("dyn-array"));
-		_empty_type = *type_table.get_type(*base_pkg.find_symbol("empty"));
-		_const_str_type = *type_table.get_type(*base_pkg.find_symbol("const-string"));
-		_symbol_type = *type_table.get_type(*base_pkg.find_symbol("symbol"));
+		_int32_type =     *type_table.get_named(*base_pkg.find_symbol("int-32"));
+		_float_type =     *type_table.get_named(*base_pkg.find_symbol("float-32"));
+		_list_type =      *type_table.get_named(*base_pkg.find_symbol("list"));
+		_dyn_array_type = *type_table.get_named(*base_pkg.find_symbol("dyn-array"));
+		_empty_type =     *type_table.get_named(*base_pkg.find_symbol("empty"));
+		_const_str_type = *type_table.get_named(*base_pkg.find_symbol("const-string"));
+		_symbol_type =    *type_table.get_named(*base_pkg.find_symbol("symbol"));
 		// TODO: use C++ assertions with exceptions
 		assert(_int32_type != nullptr && _float_type != nullptr && _list_type != nullptr
 		       && _dyn_array_type != nullptr && _const_str_type != nullptr
@@ -77,32 +75,31 @@ namespace salmon::vm {
 		return find_package((*name).name);
 	}
 
-	Type *VirtualMachine::int32_type() {
+	TypePtr VirtualMachine::int32_type() {
 		return _int32_type;
 	}
 
-	Type *VirtualMachine::float_type() {
+	TypePtr VirtualMachine::float_type() {
 		return _float_type;
 	}
 
-	Type *VirtualMachine::symbol_type() {
+	TypePtr VirtualMachine::symbol_type() {
 		return _symbol_type;
 	}
 
-	Type *VirtualMachine::empty_type() {
+	TypePtr VirtualMachine::empty_type() {
 		return _empty_type;
 	}
 
-	Type *VirtualMachine::list_type() {
+	TypePtr VirtualMachine::list_type() {
 		return _list_type;
 	}
 
-  Type *VirtualMachine::dyn_array_type() {
-    return _dyn_array_type;
-  }
-
-	Type *VirtualMachine::const_str_type() {
-		return _const_str_type;
+	TypePtr VirtualMachine::dyn_array_type() {
+		return _dyn_array_type;
 	}
 
+	TypePtr VirtualMachine::const_str_type() {
+		return _const_str_type;
+	}
 }
