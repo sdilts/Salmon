@@ -9,6 +9,7 @@
 #include <vm/symbol.hpp>
 #include <vm/string.hpp>
 #include <vm/empty.hpp>
+#include <vm/type.hpp>
 
 namespace salmon::vm {
 
@@ -16,7 +17,7 @@ namespace salmon::vm {
 	struct Array;
 
 	struct InternalBox {
-		struct Type *type;
+		TypePtr type;
 		std::variant<int32_t,
 					 float,
 					 bool,
