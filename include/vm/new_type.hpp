@@ -153,8 +153,8 @@ namespace salmon::vm {
 
 	class TypeTable {
 	public:
-		std::optional<TypePtr> get_named(const vm_ptr<Symbol> &name);
 		// TypePtr get_fn(std::vector<TypePtr> arg_types, std::vector<TypePtr> ret_types);
+		std::optional<TypePtr> get_named(const vm_ptr<Symbol> &name) const;
 
 		bool make_alias(const vm_ptr<Symbol> &alias, TypePtr &type);
 

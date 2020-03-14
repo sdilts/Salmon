@@ -355,7 +355,7 @@ namespace salmon::vm {
 		return type < other.type;
 	}
 
-	std::optional<TypePtr> TypeTable::get_named(const vm_ptr<Symbol> &name) {
+	std::optional<TypePtr> TypeTable::get_named(const vm_ptr<Symbol> &name) const {
 		auto place = named_types.find(name);
 		if(place == named_types.end()) {
 			return std::nullopt;
