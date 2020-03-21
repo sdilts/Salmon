@@ -30,8 +30,10 @@ namespace salmon::compiler {
 		std::optional<std::filesystem::path> source_file;
 	};
 
+	//! Read a single form from the input stream.
 	std::optional<salmon::vm::Box> read(std::istream &input, Compiler &compiler);
 
+	//! Read a single form from the string
 	std::optional<salmon::vm::Box> read_from_string(const std::string& input, Compiler &compiler);
 
 }
