@@ -44,7 +44,7 @@ namespace salmon::vm {
 
 		auto interned_result = interned.lower_bound(name);
 		if(interned_result == interned.end() || (*interned_result).second->name != name) {
-			vm_ptr<Symbol> new_symb = mem_manager.make_symbol(name);
+			vm_ptr<Symbol> new_symb = mem_manager.allocate_obj<Symbol>(name);
 			new_symb->package = std::make_optional(this);
 			auto final_place = interned.insert(interned_result, {name, std::move(new_symb)});
 			assert((*final_place).second->name == name);

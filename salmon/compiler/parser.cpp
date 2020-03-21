@@ -146,7 +146,7 @@ namespace salmon::compiler {
 
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
 		box.type = compiler.vm.const_str_type();
-		box.elem = &*compiler.vm.mem_manager.make_static_string(token.str());
+		box.elem = &*compiler.vm.mem_manager.allocate_obj<vm::StaticString>(token.str());
 
 		return box;
 	}
@@ -211,8 +211,8 @@ namespace salmon::compiler {
 			throw ParseException("Encountered package prefix or keyword while parsing reader macro #:",
 								 start_info, countStreamBuf->positionInfo());
 		} else {
-			salmon::vm::Box box = compiler.vm.mem_manager.make_box();
-			salmon::vm::vm_ptr<salmon::vm::Symbol> tmp_symb = compiler.vm.mem_manager.make_symbol(chunk);
+			vm::Box box = compiler.vm.mem_manager.make_box();
+			vm::vm_ptr<vm::Symbol> tmp_symb = compiler.vm.mem_manager.allocate_obj<vm::Symbol>(chunk);
 			box.type = compiler.vm.symbol_type();
 			box.elem = &*tmp_symb;
 			return box;
@@ -391,11 +391,11 @@ namespace salmon::compiler {
 		std::list<salmon::vm::Box> collected_items = collect_list(input, ReadResult::R_PAREN, compiler);
 		if (!collected_items.empty()) {
 			vm::Box first = collected_items.front();
-			vm::vm_ptr<vm::List> head = compiler.vm.mem_manager.make_list(first);
+			vm::vm_ptr<vm::List> head = compiler.vm.mem_manager.allocate_obj<vm::List>(first);
 			collected_items.pop_front();
 			vm::vm_ptr<vm::List> tail = head;
 			for(salmon::vm::Box &box : collected_items) {
-				vm::vm_ptr<vm::List> next = compiler.vm.mem_manager.make_list(box);
+				vm::vm_ptr<vm::List> next = compiler.vm.mem_manager.allocate_obj<vm::List>(box);
 				tail->next = &*next;
 				tail = next;
 			}
@@ -414,7 +414,7 @@ namespace salmon::compiler {
 
 	static salmon::vm::Box read_array(std::istream &input, Compiler &compiler) {
 		std::list<salmon::vm::Box> collected_items = collect_list(input, ReadResult::R_BRACKET, compiler);
-		vm::vm_ptr<vm::Array> array = compiler.vm.mem_manager.make_array(collected_items.size());
+		vm::vm_ptr<vm::Array> array = compiler.vm.mem_manager.allocate_obj<vm::Array>(collected_items.size());
 		for(salmon::vm::Box &box : collected_items) {
 			array->items.push_back(box);
 		}

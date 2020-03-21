@@ -14,9 +14,9 @@ namespace salmon::vm {
 
 	MemoryManager manager;
 
-	auto func_name = manager.make_symbol("foo");
-	auto arg1 = manager.make_symbol("arg1");
-	auto arg2 = manager.make_symbol("arg2");
+	auto func_name = manager.allocate_obj<Symbol>("foo");
+	auto arg1 = manager.allocate_obj<Symbol>("arg1");
+	auto arg2 = manager.allocate_obj<Symbol>("arg2");
 
 	BuiltinFunction<Box&,Box&> func({arg1, arg2}, std::nullopt, std::nullopt, foo);
 

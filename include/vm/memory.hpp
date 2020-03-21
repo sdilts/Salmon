@@ -22,10 +22,15 @@ namespace salmon::vm {
 		MemoryManager(const Package&) = delete;
 
 		Box make_box();
-		vm_ptr<Symbol> make_symbol(const std::string &name);
-		vm_ptr<StaticString> make_static_string(const std::string &str);
-		vm_ptr<List> make_list(Box &itm);
-		vm_ptr<Array> make_array(int32_t size);
+
+		template<typename T, typename ... ConstructorArgs>
+		vm_ptr<T> allocate_obj(ConstructorArgs... args) {
+			T *chunk = new T(args...);
+			total_allocated += sizeof(T);
+			this->allocated.insert(chunk);
+			vm_ptr<T> thing(chunk, roots);
+			return thing;
+		}
 
 		void do_gc();
 	private:

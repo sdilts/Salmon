@@ -20,38 +20,6 @@ namespace salmon::vm {
 		return box;
 	}
 
-	vm_ptr<Symbol> MemoryManager::make_symbol(const std::string &name) {
-		Symbol *chunk = new Symbol(name, std::nullopt);
-		total_allocated += sizeof(Symbol);
-		this->allocated.insert(chunk);
-		vm_ptr<Symbol> symb(chunk, roots);
-		return symb;
-	}
-
-	vm_ptr<List> MemoryManager::make_list(Box &itm) {
-		List *chunk = new List(itm);
-		total_allocated += sizeof(List);
-		this->allocated.insert(chunk);
-		vm_ptr<List> list(chunk, roots);
-		return list;
-	}
-
-	vm_ptr<Array> MemoryManager::make_array(int32_t size) {
-		Array *chunk = new Array(size);
-		total_allocated += sizeof(Array);
-		this->allocated.insert(chunk);
-		vm_ptr<Array> arr(chunk, roots);
-		return arr;
-	}
-
-	vm_ptr<StaticString> MemoryManager::make_static_string(const std::string &str) {
-		StaticString *chunk = new StaticString(str);
-		total_allocated += sizeof(StaticString);
-		this->allocated.insert(chunk);
-		vm_ptr<StaticString> string(chunk, roots);
-		return string;
-	}
-
 	static bool set_contains(const std::unordered_set<AllocatedItem*> &set, AllocatedItem* item) {
 		auto itr = set.find(item);
 		return itr != set.end();
