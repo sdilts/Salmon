@@ -14,6 +14,9 @@ namespace salmon::vm {
 
 	}
 
+	Symbol::Symbol(const std::string &name) :
+		name{name}, package{std::nullopt} {}
+
 	Symbol::~Symbol() { }
 
 	void Symbol::print_debug_info() const {
