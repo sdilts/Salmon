@@ -96,6 +96,20 @@ namespace salmon::vm {
 			return *this;
 		}
 
+		vm_ptr& operator=(std::nullptr_t)  {
+			// Maybe just call the destructor?
+			// This is copied from that
+			if(ptr) {
+				auto pos = instances->find(ptr);
+				pos->second -= 1;
+				if(pos->second == 0) {
+					instances->erase(pos);
+				}
+				ptr = nullptr;
+			}
+			return *this;
+		}
+
 		T* get() const {
 			return ptr;
 		}
