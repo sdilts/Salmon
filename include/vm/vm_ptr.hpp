@@ -88,9 +88,9 @@ namespace salmon::vm {
 			return *this;
 		}
 
-		vm_ptr& operator=(T* newPtr)  {
+		vm_ptr& operator=(T *newPtr)  {
 			if(ptr != newPtr) {
-				vm_ptr tmp(newPtr);
+				vm_ptr tmp(newPtr, std::ref(*instances));
 				tmp.swap(*this);
 			}
 			return *this;
