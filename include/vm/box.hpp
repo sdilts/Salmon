@@ -40,6 +40,7 @@ namespace salmon::vm {
 
 		template<typename T>
 		void set_value(T *value) {
+			static_assert(std::is_base_of<AllocatedItem, T>::value);
 			elem = value;
 			smart_ptr = value;
 		}
