@@ -16,7 +16,7 @@ namespace salmon::vm {
 	}
 
 	Box MemoryManager::make_box() {
-		Box box(box_roots);
+		Box box(roots);
 		return box;
 	}
 
@@ -57,16 +57,6 @@ namespace salmon::vm {
 			// each root is guaranteed to be unique, so no need to check if it has
 			// already been marked.
 		    check_item(root, to_check, marked);
-		}
-
-		for(Box *box : box_roots) {
-			std::vector<AllocatedItem*> children = box->get_roots();
-			for(AllocatedItem *child : children) {
-				// ensure that marked union to_check = ()
-				if(!set_contains(marked, child)) {
-					to_check.insert(child);
-				}
-			}
 		}
 
 		while (!to_check.empty()) {

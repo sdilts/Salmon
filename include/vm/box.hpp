@@ -31,15 +31,27 @@ namespace salmon::vm {
 
 	struct Box : public InternalBox {
 
-		Box(std::unordered_set<Box*> &table);
-		Box(const Box&);
+		Box(std::unordered_map<AllocatedItem*,unsigned int> &table);
+		Box(const Box&) = default;
+		Box(Box &&) = default;
 		Box() = delete;
-		~Box();
 
-		Box &operator=(const Box &);
+		Box &operator=(const Box &) = default;
+
+		template<typename T>
+		void set_value(T *value) {
+			elem = value;
+			smart_ptr = value;
+		}
+
+		template<typename T>
+		void set_value(T value) {
+			elem = value;
+			smart_ptr = nullptr;
+		}
 
 	private:
-		std::unordered_set<Box*> *instances;
+		vm_ptr<AllocatedItem> smart_ptr;
 	};
 
 	struct Array : public AllocatedItem {
