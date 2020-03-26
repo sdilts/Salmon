@@ -2,7 +2,6 @@
 
 #include <vm/function.hpp>
 
-
 namespace salmon::vm {
 
 	ArityException ArityException::build(const std::vector<vm_ptr<Symbol>> &lambda_list,
