@@ -22,6 +22,8 @@ namespace salmon::vm {
 
 	public:
 
+		template<typename> friend class vm_ptr;
+
 		explicit vm_ptr(T *thing, std::unordered_map<AllocatedItem*, unsigned int> &table) :
 		    instances{&table},
 			ptr(thing) {
@@ -37,6 +39,18 @@ namespace salmon::vm {
 		vm_ptr(const vm_ptr<T>& other) :
 			instances{other.instances},
 			ptr(other.ptr) {
+			// Unless we point to something, don't do anything:
+			if(ptr) {
+				auto pos = instances->find(ptr);
+				pos->second += 1;
+			}
+		}
+
+		template<typename Other>
+		vm_ptr(const vm_ptr<Other> other) :
+			instances{other.instances},
+			ptr(static_cast<T*>(other.get())) {
+			static_assert(std::is_base_of<T, Other>::value);
 			// Unless we point to something, don't do anything:
 			if(ptr) {
 				auto pos = instances->find(ptr);
