@@ -1,13 +1,9 @@
 #include <vector>
 #include <algorithm>
-
-#include <assert.h>
-#include <algorithm>
 #include <iostream>
 
 #include <vm/vm_ptr.hpp>
 #include <vm/memory.hpp>
-
 
 namespace salmon::vm {
 

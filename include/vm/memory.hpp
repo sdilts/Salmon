@@ -7,8 +7,6 @@
 
 #include <vm/allocateditem.hpp>
 #include <vm/vm_ptr.hpp>
-#include <vm/box.hpp>
-#include <vm/symbol.hpp>
 
 namespace salmon::vm {
 
