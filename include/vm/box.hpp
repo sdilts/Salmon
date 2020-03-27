@@ -40,13 +40,6 @@ namespace salmon::vm {
 		Box &operator=(const Box &) = default;
 
 		template<typename T>
-		void set_value(T *value) {
-			static_assert(std::is_base_of<AllocatedItem, T>::value);
-			elem = value;
-			smart_ptr = value;
-		}
-
-		template<typename T>
 		void set_value(const vm_ptr<T> &value) {
 			elem = &*value;
 			smart_ptr = &*value;
