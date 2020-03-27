@@ -10,7 +10,7 @@ namespace salmon::vm {
 		return std::visit([](auto &&arg) {
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr (std::is_pointer<T>::value) {
-				std::vector<AllocatedItem*> set = { dynamic_cast<AllocatedItem*>(arg) };
+				std::vector<AllocatedItem*> set = { arg };
 				return set;
 			} else {
 				static_assert(!std::is_pointer<T>::value);
