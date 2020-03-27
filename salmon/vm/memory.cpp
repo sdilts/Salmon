@@ -13,6 +13,7 @@ namespace salmon::vm {
 
 	MemoryManager::~MemoryManager() {
 		do_gc();
+		do_gc();
 	}
 
 	Box MemoryManager::make_box() {
