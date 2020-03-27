@@ -16,16 +16,17 @@ namespace salmon::vm {
 	struct List;
 	struct Array;
 
+	using BoxVariant = std::variant<int32_t,
+									float,
+									bool,
+									Empty,
+									Symbol*,
+									List*,
+									StaticString*>;
+
 	struct InternalBox {
 		TypePtr type;
-		std::variant<int32_t,
-					 float,
-					 bool,
-					 Empty,
-					 Symbol*,
-					 List*,
-					 StaticString*>
-					 elem;
+		BoxVariant elem;
 		std::vector<AllocatedItem*> get_roots() const;
 	};
 
