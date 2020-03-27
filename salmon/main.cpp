@@ -14,7 +14,6 @@
 #include <salmon/config.hpp>
 #include <compiler/compiler.hpp>
 
-
 static salmon::Config get_config() {
 	return {
 		0, salmon::get_cache_dir(), salmon::get_config_dir(), salmon::get_data_dir()

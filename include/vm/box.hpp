@@ -32,7 +32,13 @@ namespace salmon::vm {
 
 	struct Box : public InternalBox {
 
-		Box(std::unordered_map<AllocatedItem*,unsigned int> &table);
+		template<typename T>
+		Box(const vm_ptr<T> &elem_ptr) :
+			smart_ptr{elem_ptr} {
+			if(elem_ptr) {
+				elem = elem_ptr.get();
+			}
+		}
 		Box(const Box&) = default;
 		Box(Box &&) = default;
 		Box() = delete;
@@ -41,7 +47,7 @@ namespace salmon::vm {
 
 		template<typename T>
 		void set_value(const vm_ptr<T> &value) {
-			elem = &*value;
+			elem = value.get();
 			smart_ptr = &*value;
 		}
 

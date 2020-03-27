@@ -144,10 +144,9 @@ namespace salmon::compiler {
 
 	end:
 
-		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
-		box.type = compiler.vm.const_str_type();
 		auto str = compiler.vm.mem_manager.allocate_obj<vm::StaticString>(token.str());
-		box.set_value(std::move(str));
+		vm::Box box(str);
+		box.type = compiler.vm.const_str_type();
 
 		return box;
 	}
@@ -212,10 +211,9 @@ namespace salmon::compiler {
 			throw ParseException("Encountered package prefix or keyword while parsing reader macro #:",
 								 start_info, countStreamBuf->positionInfo());
 		} else {
-			vm::Box box = compiler.vm.mem_manager.make_box();
 			vm::vm_ptr<vm::Symbol> tmp_symb = compiler.vm.mem_manager.allocate_obj<vm::Symbol>(chunk);
+			vm::Box box(tmp_symb);
 			box.type = compiler.vm.symbol_type();
-			box.set_value(std::move(tmp_symb));
 			return box;
 		}
 	}
@@ -282,7 +280,7 @@ namespace salmon::compiler {
 		}
 
 		// TODO: add unsigned integers:
-		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
+		vm::Box box(compiler.vm.mem_manager.make_vm_ptr<vm::AllocatedItem>());
 		box.set_value(static_cast<int32_t>(sum));
 		box.type = compiler.vm.int32_type();
 		return box;
@@ -324,7 +322,7 @@ namespace salmon::compiler {
 		std::string chunk = read_atom(input);
 		salmon_check(!chunk.empty(), "Atom shouldn't be empty");
 
-		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
+		salmon::vm::Box box(compiler.vm.mem_manager.make_vm_ptr<vm::AllocatedItem>());
 		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
 			switch(type) {
 			case NumberType::FLOAT:
@@ -340,11 +338,11 @@ namespace salmon::compiler {
 			}
 		} else if(isKeyword(chunk)) {
 			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
-			box.set_value(std::move(symb));
+			box.set_value(symb);
 			box.type = compiler.vm.symbol_type();
 		} else {
 			auto symb = compiler.current_package()->intern_symbol(chunk);
-			box.set_value(std::move(symb));
+			box.set_value(symb);
 			box.type = compiler.vm.symbol_type();
 		}
 
@@ -400,12 +398,11 @@ namespace salmon::compiler {
 				tail->next = &*next;
 				tail = next;
 			}
-			vm::Box box = compiler.vm.mem_manager.make_box();
-			box.set_value(std::move(head));
+			vm::Box box(head);
 			box.type = compiler.vm.list_type();
 			return box;
 		} else {
-			vm::Box box = compiler.vm.mem_manager.make_box();
+			vm::Box box(compiler.vm.mem_manager.make_vm_ptr<vm::AllocatedItem>());
 			vm::Empty empty;
 			box.type = compiler.vm.empty_type();
 			box.set_value(empty);
@@ -419,8 +416,7 @@ namespace salmon::compiler {
 		for(salmon::vm::Box &box : collected_items) {
 			array->items.push_back(box);
 		}
-		vm::Box box = compiler.vm.mem_manager.make_box();
-		box.set_value(std::move(array));
+		vm::Box box(array);
 		box.type = compiler.vm.dyn_array_type();
 		return box;
 	}

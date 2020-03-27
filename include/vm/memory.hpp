@@ -19,9 +19,13 @@ namespace salmon::vm {
 		~MemoryManager();
 
 		// While it may be possible to copy a MemoryManager, the default implementation is wrong:
-		MemoryManager(const Package&) = delete;
+		MemoryManager(const MemoryManager&) = delete;
 
-		Box make_box();
+		template<typename T>
+		vm_ptr<T> make_vm_ptr() {
+			vm_ptr<T> tmp(nullptr, roots);
+			return tmp;
+		}
 
 		template<typename T, typename ... ConstructorArgs>
 		vm_ptr<T> allocate_obj(ConstructorArgs... args) {

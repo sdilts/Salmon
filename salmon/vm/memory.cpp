@@ -16,11 +16,6 @@ namespace salmon::vm {
 		do_gc();
 	}
 
-	Box MemoryManager::make_box() {
-		Box box(roots);
-		return box;
-	}
-
 	static bool set_contains(const std::unordered_set<AllocatedItem*> &set, AllocatedItem* item) {
 		auto itr = set.find(item);
 		return itr != set.end();

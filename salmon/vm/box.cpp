@@ -18,7 +18,4 @@ namespace salmon::vm {
 				return set;
 			} }, elem);
 	}
-
-	Box::Box(std::unordered_map<AllocatedItem*,unsigned int> &table) :
-		smart_ptr(nullptr, table) { }
 }
