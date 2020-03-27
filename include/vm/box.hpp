@@ -16,30 +16,50 @@ namespace salmon::vm {
 	struct List;
 	struct Array;
 
+	using BoxVariant = std::variant<int32_t,
+									float,
+									bool,
+									Empty,
+									Array*,
+									Symbol*,
+									List*,
+									StaticString*>;
+
 	struct InternalBox {
 		TypePtr type;
-		std::variant<int32_t,
-					 float,
-					 bool,
-					 Empty,
-					 Symbol*,
-					 List*,
-					 StaticString*>
-					 elem;
+		BoxVariant elem;
 		std::vector<AllocatedItem*> get_roots() const;
 	};
 
 	struct Box : public InternalBox {
 
-		Box(std::unordered_set<Box*> &table);
-		Box(const Box&);
+		template<typename T>
+		Box(const vm_ptr<T> &elem_ptr) :
+			smart_ptr{elem_ptr} {
+			if(elem_ptr) {
+				elem = elem_ptr.get();
+			}
+		}
+		Box(const Box&) = default;
+		Box(Box &&) = default;
 		Box() = delete;
-		~Box();
 
-		Box &operator=(const Box &);
+		Box &operator=(const Box &) = default;
+
+		template<typename T>
+		void set_value(const vm_ptr<T> &value) {
+			elem = value.get();
+			smart_ptr = &*value;
+		}
+
+		template<typename T>
+		void set_value(T value) {
+			elem = value;
+			smart_ptr = nullptr;
+		}
 
 	private:
-		std::unordered_set<Box*> *instances;
+		vm_ptr<AllocatedItem> smart_ptr;
 	};
 
 	struct Array : public AllocatedItem {

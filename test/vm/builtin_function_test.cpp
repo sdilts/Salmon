@@ -24,15 +24,16 @@ namespace salmon::vm {
 	SCENARIO("Builtin functions check their argument lengths", "[vm, functions]") {
 
 		WHEN("The wrong number of arguments is given") {
-
-			Box b = manager.make_box();
+			auto ptr = manager.make_vm_ptr<AllocatedItem>();
+			Box b(ptr);
 			std::vector<Box> input = { b };
 			THEN("An ArityException is thrown") {
 				REQUIRE_THROWS_AS(func(input), ArityException);
 			}
 		}
 		WHEN("The correct number of arguments is given") {
-			Box b = manager.make_box();
+			auto ptr = manager.make_vm_ptr<AllocatedItem>();
+			Box b(ptr);
 			std::vector<Box> input = { b, b };
 			THEN("An ArityException isn't thrown") {
 				REQUIRE_NOTHROW(func(input));
@@ -42,7 +43,8 @@ namespace salmon::vm {
 
 	SCENARIO("ArityExceptions report the correct info", "[vm, functions]") {
 		try {
-			Box b = manager.make_box();
+			auto ptr = manager.make_vm_ptr<AllocatedItem>();
+			Box b(ptr);
 			std::vector<Box> input = { b };
 			func(input);
 			REQUIRE(false);
