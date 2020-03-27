@@ -20,6 +20,7 @@ namespace salmon::vm {
 									float,
 									bool,
 									Empty,
+									Array*,
 									Symbol*,
 									List*,
 									StaticString*>;
