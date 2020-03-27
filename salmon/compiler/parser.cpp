@@ -146,7 +146,8 @@ namespace salmon::compiler {
 
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
 		box.type = compiler.vm.const_str_type();
-		box.elem = &*compiler.vm.mem_manager.allocate_obj<vm::StaticString>(token.str());
+		auto str = compiler.vm.mem_manager.allocate_obj<vm::StaticString>(token.str());
+		box.set_value(std::move(str));
 
 		return box;
 	}
@@ -214,7 +215,7 @@ namespace salmon::compiler {
 			vm::Box box = compiler.vm.mem_manager.make_box();
 			vm::vm_ptr<vm::Symbol> tmp_symb = compiler.vm.mem_manager.allocate_obj<vm::Symbol>(chunk);
 			box.type = compiler.vm.symbol_type();
-			box.elem = &*tmp_symb;
+			box.set_value(std::move(tmp_symb));
 			return box;
 		}
 	}
@@ -282,7 +283,7 @@ namespace salmon::compiler {
 
 		// TODO: add unsigned integers:
 		salmon::vm::Box box = compiler.vm.mem_manager.make_box();
-		box.elem = static_cast<int32_t>(sum);
+		box.set_value(static_cast<int32_t>(sum));
 		box.type = compiler.vm.int32_type();
 		return box;
 	}
@@ -327,11 +328,11 @@ namespace salmon::compiler {
 		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
 			switch(type) {
 			case NumberType::FLOAT:
-				box.elem = std::stof(chunk);
+				box.set_value(std::stof(chunk));
 				box.type = compiler.vm.float_type();
 				break;
 			case NumberType::INTEGER:
-				box.elem = std::stoi(chunk);
+				box.set_value(std::stoi(chunk));
 				box.type = compiler.vm.int32_type();
 				break;
 			case NumberType::NOT_A_NUM:
@@ -339,11 +340,11 @@ namespace salmon::compiler {
 			}
 		} else if(isKeyword(chunk)) {
 			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
-			box.elem = &*symb;
+			box.set_value(std::move(symb));
 			box.type = compiler.vm.symbol_type();
 		} else {
 			auto symb = compiler.current_package()->intern_symbol(chunk);
-			box.elem = &*symb;
+			box.set_value(std::move(symb));
 			box.type = compiler.vm.symbol_type();
 		}
 
@@ -400,14 +401,14 @@ namespace salmon::compiler {
 				tail = next;
 			}
 			vm::Box box = compiler.vm.mem_manager.make_box();
-			box.elem = &*head;
+			box.set_value(std::move(head));
 			box.type = compiler.vm.list_type();
 			return box;
 		} else {
 			vm::Box box = compiler.vm.mem_manager.make_box();
 			vm::Empty empty;
 			box.type = compiler.vm.empty_type();
-			box.elem = empty;
+			box.set_value(empty);
 			return box;
 		}
 	}
@@ -419,7 +420,7 @@ namespace salmon::compiler {
 			array->items.push_back(box);
 		}
 		vm::Box box = compiler.vm.mem_manager.make_box();
-		box.elem = &*array;
+		box.set_value(std::move(array));
 		box.type = compiler.vm.dyn_array_type();
 		return box;
 	}

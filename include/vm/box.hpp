@@ -46,6 +46,12 @@ namespace salmon::vm {
 		}
 
 		template<typename T>
+		void set_value(const vm_ptr<T> &value) {
+			elem = &*value;
+			smart_ptr = &*value;
+		}
+
+		template<typename T>
 		void set_value(T value) {
 			elem = value;
 			smart_ptr = nullptr;
