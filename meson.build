@@ -33,6 +33,9 @@ salmon_inc = include_directories('include')
 
 # subdir('include')
 subdir('salmon')
-subdir('test')
+
+if get_option('test')
+  subdir('test')
+endif
 
 doxygen = find_program('doxygen', required : false)
