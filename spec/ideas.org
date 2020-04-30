@@ -16,7 +16,7 @@
    + inheretable exceptions
 ** Macros
 *** Reader macros
-    + All reader macros start with a =#= character
+    + All user-created reader macros start with a =#= character
 *** True macros
 ** Function arguments
 *** Optional args
@@ -93,22 +93,22 @@
      (foo-slot2 obj)
 
      (defstruct bar (foo)
-       (slot3 :string))
+       (slot3 string))
 
      ;; generates bar-slot3 function:
      (bar-slot3 :obj)
 
      (defstruct nested
-       (slot-a :int)
+       (slot-a int)
        (defstruct inner
-	 (slot-inner :string)))
+	 (slot-inner string)))
 
      ;; generates
      (nested.inner-slot-inner obj)
 
      (defunion union-example
-       (first :int)
-       (second :double))
+       (first int)
+       (second double))
 
      ;; generates
      (union-example-first obj &optional default)
@@ -121,6 +121,23 @@
      ;; -> either :int or :double
    #+END_SRC
 * Multi-methods
+  Declaring multi-methods:
+  #+BEGIN_SRC clojure
+    ;; Defines a method that receives one value of type a and returns a value of type a
+    (defgeneric interface [:a] :a)
+
+    ;; defines a method that recieves an integer and an array of type v, and returns a v:
+    (defgeneric nth [int (Array :v)] :v)
+
+    ;; defines a method that takes two values and returns another one:
+    ;; implementations of this method cannot have the same arguments but a different return value:
+    ;; i.e the two functions (something [a b] c) and (something [a b] d) won't work: salmon will use
+    ;; the definition of the last one declared and signal a warning.
+    ;; (something [a b] c) and (something [e f] c) will work.
+    (defgeneric something [:a :b] :c)
+  #+END_SRC
+  Types parameters are specified with keywords, and concrete types as
+  symbols.
 * Special forms
 ** Conditionals
   #+BEGIN_EXAMPLE
@@ -185,8 +202,8 @@
      ;; specifying the type is optional
      ;; unless the type isn't the default:
      (let ((a 10)
-	   (b 20 :long)
-	   (c 0 :float))
+	   (b 20 long)
+	   (c 0 float))
        <expressions>)
 
      ;; bind a and b to the multiple values returned from a function:
@@ -198,13 +215,13 @@
        <expressions>)
 
      ;; same form for the variable's value as a let binding
-     ;; here:
+     ;; when declaring global variables
      (defglobal (a 10))
-     (defglobal (b 1 :float)
-                (c 10 :long))
+     (defglobal (b 1 float)
+		(c 10 long))
    #+END_EXAMPLE
 ** Variable assignment
-   #+BEGIN_EXAMPLE
+   #+BEGIN_SRC clojure
      ;; setting a single value at a time:
      (set a 10)
      (set (foo-slot1 obj) 10)
@@ -213,4 +230,4 @@
      (set [a b] (multi-ret-val-func 10))
      ;; setting two variables to the same thing:
      (set {a b} 10)
-   #+END_EXAMPLE
+   #+END_SRC
