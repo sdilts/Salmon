@@ -471,7 +471,7 @@ namespace salmon::compiler {
 	}
 
 	std::optional<salmon::vm::Box> read(std::istream &input, Compiler &compiler) {
-		CountingStreamBuffer countStreamBuf(input.rdbuf());
+		CountingStreamBuffer countStreamBuf(input);
 		std::istream inStream(&countStreamBuf);
 		salmon_check(tracker_from_stream(inStream) == &countStreamBuf, "tracker_from_stream works");
 

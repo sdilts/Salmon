@@ -11,6 +11,7 @@ namespace salmon::compiler {
 	public:
 		// constructor
 		CountingStreamBuffer(std::streambuf* sbuf);
+		explicit CountingStreamBuffer(std::istream& istream);
 
 		// Get current line number
 		unsigned int        lineNumber() const;

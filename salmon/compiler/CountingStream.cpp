@@ -1,5 +1,6 @@
 #include <streambuf>
 #include <iostream>
+#include <limits>
 
 #include <compiler/CountingStream.hpp>
 #include <compiler/meta.hpp>
@@ -12,10 +13,14 @@ namespace salmon::compiler {
 		lineNumber_(1),
 		lastLineNumber_(1),
 		column_(0),
-		prevColumn_(static_cast<unsigned int>(-1)),
+		// explicity rely on the fact that (max + 1) = 0 for unsigned numbers
+		prevColumn_(std::numeric_limits<unsigned int>::max()),
 		filePos_(0)
 	{
 	}
+
+	CountingStreamBuffer::CountingStreamBuffer(std::istream& istream) :
+		CountingStreamBuffer(istream.rdbuf()) {}
 
 	// Get current line number
 	unsigned int CountingStreamBuffer::lineNumber() const  {
