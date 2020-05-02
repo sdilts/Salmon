@@ -326,7 +326,7 @@ namespace salmon::compiler {
 		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
 			switch(type) {
 			case NumberType::FLOAT:
-				box.set_value(std::stof(chunk));
+				box.set_value(std::stod(chunk));
 				box.type = compiler.vm.float_type();
 				break;
 			case NumberType::INTEGER:

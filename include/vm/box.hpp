@@ -17,7 +17,7 @@ namespace salmon::vm {
 	struct Array;
 
 	using BoxVariant = std::variant<int32_t,
-									float,
+									double,
 									bool,
 									Empty,
 									Array*,

@@ -9,7 +9,7 @@ namespace salmon::vm {
 		vm_ptr<Symbol> list_symb = base_package.intern_symbol("list");
 		vm_ptr<Symbol> dyn_arr_symb = base_package.intern_symbol("dyn-array");
 		vm_ptr<Symbol> int_symb = base_package.intern_symbol("int-32");
-		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-32");
+		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-64");
 		vm_ptr<Symbol> symb_symb = base_package.intern_symbol("symbol");
 		vm_ptr<Symbol> bool_symb = base_package.intern_symbol("boolean");
 		vm_ptr<Symbol> empty_symb = base_package.intern_symbol("empty");
