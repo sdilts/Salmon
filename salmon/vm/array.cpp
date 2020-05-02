@@ -15,6 +15,14 @@ namespace salmon::vm {
 		return to_return;
 	}
 
+	void Array::push_back(const Box& item) {
+		items.push_back(item);
+	}
+
+	void Array::push_back(Box&& item) {
+		items.push_back(item);
+	}
+
 	void Array::print_debug_info() const {
 		std::cerr << "Array " << items.size() << " " << this << std::endl;
 	}

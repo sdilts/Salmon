@@ -414,7 +414,7 @@ namespace salmon::compiler {
 		std::list<salmon::vm::Box> collected_items = collect_list(input, ReadResult::R_BRACKET, compiler);
 		vm::vm_ptr<vm::Array> array = compiler.vm.mem_manager.allocate_obj<vm::Array>(collected_items.size());
 		for(salmon::vm::Box &box : collected_items) {
-			array->items.push_back(box);
+			array->push_back(box);
 		}
 		vm::Box box(array);
 		box.type = compiler.vm.dyn_array_type();

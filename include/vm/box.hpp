@@ -65,11 +65,15 @@ namespace salmon::vm {
 	struct Array : public AllocatedItem {
 		Array(int32_t size);
 
-		std::vector<InternalBox> items;
+		void push_back(const Box& item);
+		void push_back(Box&& item);
 
 		void print_debug_info() const override;
 		std::vector<AllocatedItem*> get_roots() const override;
 		size_t allocated_size() const override;
+
+	private:
+		std::vector<InternalBox> items;
 	};
 
 	struct List : public AllocatedItem {
