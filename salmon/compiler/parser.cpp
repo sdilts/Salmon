@@ -317,27 +317,28 @@ namespace salmon::compiler {
 		std::string chunk = read_atom(input);
 		salmon_check(!chunk.empty(), "Atom shouldn't be empty");
 
-		salmon::vm::Box box(compiler.vm.mem_manager.make_vm_ptr<vm::AllocatedItem>());
+		std::optional<vm::Box> box{std::nullopt};
 		if(NumberType type = get_num_type(chunk); type != NumberType::NOT_A_NUM) {
 			switch(type) {
 			case NumberType::FLOAT:
-				box = compiler.vm.make_boxed(static_cast<double>(std::stod(chunk)));
+				box.emplace(compiler.vm.make_boxed(static_cast<double>(std::stod(chunk))));
 				break;
 			case NumberType::INTEGER:
-				box = compiler.vm.make_boxed(static_cast<int32_t>(std::stoi(chunk)));
+				box.emplace(compiler.vm.make_boxed(static_cast<int32_t>(std::stoi(chunk))));
 				break;
 			case NumberType::NOT_A_NUM:
 				salmon_abort("Primitive type should always be a number");
 			}
 		} else if(isKeyword(chunk)) {
 			auto symb = compiler.keyword_package()->intern_symbol(chunk.substr(1));
-			box = compiler.vm.make_boxed(symb);
+			box.emplace(compiler.vm.make_boxed(symb));
 		} else {
 			auto symb = compiler.current_package()->intern_symbol(chunk);
-			box = compiler.vm.make_boxed(symb);
+			box.emplace(compiler.vm.make_boxed(symb));
 		}
 
-		return box;
+		salmon_check(box.has_value(), "Box was not assigned a value in parse_primitive");
+		return *box;
 	}
 
 	static std::pair<ReadResult, std::optional<salmon::vm::Box>>
