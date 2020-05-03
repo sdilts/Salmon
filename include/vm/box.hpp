@@ -65,7 +65,7 @@ namespace salmon::vm {
 	struct Array : public AllocatedItem {
 		Array(int32_t size);
 
-		void push_back(const Box& item);
+		void push_back(const Box &item);
 		void push_back(Box&& item);
 
 		void print_debug_info() const override;

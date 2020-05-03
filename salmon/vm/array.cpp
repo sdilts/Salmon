@@ -1,10 +1,13 @@
 #include <iostream>
+
 #include <vm/box.hpp>
 
 namespace salmon::vm {
 
 	Array::Array(int32_t size) :
-		items(size) { }
+		items{} {
+		items.reserve(size);
+	}
 
 	std::vector<AllocatedItem*> Array::get_roots() const {
 		std::vector<AllocatedItem*> to_return;
@@ -15,7 +18,7 @@ namespace salmon::vm {
 		return to_return;
 	}
 
-	void Array::push_back(const Box& item) {
+	void Array::push_back(const Box &item) {
 		items.push_back(item);
 	}
 
