@@ -7,7 +7,7 @@ project('salmon',
 	  'cpp_std=c++17',
 	  'c_std=c17',
 	  'werror=true',
-	  'warning_level=2',
+	  'warning_level=3',
 	  'buildtype=debugoptimized',
 	  'b_ndebug=if-release',
 	])
@@ -15,7 +15,6 @@ project('salmon',
 cmake = import('cmake')
 
 common_args = [
-  '-Wall',
   '-Wimplicit-fallthrough',
 ]
 
