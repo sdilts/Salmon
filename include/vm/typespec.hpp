@@ -51,6 +51,7 @@ namespace salmon::vm {
 		const bool is_concrete;
 	};
 
+	// TODO: make SpecBuilder more aware of the internals of TypeSpecification objects:
 	class SpecBuilder {
 
 	public:

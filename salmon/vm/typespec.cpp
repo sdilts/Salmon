@@ -218,4 +218,17 @@ namespace salmon::vm {
 	bool TypeSpecification::concrete() const {
 		return is_concrete;
 	}
+
+	void SpecBuilder::add_parameter(vm_ptr<Symbol> param) {
+		types.push_back(param);
+	}
+
+	void SpecBuilder::add_type(std::shared_ptr<Type> type) {
+		types.push_back(type);
+	}
+
+	TypeSpecification SpecBuilder::get() {
+		TypeSpecification spec(this->types);
+		return spec;
+	}
 }
