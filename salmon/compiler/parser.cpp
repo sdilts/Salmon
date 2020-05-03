@@ -75,7 +75,7 @@ namespace salmon::compiler {
 		switch(ch) {
 		case 'a':  return '\a';
 		case 'b':  return '\b';
-		case 'e':  return '\e';
+		case 'e':  return 27;
 		case 'f':  return '\f';
 		case 'n':  return '\n';
 		case 'r':  return '\r';
