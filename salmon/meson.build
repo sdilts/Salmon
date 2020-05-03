@@ -16,6 +16,7 @@ lib_compiler = static_library(
     'vm/list.cpp',
     'vm/memory.cpp',
     'vm/package.cpp',
+    'vm/typespec.cpp',
     'vm/string.cpp',
     'vm/symbol.cpp',
     'vm/type.cpp',
@@ -23,7 +24,7 @@ lib_compiler = static_library(
   ),
   include_directories: salmon_inc,
   dependencies: compiler_deps,
-  cpp_pch: 'pch/pch_cpp.hpp',
+  # cpp_pch: 'pch/pch_cpp.hpp',
 )
 
 

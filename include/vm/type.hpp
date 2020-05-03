@@ -13,48 +13,10 @@
 
 #include <vm/symbol.hpp>
 #include <vm/vm_ptr.hpp>
+#include <vm/typespec.hpp>
 #include <optional>
 
 namespace salmon::vm {
-	struct Type;
-
-	class TypeSpecification {
-	public:
-		using ItemMask = std::variant<vm_ptr<Symbol>, std::shared_ptr<const Type>>;
-
-		TypeSpecification(const std::vector<TypeSpecification::ItemMask> &types);
-
-		//! Check if the given types conform to the specifictation
-		bool matches(const std::vector<std::shared_ptr<const Type>> &type_list) const;
-
-		std::optional<std::map<vm_ptr<Symbol>,std::shared_ptr<const Type>>>
-		match_symbols(const std::vector<std::shared_ptr<const Type>> &type_list) const;
-
-		std::string str() const;
-
-		//! checks to see if this specification can be synthesised
-		bool concrete() const;
-
-		//! Get the number of types:
-		int num_types() const;
-
-		bool operator==(const TypeSpecification &other) const;
-		bool operator!=(const TypeSpecification &other) const;
-		bool operator>(const TypeSpecification &other) const;
-		bool operator<(const TypeSpecification &other) const;
-
-		friend std::ostream &operator<<(std::ostream &out, const TypeSpecification& spec);
-	private:
-		const std::vector<ItemMask> specification;
-
-		//! bare types are specified with specific symbol, i.e. A
-		const std::map<vm_ptr<Symbol>,std::vector<size_t>> unspecified_types;
-		//! Indexes of types that must be the same
-		const std::vector<size_t> concrete_types;
-		// TODO: allow unresolved types in type specifications
-		const bool is_concrete;
-	};
-
 	// struct InstanceType {
 
 	// 	InstanceType(bool constant, bool is_static);
