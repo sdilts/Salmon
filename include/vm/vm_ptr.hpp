@@ -33,6 +33,8 @@ namespace salmon::vm {
 			}
 		}
 
+		vm_ptr() = delete;
+
 		vm_ptr(std::nullptr_t,  std::unordered_map<AllocatedItem*, unsigned int> &table) :
 			instances{&table}, ptr(nullptr) {}
 
