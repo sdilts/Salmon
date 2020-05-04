@@ -23,18 +23,20 @@ namespace salmon::vm {
 
 		template<typename T>
 		Box make_boxed(vm_ptr<T> item) {
-			TypePtr type = builtin_map[typeid(T)];
-			Box box(item);
-			box.type = type;
+			auto type = builtin_map[typeid(T)];
+			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
+			vm_ptr = type;
+			Box box(item, vm_ptr);
 			return box;
 		}
 
 		template<typename T>
 		Box make_boxed(T item) {
-			TypePtr type = builtin_map[typeid(T)];
-			Box box(mem_manager.make_vm_ptr<vm::AllocatedItem>());
+			auto type = builtin_map[typeid(T)];
+			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
+			vm_ptr = type;
+			Box box(item, vm_ptr);
 			box.set_value(item);
-			box.type = type;
 			return box;
 		}
 
@@ -52,7 +54,7 @@ namespace salmon::vm {
 		Config _config;
 
 		//! map used to lookup the VM types of builtin types
-		std::unordered_map<std::type_index, TypePtr> builtin_map;
+		std::unordered_map<std::type_index, Type*> builtin_map;
 		// std::map<vm_ptr<Symbol>, std::unique_ptr<VmFunction>> func_table;
 		// registering interface functions require different steps,
 		// and we want to avoid instanceof usage, so use a different table.

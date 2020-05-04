@@ -6,7 +6,7 @@
 namespace salmon::vm {
 
 	static void init_types(Package &base_package, TypeTable &t_table,
-						   std::unordered_map<std::type_index, TypePtr> &builtin_map) {
+						   std::unordered_map<std::type_index, Type*> &builtin_map) {
 		vm_ptr<Symbol> str_symb = base_package.intern_symbol("const-string");
 		vm_ptr<Symbol> list_symb = base_package.intern_symbol("list");
 		vm_ptr<Symbol> dyn_arr_symb = base_package.intern_symbol("dyn-array");
@@ -41,21 +41,22 @@ namespace salmon::vm {
 		TypePtr empty_type = t_table.make_primitive(empty_symb, "Type representing the empty object.",
 													sizeof(vm_ptr<Symbol>));
 
-		builtin_map[typeid(StaticString)] = str;
-		builtin_map[typeid(List)] = list;
-		builtin_map[typeid(Array)] = dyn_arr;
-		builtin_map[typeid(int32_t)] = int_type;
-		builtin_map[typeid(double)] = double_type;
-		builtin_map[typeid(Symbol)] = symbol_type;
-		builtin_map[typeid(bool)] = bool_type;
-		builtin_map[typeid(Empty)] = empty_type;
+		builtin_map[typeid(StaticString)] = str.get();
+		builtin_map[typeid(List)] = list.get();
+		builtin_map[typeid(Array)] = dyn_arr.get();
+		builtin_map[typeid(int32_t)] = int_type.get();
+		builtin_map[typeid(double)] = double_type.get();
+		builtin_map[typeid(Symbol)] = symbol_type.get();
+		builtin_map[typeid(bool)] = bool_type.get();
+		builtin_map[typeid(Empty)] = empty_type.get();
 	}
 
 	VirtualMachine::VirtualMachine(const Config &config, const std::string &base_package) :
 		mem_manager{},
-		type_table{},
+		type_table{mem_manager},
 		packages{},
-		_config{config} {
+		_config{config},
+		builtin_map{} {
 		packages.emplace(std::string(base_package), Package(base_package, mem_manager));
 
 		Package &base_pkg = packages.find(base_package)->second;

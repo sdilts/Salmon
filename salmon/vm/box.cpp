@@ -3,18 +3,21 @@
 #include <util/assert.hpp>
 #include <vm/box.hpp>
 #include <vm/type.hpp>
+#include <util/assert.hpp>
 
 namespace salmon::vm {
 
 	std::vector<AllocatedItem*> InternalBox::get_roots() const {
-		return std::visit([](auto &&arg) {
+		salmon_check(type != nullptr, "Type is null");
+		std::vector<AllocatedItem*> set = { type };
+
+		return std::visit([&set](auto &&arg) {
 			using T = std::decay_t<decltype(arg)>;
 			if constexpr (std::is_pointer<T>::value) {
-				std::vector<AllocatedItem*> set = { arg };
+				set.push_back(arg);
 				return set;
 			} else {
 				static_assert(!std::is_pointer<T>::value);
-				std::vector<AllocatedItem*> set;
 				return set;
 			} }, elem);
 	}
