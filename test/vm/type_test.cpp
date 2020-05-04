@@ -13,7 +13,7 @@ namespace salmon::vm {
 	vm_ptr<Symbol> b_symb = base_package.intern_symbol("b");
 
 	SCENARIO("Primitive types are created correctly") {
-		TypeTable table;
+		TypeTable table(manager);
 		WHEN("A primitive is created using TypeTable::make_primitive") {
 			auto p_type = table.make_primitive(a_symb, "Some doc", sizeof(vm_ptr<Symbol>));
 
@@ -26,7 +26,7 @@ namespace salmon::vm {
 		}
 	}
 	SCENARIO("Type Aliases are created correctly") {
-		TypeTable table;
+		TypeTable table(manager);
 		GIVEN("A type object") {
 			auto p_type = table.make_primitive(a_symb, "Some doc", sizeof(vm_ptr<Symbol>));
 

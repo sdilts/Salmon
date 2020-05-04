@@ -29,7 +29,7 @@ static void process_files(char **filenames, const int length, salmon::compiler::
 				std::ifstream file;
 				file.open(filepath);
 				while(auto token = salmon::compiler::read(file, engine)) {
-					std::cout << *token->type << "\n";
+					std::cout << *token->elem_type() << "\n";
 					// token = salmon::compiler::read(file, engine);
 					engine.vm.mem_manager.do_gc();
 				}
@@ -60,7 +60,7 @@ static void repl(salmon::compiler::Compiler& engine) {
 			try {
 			    auto token = compiler::read_from_string(line, engine);
 				if(token) {
-					std::cout << "token: " << *token->type << std::endl;
+					std::cout << "token: " << *token->elem_type() << std::endl;
 				}
 				rx.history_add(line);
 				engine.vm.mem_manager.do_gc();
