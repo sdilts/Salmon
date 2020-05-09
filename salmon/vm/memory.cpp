@@ -9,7 +9,6 @@ namespace salmon::vm {
 
 	MemoryManager::~MemoryManager() {
 		do_gc();
-		do_gc();
 	}
 
 	static bool set_contains(const std::unordered_set<AllocatedItem*> &set, AllocatedItem* item) {
