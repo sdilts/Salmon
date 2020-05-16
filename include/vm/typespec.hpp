@@ -14,6 +14,18 @@
 namespace salmon::vm {
 	struct Type;
 
+	struct VariableProperties {
+		VariableProperties(bool constant, bool is_static);
+
+		bool is_constant() const;
+		bool is_static() const;
+	private:
+		uint8_t properties;
+
+		static const uint8_t CONSTANT_MASK = 1;
+		static const uint8_t STATIC_MASK = 1 << 1;
+	};
+
 	// class TypeSpecification {
 	// public:
 	// 	using ItemMask = std::variant<vm_ptr<Symbol>, std::shared_ptr<const Type>>;
@@ -51,21 +63,21 @@ namespace salmon::vm {
 	// 	const bool is_concrete;
 	// };
 
-	// // TODO: make SpecBuilder more aware of the internals of TypeSpecification objects:
-	// class SpecBuilder {
+	// TODO: make SpecBuilder more aware of the internals of TypeSpecification objects:
+	class SpecBuilder {
 
-	// public:
-	// 	//! add a paramenter to the specification
-	// 	void add_parameter(vm_ptr<Symbol> param);
-	// 	//! add a type to the specification
-	// 	void add_type(std::shared_ptr<Type> type);
+	public:
+		//! add a paramenter to the specification
+		void add_parameter(vm_ptr<Symbol> param);
+		//! add a type to the specification
+		void add_type(std::shared_ptr<Type> type);
 
-	// 	//! the the spec that you have built
-	// 	TypeSpecification get();
+		//! the the spec that you have built
+		// TypeSpecification get();
 
-	// private:
-	// 	std::vector<TypeSpecification::ItemMask> types;
-	// };
+	private:
+		// std::vector<TypeSpecification::ItemMask> types;
+	};
 }
 
 #endif

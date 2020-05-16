@@ -16,7 +16,7 @@ lib_compiler = static_library(
     'vm/list.cpp',
     'vm/memory.cpp',
     'vm/package.cpp',
-    # 'vm/typespec.cpp',
+    'vm/typespec.cpp',
     'vm/string.cpp',
     'vm/symbol.cpp',
     'vm/type.cpp',

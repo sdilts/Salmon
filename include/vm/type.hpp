@@ -17,20 +17,6 @@
 #include <optional>
 
 namespace salmon::vm {
-	// struct InstanceType {
-
-	// 	InstanceType(bool constant, bool is_static);
-
-	// 	Type *actual;
-
-	// 	bool is_constant() const;
-	// 	bool is_static() const;
-	// private:
-	// 	uint8_t properties;
-
-	// 	static const uint8_t CONSTANT_MASK = 1;
-	// 	static const uint8_t STATIC_MASK = 1 << 1;
-	// };
 
 	struct TypeInterface {
 
