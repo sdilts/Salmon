@@ -18,13 +18,13 @@ namespace salmon::vm {
 	struct Array;
 
 	using BoxVariant = std::variant<int32_t,
-									double,
-									bool,
-									Empty,
-									Array*,
-									Symbol*,
-									List*,
-									StaticString*>;
+					double,
+					bool,
+					Empty,
+					Array*,
+					Symbol*,
+					List*,
+					StaticString*>;
 
 	struct InternalBox {
 		Type* type;
