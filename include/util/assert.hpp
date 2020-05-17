@@ -23,13 +23,13 @@ namespace salmon {
 
 #ifndef NDEBUG
 #define salmon_check(cond, msg) salmon::throw_assert(#cond, __FILE__, __LINE__, \
-													 static_cast<bool>(cond), msg)
+						     static_cast<bool>(cond), msg)
 #else
 #define salmon_check(cond,msg) static_cast<void>(0)
 #endif
 
 #define salmon_ensure(cond, msg) salmon::throw_assert(#cond, __FILE__, __LINE__, \
-						  static_cast<bool>(cond), msg)
+						      static_cast<bool>(cond), msg)
 
 #define salmon_abort(msg) salmon::throw_assert("false", __FILE__, __LINE__, false, msg)
 
