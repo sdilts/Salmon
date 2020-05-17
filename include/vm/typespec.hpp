@@ -34,6 +34,7 @@ namespace salmon::vm {
 
 	// 	//! Check if the given types conform to the specifictation
 	// 	bool matches(const std::vector<std::shared_ptr<const Type>> &type_list) const;
+	class TypeSpecification {
 
 	// 	std::optional<std::map<vm_ptr<Symbol>,std::shared_ptr<const Type>>>
 	// 	match_symbols(const std::vector<std::shared_ptr<const Type>> &type_list) const;
@@ -62,21 +63,31 @@ namespace salmon::vm {
 	// 	// TODO: allow unresolved types in type specifications
 	// 	const bool is_concrete;
 	// };
+	};
 
 	// TODO: make SpecBuilder more aware of the internals of TypeSpecification objects:
 	class SpecBuilder {
 
 	public:
 		//! add a paramenter to the specification
-		void add_parameter(vm_ptr<Symbol> param);
+		void add_parameter(vm_ptr<Symbol> &param);
+		void add_parameter(vm_ptr<Symbol> &param, bool constant, bool is_static);
 		//! add a type to the specification
-		void add_type(std::shared_ptr<Type> type);
+		void add_type(vm_ptr<Type> &type);
+		void add_type(vm_ptr<Type> &type, bool constant, bool is_static);
 
 		//! the the spec that you have built
-		// TypeSpecification get();
+		TypeSpecification get();
 
 	private:
-		// std::vector<TypeSpecification::ItemMask> types;
+		size_t num_elems = 0;
+
+		//! bare types are specified with specific symbol, i.e. A
+		std::map<vm_ptr<Symbol>,std::vector<size_t>> parameters;
+		//! Indexes of types that must be the same
+		std::vector<std::pair<vm_ptr<Type>,size_t>> concrete_types;
+		// TODO: allow non-concrete types in type specifications
+		std::vector<VariableProperties> properties;
 	};
 }
 

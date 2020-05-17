@@ -23,65 +23,33 @@ namespace salmon::vm {
 		return properties & CONSTANT_MASK;
 	}
 
-	// // Helper class for spec_is_concrete
-	// template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
-	// template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+        void SpecBuilder::add_parameter(vm_ptr<Symbol> &param) {
+		add_parameter(param, false, false);
+	}
 
-	// static bool
-	// spec_is_concrete(const std::vector<TypeSpecification::ItemMask> &types) {
-	// 	for(const auto &item : types) {
-	// 		bool check = std::visit(overloaded {
-	// 				[](const std::shared_ptr<const Type> &arg) {
-	// 					return arg->concrete(); },
-	// 				[](const vm_ptr<Symbol> &symb) {
-	// 					std::ignore = symb;
-	// 					return false;
-	// 				}
-	// 			}, item);
+        void SpecBuilder::add_parameter(vm_ptr<Symbol> &param, bool constant,
+					bool is_static) {
+		auto place = parameters.lower_bound(param);
+		if( place == parameters.end() || *(*place).first != *param ) {
+                        parameters.emplace_hint(place, param, num_elems);
+                } else {
+			(*place).second.push_back(num_elems);
+                }
+		num_elems += 1;
+		properties.emplace_back(constant, is_static);
+		salmon_check(properties.size() == num_elems, "didn't increment num_elems");
+        }
 
-	// 		if(!check) {
-	// 			return false;
-	// 		}
-	// 	}
-	// 	return true;
-	// }
+        void SpecBuilder::add_type(vm_ptr<Type> &type) {
+		add_type(type, false, false);
+	}
 
-	// static std::map<vm_ptr<Symbol>, std::vector<size_t>>
-	// get_unspecified_types(const std::vector<TypeSpecification::ItemMask> &types) {
-	// 	std::map<vm_ptr<Symbol>, std::vector<size_t>> unspecified_types;
-	// 	size_t index = 0;
-	// 	for(const auto &item : types) {
-	// 		auto symbol = std::get_if<vm_ptr<Symbol>>(&item);
-	// 		if(symbol) {
-	// 			auto loc = unspecified_types.find(*symbol);
-	// 			if(loc == unspecified_types.end()) {
-	// 				std::vector<size_t> tmp = { index };
-	// 				unspecified_types.insert(std::make_pair(*symbol, std::move(tmp)));
-	// 			} else {
-	// 				auto &vec = std::get<std::vector<size_t>>(*loc);
-	// 			    vec.push_back(index);
-	// 			}
-	// 		}
-	// 		index = index + 1;
-	// 	}
-	// 	return unspecified_types;
-	// }
-
-	// static std::vector<size_t>
-	// get_concrete_indices(const std::vector<TypeSpecification::ItemMask> &types) {
-	// 	std::vector<size_t> indices;
-	// 	size_t index = 0;
-	// 	for(const auto &item : types) {
-	// 		auto type = std::get_if<std::shared_ptr<const Type>>(&item);
-	// 		if(type) {
-	// 			// TODO: allow unresolved types in type specification
-	// 			salmon_check((*type)->concrete(), "All types in spec must be concrete!");
-	// 			indices.push_back(index);
-	// 		}
-	// 		index = index + 1;
-	// 	}
-	// 	return indices;
-	// }
+        void SpecBuilder::add_type(vm_ptr<Type> &type, bool constant, bool is_static) {
+		concrete_types.emplace_back(type, num_elems);
+		num_elems += 1;
+		properties.emplace_back(constant, is_static);
+		salmon_check(properties.size() == num_elems, "didn't increment num_elems");
+	}
 
 	// TypeSpecification::TypeSpecification(const std::vector<TypeSpecification::ItemMask> &types) :
 	// 	specification{types},
