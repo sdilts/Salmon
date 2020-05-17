@@ -1,6 +1,5 @@
-#include <assert.h>
-
 #include <vm/package.hpp>
+#include <util/assert.hpp>
 
 namespace salmon::vm {
 
@@ -46,8 +45,8 @@ namespace salmon::vm {
 		if(interned_result == interned.end() || (*interned_result).second->name != name) {
 			vm_ptr<Symbol> new_symb = mem_manager.allocate_obj<Symbol>(name);
 			new_symb->package = std::make_optional(this);
-			auto final_place = interned.insert(interned_result, {name, std::move(new_symb)});
-			assert((*final_place).second->name == name);
+			auto final_place = interned.emplace_hint(interned_result, name, std::move(new_symb));
+			salmon_check((*final_place).second->name == name, "Name not added correctly");
 			return (*final_place).second;
 		}
 		return (*interned_result).second;
