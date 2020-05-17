@@ -44,7 +44,7 @@ namespace salmon::vm {
 
 		std::optional<vm_ptr<Symbol>> find_external_symbol(const std::string&) const;
 
-        std::map<std::string, vm_ptr<Symbol>> interned;
+		std::map<std::string, vm_ptr<Symbol>> interned;
 		std::map<std::string, vm_ptr<Symbol>> exported;
 
 		std::set<std::reference_wrapper<Package>> used;

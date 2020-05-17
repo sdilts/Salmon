@@ -25,8 +25,8 @@ namespace salmon::vm {
 	}
 
 	static void check_item(AllocatedItem *item,
-						   std::unordered_set<AllocatedItem*> &to_check,
-						   std::unordered_set<AllocatedItem*> &marked) {
+			   std::unordered_set<AllocatedItem*> &to_check,
+			   std::unordered_set<AllocatedItem*> &marked) {
 		marked.insert(item);
 		std::vector<AllocatedItem*> children = item->get_roots();
 		// If a child isn't marked, attempt to add it to to_check:
