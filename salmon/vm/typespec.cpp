@@ -23,6 +23,37 @@ namespace salmon::vm {
 		return properties & CONSTANT_MASK;
 	}
 
+        std::ostream &VariableProperties::pretty_print(std::ostream &out) const {
+		if (is_static()) {
+			out << ":static";
+			if (is_constant()) {
+				out << " :const";
+			}
+		} else if (is_constant()) {
+			out << ":const";
+		}
+		return out;
+        }
+
+        bool VariableProperties::operator==(const VariableProperties &other) const {
+		return properties == other.properties;
+	}
+
+        bool
+        VariableProperties::operator!=(const VariableProperties &other) const {
+		return properties != other.properties;
+	}
+
+        bool
+        VariableProperties::operator>(const VariableProperties &other) const {
+		return properties > other.properties;
+	}
+
+        bool
+        VariableProperties::operator<(const VariableProperties &other) const {
+		return properties < other.properties;
+	}
+
         void SpecBuilder::add_parameter(vm_ptr<Symbol> &param) {
 		add_parameter(param, false, false);
 	}
@@ -51,40 +82,50 @@ namespace salmon::vm {
 		salmon_check(properties.size() == num_elems, "didn't increment num_elems");
 	}
 
-	// TypeSpecification::TypeSpecification(const std::vector<TypeSpecification::ItemMask> &types) :
-	// 	specification{types},
-	// 	unspecified_types(get_unspecified_types(types)),
-	// 	concrete_types(get_concrete_indices(types)),
-	// 	is_concrete(spec_is_concrete(types)) { }
+        TypeSpecification SpecBuilder::build() {
+		TypeSpecification spec(parameters, concrete_types, properties);
+		return spec;
+	}
 
-	// std::optional<std::map<vm_ptr<Symbol>,std::shared_ptr<const Type>>>
-	// TypeSpecification::match_symbols(const std::vector<std::shared_ptr<const Type>> &type_list) const {
-	// 	if(type_list.size() != specification.size()) {
-	// 		return std::nullopt;
-	// 	}
-	// 	std::map<vm_ptr<Symbol>,std::shared_ptr<const Type>> symb_table;
-	// 	// Check to make sure the unspecified types match where they should:
-	// 	for(const auto &[symb, indicies] : unspecified_types) {
-	// 		std::shared_ptr<const Type> type = type_list[indicies[0]];
+        static std::map<Symbol *, std::vector<size_t>>
+        copy_args(const std::map<vm_ptr<Symbol>, std::vector<size_t>> &args) {
+		std::map<Symbol*, std::vector<size_t>> ret;
+                for (const auto &val : args) {
+			ret.emplace(val.first.get(), val.second);
+                }
+		return ret;
+        }
 
-	// 		for(size_t index = 1; index < indicies.size(); index++) {
-	// 			if(type != type_list[indicies[index]]) {
-	// 				return std::nullopt;
-	// 			}
-	// 		}
-	// 		symb_table.insert(std::make_pair(symb, std::move(type)));
-	// 	}
-	// 	// Now check that the specified types match the given types:
-	// 	for(size_t index : concrete_types) {
-	// 		auto type = std::get_if<std::shared_ptr<const Type>>(&specification[index]);
-	// 		if(*type != type_list[index]) {
-	// 			return std::nullopt;
-	// 		}
-	// 	}
-	// 	return std::make_optional(symb_table);
-	// }
+        static std::vector<std::pair<Type*, size_t>>
+        copy_args(const std::vector<std::pair<vm_ptr<Type>, size_t>> &args) {
+		std::vector<std::pair<Type*, size_t>> ret;
+		ret.reserve(args.size());
+                for (const auto &val : args) {
+			ret.emplace_back(val.first.get(), val.second);
+                }
+		return ret;
+        }
 
-	// bool TypeSpecification::matches(const std::vector<std::shared_ptr<const Type>> &type_list) const {
+        TypeSpecification::TypeSpecification(
+            std::map<vm_ptr<Symbol>, std::vector<size_t>> &params,
+            std::vector<std::pair<vm_ptr<Type>, size_t>> &concrete_types,
+            std::vector<VariableProperties> &properties) :
+		parameters{copy_args(params)},
+		concrete_types{copy_args(concrete_types)},
+		properties{properties},
+		is_concrete(concrete_types.size() == properties.size()) {
+
+                #ifndef NDEBUG
+		size_t sum = 0;
+                for (const auto &val : params) {
+			sum += val.second.size();
+                }
+		sum += concrete_types.size();
+		salmon_check(sum == properties.size(), "Property size mismatch");
+		#endif
+	}
+
+        // bool TypeSpecification::matches(const std::vector<std::shared_ptr<const Type>> &type_list) const {
 	// 	if(type_list.size() != specification.size()) {
 	// 		return false;
 	// 	}
@@ -108,115 +149,87 @@ namespace salmon::vm {
 	// 	return true;
 	// }
 
-	// int TypeSpecification::num_types() const {
-	// 	return specification.size();
-	// }
+	size_t TypeSpecification::size() const {
+		// Arbitrary container: they all should be the same size.
+		return properties.size();
+	}
 
-	// bool TypeSpecification::operator==(const TypeSpecification &other) const {
-	// 	if(specification.size() == other.specification.size()) {
-	// 		auto this_iter = specification.begin();
-	// 		auto other_iter = other.specification.begin();
-	// 		while(this_iter != specification.end()) {
-	// 			const auto &this_item = *this_iter;
-	// 			const auto &other_item = *other_iter;
-	// 			auto this_symb = std::get_if<vm_ptr<Symbol>>(&this_item);
-	// 			auto other_symb = std::get_if<vm_ptr<Symbol>>(&other_item);
-	// 			if(this_symb && other_symb) {
-	// 				return **this_symb == **other_symb;
-	// 			} else {
-	// 				auto this_type = std::get_if<std::shared_ptr<const Type>>(&this_item);
-	// 				auto other_type = std::get_if<std::shared_ptr<const Type>>(&other_item);
-	// 				if(this_type && other_type) {
-	// 					return **this_type == **other_type;
-	// 				} else {
-	// 					return false;
-	// 				}
-	// 			}
-	// 			++this_iter;
-	// 			++other_iter;
-	// 		}
-	// 		return true;
-	// 	}
-	// 	return false;
-	// }
+	bool TypeSpecification::operator==(const TypeSpecification &other) const {
+		if (std::equal(concrete_types.begin(), concrete_types.end(),
+			       other.concrete_types.begin())
+		    && properties == other.properties) {
+			for (const auto &val : parameters) {
+				bool found = false;
+				for (const auto &v_other : other.parameters) {
+					if (val.second == v_other.second) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					return false;
+				}
+			}
+			return true;
+		} else {
+			return false;
+		}
+        }
 
-	// bool TypeSpecification::operator>(const TypeSpecification &other) const {
-	// 	if(specification.size() > other.specification.size()) {
-	// 		return true;
-	// 	}
-	// 	auto this_iter = specification.begin();
-	// 	auto other_iter = other.specification.begin();
-	// 	while(this_iter != specification.end()) {
-	// 		const auto &this_item = *this_iter;
-	// 		const auto &other_item = *other_iter;
-	// 		// TODO: use spaceship operator
-	// 		if(this_item > other_item) {
-	// 			return true;
-	// 		} else if(this_item < other_item) {
-	// 			return false;
-	// 		}
-	// 	}
-	// 	// They are equal:
-	// 	return false;
-	// }
+	bool TypeSpecification::operator!=(const TypeSpecification &other) const {
+	 	return !(*this == other);
+	}
 
-	// bool TypeSpecification::operator<(const TypeSpecification &other) const {
-	// 	if(specification.size() < other.specification.size()) {
-	// 		return true;
-	// 	}
-	// 	auto this_iter = specification.begin();
-	// 	auto other_iter = other.specification.begin();
-	// 	while(this_iter != specification.end()) {
-	// 		const auto &this_item = *this_iter;
-	// 		const auto &other_item = *other_iter;
-	// 		// TODO: use spaceship operator
-	// 		if(this_item < other_item) {
-	// 			return true;
-	// 		} else if(this_item > other_item) {
-	// 			return false;
-	// 		}
-	// 	}
-	// 	// They are equal:
-	// 	return false;
-	// }
+	bool TypeSpecification::operator>(const TypeSpecification &other) const {
+		return parameters > other.parameters &&
+			concrete_types > other.concrete_types &&
+			properties > other.properties;
+	}
 
-	// bool TypeSpecification::operator!=(const TypeSpecification &other) const {
-	// 	return !(*this == other);
-	// }
+	bool TypeSpecification::operator<(const TypeSpecification &other) const {
+		return (parameters < other.parameters)
+			&& concrete_types < other.concrete_types
+			&& (properties < other.properties);
+	}
 
-	// std::ostream &operator<<(std::ostream &out, const TypeSpecification& spec) {
-	// 	auto iter = spec.specification.cbegin();
-	// 	if(iter != spec.specification.cend()) {
-	// 		const auto &item = *iter;
-	// 		std::visit([&out](auto &&item) {
-	// 			out << *item;
-	// 		}, item);
-	// 		++iter;
-	// 		while(iter != spec.specification.cend()) {
-	// 			const auto &item = *iter;
-	// 			std::visit([&out](auto &&item) {
-	// 				out << " " << *item;
-	// 			}, item);
-	// 			++iter;
-	// 		}
-	// 	}
-	// 	return out;
-	// }
+	using ItemMask = std::variant<Symbol*, Type*>;
 
-	// bool TypeSpecification::concrete() const {
-	// 	return is_concrete;
-	// }
+	std::ostream &operator<<(std::ostream &out, const TypeSpecification& spec) {
+		if(spec.size() > 0) {
+			std::vector<ItemMask> to_print;
+			to_print.reserve(spec.size());
+			for (const auto &[symb, array] : spec.parameters) {
+				for (const size_t index : array) {
+					to_print[index] = symb;
+				}
+			}
+			for (const auto &[type, index] : spec.concrete_types) {
+				to_print[index] = type;
+			}
 
-	// void SpecBuilder::add_parameter(vm_ptr<Symbol> param) {
-	// 	types.push_back(param);
-	// }
+			spec.properties[0].pretty_print(out);
+			std::visit([&out](const auto &arg) { out << *arg; },
+				   to_print[0]);
+			for (size_t i = 1; i < spec.size(); ++i) {
+				spec.properties[i].pretty_print(out);
+				std::visit([&out](const auto &arg) { out << *arg; },
+					   to_print[0]);
+			}
+                }
+                return out;
+        }
 
-	// void SpecBuilder::add_type(std::shared_ptr<Type> type) {
-	// 	types.push_back(type);
-	// }
+	bool TypeSpecification::concrete() const {
+		return is_concrete;
+	}
 
-	// TypeSpecification SpecBuilder::get() {
-	// 	TypeSpecification spec(this->types);
-	// 	return spec;
-	// }
+        void TypeSpecification::get_roots(std::vector<AllocatedItem*> &add) const {
+		add.reserve(add.size() + parameters.size() + concrete_types.size());
+                for (const auto &val : parameters) {
+			add.push_back(val.first);
+                }
+                for (const auto &val : concrete_types) {
+			add.push_back(val.first);
+                }
+        }
 }

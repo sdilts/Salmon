@@ -9,15 +9,11 @@ namespace salmon::vm {
 
 	TypeInterface::~TypeInterface() {}
 
-	// FunctionType::FunctionType(const TypeSpecification &ret_spec, const TypeSpecification &arg_spec) :
-	// 	arg_spec(arg_spec),
-	// 	ret_spec(ret_spec) { }
-	// FunctionType::FunctionType(const std::vector<TypeSpecification::ItemMask> &ret_types,
-	// 						   const std::vector<TypeSpecification::ItemMask> &arg_types) :
-	// 	arg_spec(arg_types),
-	// 	ret_spec(ret_types) { }
+	FunctionType::FunctionType(const TypeSpecification &ret_spec, const TypeSpecification &arg_spec) :
+		arg_spec(arg_spec),
+		ret_spec(ret_spec) { }
 
-	// FunctionType::~FunctionType() {}
+	FunctionType::~FunctionType() {}
 
 	// bool
 	// FunctionType::match(const std::vector<std::shared_ptr<const Type>> &type_list) const {
@@ -51,56 +47,63 @@ namespace salmon::vm {
 	// 	return arg_spec.matches(type_list);
 	// }
 
-	// int FunctionType::arity() const {
-	// 	return arg_spec.num_types();
-	// }
+	int FunctionType::arity() const {
+		return arg_spec.size();
+	}
 
-	// size_t FunctionType::size() const {
-	// 	// TODO: change to allow cross-compiling
-	// 	return sizeof(void*);
-	// }
+	size_t FunctionType::size() const {
+		// TODO: actually compute this
+		return sizeof(void*);
+	}
 
-	// bool FunctionType::concrete() const {
-	// 	return arg_spec.concrete() && ret_spec.concrete();
-	// }
+	bool FunctionType::concrete() const {
+		return arg_spec.concrete() && ret_spec.concrete();
+	}
 
-	// bool FunctionType::operator==(const FunctionType &other) const {
-	// 	bool arg_same = arg_spec == other.arg_spec;
-	// 	if(arg_same) {
-	// 		return ret_spec == other.ret_spec;
-	// 	}
-	// 	return false;
-	// }
+        std::vector<AllocatedItem*> FunctionType::get_roots() const {
+		std::vector<AllocatedItem*> to_return;
+		arg_spec.get_roots(to_return);
+		ret_spec.get_roots(to_return);
+		return to_return;
+	}
 
-	// bool FunctionType::operator!=(const FunctionType &other) const {
-	// 	return !(*this == other);
-	// }
+        bool FunctionType::operator==(const FunctionType &other) const {
+		bool arg_same = arg_spec == other.arg_spec;
+		if(arg_same) {
+			return ret_spec == other.ret_spec;
+		}
+		return false;
+	}
 
-	// bool FunctionType::operator<(const FunctionType &other) const {
-	// 	bool arg_smaller = arg_spec < other.arg_spec;
-	// 	if(arg_smaller) {
-	// 		return true;
-	// 	} else {
-	// 		return ret_spec < other.ret_spec;
-	// 	}
-	// }
+	bool FunctionType::operator!=(const FunctionType &other) const {
+		return !(*this == other);
+	}
 
-	// bool FunctionType::operator>(const FunctionType &other) const {
-	// 	bool arg_bigger = arg_spec > other.arg_spec;
-	// 	if(arg_bigger) {
-	// 		return true;
-	// 	} else {
-	// 		return ret_spec > other.ret_spec;
-	// 	}
-	// }
+	bool FunctionType::operator<(const FunctionType &other) const {
+		bool arg_smaller = arg_spec < other.arg_spec;
+		if(arg_smaller) {
+			return true;
+		} else {
+			return ret_spec < other.ret_spec;
+		}
+	}
 
-	// std::ostream &operator<<(std::ostream &out, const FunctionType &fn) {
-	// 	std::ignore = fn;
-	// 	out << "<TYPE: (fn ";
-	// 	out << "[" << fn.arg_spec << "] ";
-	// 	out << "(" << fn.ret_spec << ") ";
-	// 	return out << ") >";
-	// }
+	bool FunctionType::operator>(const FunctionType &other) const {
+		bool arg_bigger = arg_spec > other.arg_spec;
+		if(arg_bigger) {
+			return true;
+		} else {
+			return ret_spec > other.ret_spec;
+		}
+	}
+
+	std::ostream &operator<<(std::ostream &out, const FunctionType &fn) {
+		std::ignore = fn;
+		out << "<TYPE: (fn ";
+		out << "[" << fn.arg_spec << "] ";
+		out << "(" << fn.ret_spec << ") ";
+		return out << ") >";
+	}
 
 	PrimitiveType::PrimitiveType(const vm_ptr<Symbol> &name, const std::string &documentation,
 								 const size_t size) :
