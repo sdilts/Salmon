@@ -54,39 +54,40 @@ namespace salmon::vm {
 	};
 	std::ostream &operator<<(std::ostream &out, const PrimitiveType &type);
 
-	// struct FunctionType : TypeInterface {
-	// 	FunctionType(const TypeSpecification &ret_spec, const TypeSpecification &arg_spec);
-	// 	FunctionType(const std::vector<TypeSpecification::ItemMask> &ret_types,
-	// 				 const std::vector<TypeSpecification::ItemMask> &arg_types);
-	// 	~FunctionType();
+	struct FunctionType : TypeInterface {
+		FunctionType(const TypeSpecification &ret_spec, const TypeSpecification &arg_spec);
 
-	// 	//! Return the arity of the function.
-	// 	int arity() const;
-	// 	//! Match the return types and the arguments. Order is return types, then args.
-	// 	bool match(const std::vector<std::shared_ptr<const Type>> &type_list) const;
-	// 	//! Just match the arguments
-	// 	bool match_args(const std::vector<std::shared_ptr<const Type>> &type_list) const;
+		~FunctionType();
 
+		//! Return the arity of the function.
+		int arity() const;
+		//! Match the return types and the arguments. Order is return types, then args.
+		bool match(const std::vector<vm_ptr<Type>> &type_list) const;
+		bool match(const FunctionType &other) const;
+		//! Just match the arguments
+		bool match_args(const std::vector<vm_ptr<Type>> &type_list) const;
 
-	// 	size_t size() const;
-	// 	bool concrete() const;
+		size_t size() const override;
+		bool concrete() const override;
 
-	// 	bool operator==(const FunctionType &other) const;
-	// 	bool operator!=(const FunctionType &other) const;
-	// 	bool operator>(const FunctionType &other) const;
-	// 	bool operator<(const FunctionType &other) const;
+		std::vector<AllocatedItem*> get_roots() const override;
 
-	// 	friend std::ostream &operator<<(std::ostream &out, const FunctionType &fn);
-	// private:
-	// 	TypeSpecification arg_spec;
-	// 	TypeSpecification ret_spec;
-	// };
+		bool operator==(const FunctionType &other) const;
+		bool operator!=(const FunctionType &other) const;
+		bool operator>(const FunctionType &other) const;
+		bool operator<(const FunctionType &other) const;
+
+		friend std::ostream &operator<<(std::ostream &out, const FunctionType &fn);
+	private:
+		TypeSpecification arg_spec;
+		TypeSpecification ret_spec;
+	};
 
 	struct Type : AllocatedItem {
-		using TypeVar = std::variant<PrimitiveType>;
+		using TypeVar = std::variant<PrimitiveType,
 						   // ProductType,
 						   // SumType,
-		// FunctionType>;
+					     FunctionType>;
 
 		Type(const TypeVar &type);
 
