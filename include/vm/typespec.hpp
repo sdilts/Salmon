@@ -54,6 +54,8 @@ namespace salmon::vm {
 
 		void get_roots(std::vector<AllocatedItem*> &add) const;
 
+		bool equivalentTo(const TypeSpecification &other) const;
+
 		bool operator==(const TypeSpecification &other) const;
 		bool operator!=(const TypeSpecification &other) const;
 		bool operator>(const TypeSpecification &other) const;

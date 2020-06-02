@@ -4,7 +4,7 @@ tests = {
 	  'symbol_tests'   : 'symbol_test.cpp',
 	  'vm_ptr_tests'   : 'vm_ptr_tests.cpp',
 	  # 'function_tests' : 'builtin_function_test.cpp',
-	  # 'typespec_tests' : 'type_spec_test.cpp',
+	  'typespec_tests' : 'typespec_test.cpp',
 	  'type_tests'     : 'type_test.cpp',
 	}
 
