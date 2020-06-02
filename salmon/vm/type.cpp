@@ -221,11 +221,8 @@ namespace salmon::vm {
 
 	TypePtr
 	TypeTable::make_primitive(const vm_ptr<Symbol> &name, const std::string &doc, std::size_t size) {
-		#ifndef NDEBUG
-		auto place = named_types.find(name);
-		salmon_check(place == named_types.end(),
+		salmon_check(named_types.find(name) == named_types.end(),
 			     "We shouldn't be overwriting primitive types with `make_primitive`");
-		#endif
 		PrimitiveType tmp(name, doc,size);
 		auto type_ptr = mem_manager.allocate_obj<Type>(std::move(tmp));
 		named_types.insert({name, type_ptr});
