@@ -77,7 +77,13 @@ namespace salmon::vm {
 			}
 		}
 
-		T& operator*() const {
+                template <typename O>
+                vm_ptr<O> from(O *obj) {
+			vm_ptr<O> thing(obj, std::ref(*this->instances));
+			return thing;
+		}
+
+                T& operator*() const {
 			return *ptr;
 		}
 
