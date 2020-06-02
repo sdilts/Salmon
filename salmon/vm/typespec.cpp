@@ -1,3 +1,5 @@
+#include <ostream>
+
 #include <vm/typespec.hpp>
 #include <vm/type.hpp>
 #include <util/assert.hpp>
@@ -62,13 +64,13 @@ namespace salmon::vm {
 					bool is_static) {
 		auto place = parameters.lower_bound(param);
 		if( place == parameters.end() || *(*place).first != *param ) {
-                        parameters.emplace_hint(place, param, num_elems);
+			std::vector<size_t> vec = { num_elems };
+                        parameters.emplace_hint(place, param, std::move(vec));
                 } else {
 			(*place).second.push_back(num_elems);
                 }
 		num_elems += 1;
 		properties.emplace_back(constant, is_static);
-		salmon_check(properties.size() == num_elems, "didn't increment num_elems");
         }
 
         void SpecBuilder::add_type(vm_ptr<Type> &type) {
@@ -101,7 +103,7 @@ namespace salmon::vm {
 		std::vector<std::pair<Type*, size_t>> ret;
 		ret.reserve(args.size());
                 for (const auto &val : args) {
-			ret.emplace_back(val.first.get(), val.second);
+			ret.push_back({val.first.get(), val.second});
                 }
 		return ret;
         }
@@ -125,36 +127,64 @@ namespace salmon::vm {
 		#endif
 	}
 
-        // bool TypeSpecification::matches(const std::vector<std::shared_ptr<const Type>> &type_list) const {
-	// 	if(type_list.size() != specification.size()) {
-	// 		return false;
-	// 	}
-	// 	// Check to make sure the unspecified types match where they should:
-	// 	for(const auto &[symb, indicies] : unspecified_types) {
-	// 		std::shared_ptr<const Type> type = type_list[indicies[0]];
+        bool TypeSpecification::matches(const std::vector<vm_ptr<Type>> &type_list) const {
+		if(this->size() != type_list.size()) {
+			return false;
+		}
+		// Check to make sure the unspecified types match where they should:
+		for(const auto &[symb, indicies] : parameters) {
+			const vm_ptr<Type> &type = type_list[indicies[0]];
 
-	// 		for(size_t index = 1; index < indicies.size(); index++) {
-	// 			if(type != type_list[indicies[index]]) {
-	// 				return false;
-	// 			}
-	// 		}
-	// 	}
-	// 	// Now check that the specified types match the given types:
-	// 	for(size_t index : concrete_types) {
-	// 		auto type = std::get_if<std::shared_ptr<const Type>>(&specification[index]);
-	// 		if(*type != type_list[index]) {
-	// 			return false;
-	// 		}
-	// 	}
-	// 	return true;
-	// }
+			for(size_t index = 1; index < indicies.size(); index++) {
+				auto cur_type = type_list[indicies[index]];
+				if(*type != *cur_type) {
+					return false;
+				}
+			}
+		}
+		// Now check that the concrete types match the given types:
+		for(const auto &[type, index] : concrete_types) {
+			if(*type != *type_list[index]) {
+				return false;
+			}
+		}
+		return true;
+	}
 
-	size_t TypeSpecification::size() const {
+        std::optional<std::map<vm_ptr<Symbol>, vm_ptr<Type>>>
+        TypeSpecification::match_symbols(const std::vector<vm_ptr<Type>> &type_list) const {
+		if(type_list.size() != this->size()) {
+			return std::nullopt;
+		}
+		std::map<vm_ptr<Symbol>,vm_ptr<Type>> table;
+                for (const auto &[symb, indicies] : parameters) {
+			vm_ptr<Type> type = type_list[indicies[0]];
+			for(size_t index = 1; index < indicies.size(); index++) {
+				auto cur_type = type_list[indicies[index]];
+				if(*type != *cur_type) {
+					return std::nullopt;
+				}
+			}
+			vm_ptr<Symbol> ptr = type.from(symb);
+			table.insert(std::make_pair(ptr, type));
+                }
+
+		for(const auto &[type, index] : concrete_types) {
+			if(*type != *type_list[index]) {
+				return std::nullopt;
+			}
+		}
+
+                return std::make_optional(table);
+	}
+
+        size_t TypeSpecification::size() const {
 		// Arbitrary container: they all should be the same size.
 		return properties.size();
 	}
 
-	bool TypeSpecification::operator==(const TypeSpecification &other) const {
+	bool TypeSpecification::equivalentTo(const TypeSpecification &other) const {
+		// use equivalent() method for non-concrete types when we get there:
 		if (std::equal(concrete_types.begin(), concrete_types.end(),
 			       other.concrete_types.begin())
 		    && properties == other.properties) {
@@ -175,6 +205,15 @@ namespace salmon::vm {
 			return false;
 		}
         }
+
+	bool TypeSpecification::operator==(const TypeSpecification &other) const {
+		// There should only be one instance of each of these instances,
+		// so comparing vm_ptrs is okay.
+		return std::equal(concrete_types.begin(), concrete_types.end(),
+				  other.concrete_types.begin())
+			&& parameters == other.parameters
+			&& properties == other.properties;
+	}
 
 	bool TypeSpecification::operator!=(const TypeSpecification &other) const {
 	 	return !(*this == other);
@@ -207,13 +246,19 @@ namespace salmon::vm {
 				to_print[index] = type;
 			}
 
+			out << '(';
 			spec.properties[0].pretty_print(out);
+			out << ' ';
 			std::visit([&out](const auto &arg) { out << *arg; },
 				   to_print[0]);
+			out << ')';
 			for (size_t i = 1; i < spec.size(); ++i) {
+				out << " (";
 				spec.properties[i].pretty_print(out);
+				out << ' ';
 				std::visit([&out](const auto &arg) { out << *arg; },
 					   to_print[0]);
+				out << ')';
 			}
                 }
                 return out;
@@ -228,6 +273,8 @@ namespace salmon::vm {
                 for (const auto &val : parameters) {
 			add.push_back(val.first);
                 }
+		// If types appear more than once, they will added twice, but that is
+		// (probably) okay.
                 for (const auto &val : concrete_types) {
 			add.push_back(val.first);
                 }
