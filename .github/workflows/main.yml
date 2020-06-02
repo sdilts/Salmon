@@ -21,7 +21,7 @@ jobs:
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
-    # - uses: actions/setup-python@v1
+    - uses: actions/setup-python@v2
     - uses: BSFishy/meson-build@v1.0.1
       with:
         action: test
