@@ -15,37 +15,37 @@ namespace salmon::vm {
 
 	FunctionType::~FunctionType() {}
 
-	// bool
-	// FunctionType::match(const std::vector<std::shared_ptr<const Type>> &type_list) const {
-	// 	const std::vector<std::shared_ptr<const Type>> ret_list(type_list.begin(),
-	// 															type_list.begin() + arg_spec.num_types());
-	// 	const std::vector<std::shared_ptr<const Type>> arg_list(type_list.begin() + arg_spec.num_types(),
-	// 															type_list.end());
-	// 	auto arg_opt = arg_spec.match_symbols(arg_list);
-	// 	if(!arg_opt) {
-	// 		return false;
-	// 	}
-	// 	auto arg_matches = *arg_opt;
-	// 	auto ret_opt = ret_spec.match_symbols(ret_list);
-	// 	if(!ret_opt) {
-	// 		return false;
-	// 	}
-	// 	auto ret_matches = *ret_opt;
-	// 	// The ret unspecified types should be a subset of the argument types:
-	// 	return std::all_of(ret_matches.begin(), ret_matches.end(),
-	// 					   [&arg_matches](const auto &pair) {
-	// 						   auto symb = std::get<0>(pair);
-	// 						   const auto iter = arg_matches.find(symb);
-	// 						   if(iter != arg_matches.end()) {
-	// 							   return *iter == pair;
-	// 						   } else return false;
-	// 					   });
-	// }
+	bool
+	FunctionType::match(const std::vector<vm_ptr<Type>> &type_list) const {
+		const std::vector<vm_ptr<Type>> ret_list(type_list.begin(),
+							 type_list.begin() + arg_spec.size());
+		const std::vector<vm_ptr<Type>> arg_list(type_list.begin() + arg_spec.size(),
+							 type_list.end());
+		auto arg_opt = arg_spec.match_symbols(arg_list);
+		if(!arg_opt) {
+			return false;
+		}
+		auto arg_matches = *arg_opt;
+		auto ret_opt = ret_spec.match_symbols(ret_list);
+		if(!ret_opt) {
+			return false;
+		}
+		auto ret_matches = *ret_opt;
+		// The ret unspecified types should be a subset of the argument types:
+		return std::all_of(ret_matches.begin(), ret_matches.end(),
+				   [&arg_matches](const auto &pair) {
+					   auto symb = std::get<0>(pair);
+					   const auto iter = arg_matches.find(symb);
+					   if(iter != arg_matches.end()) {
+						   return *iter == pair;
+					   } else return false;
+				   });
+	}
 
-	// bool
-	// FunctionType::match_args(const std::vector<std::shared_ptr<const Type>> &type_list) const {
-	// 	return arg_spec.matches(type_list);
-	// }
+	bool
+	FunctionType::match_args(const std::vector<vm_ptr<Type>> &type_list) const {
+		return arg_spec.matches(type_list);
+	}
 
 	int FunctionType::arity() const {
 		return arg_spec.size();
@@ -229,15 +229,15 @@ namespace salmon::vm {
 		return type_ptr;
 	}
 
-	// TypePtr
-	// TypeTable::get_fn_type(const TypeSpecification &arg_types, const TypeSpecification &ret_types) {
-	// 	FunctionType fn_t(ret_types, arg_types);
-	// 	auto fn_ptr = std::make_shared<Type>(std::move(fn_t));
-	// 	auto place = functions.lower_bound(fn_ptr);
-	// 	if(place == functions.end() || (*place) != fn_ptr) {
-	// 		functions.insert(place, fn_ptr);
-	// 		return fn_ptr;
-	// 	}
-	// 	return *place;
-	// }
+        TypePtr
+	TypeTable::get_fn_type(const TypeSpecification &arg_types, const TypeSpecification &ret_types) {
+		FunctionType fn_t(ret_types, arg_types);
+		auto fn_ptr = mem_manager.allocate_obj<Type>(std::move(fn_t));
+		auto place = functions.lower_bound(fn_ptr);
+		if(place == functions.end() || *(*place) != *fn_ptr) {
+			functions.insert(place, fn_ptr);
+			return fn_ptr;
+		}
+		return *place;
+	}
 }

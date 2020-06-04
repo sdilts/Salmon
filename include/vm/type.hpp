@@ -114,7 +114,7 @@ namespace salmon::vm {
 		TypeTable(MemoryManager &mem_manager);
 
 		std::optional<TypePtr> get_named(const vm_ptr<Symbol> &name) const;
-		// TypePtr get_fn_type(const TypeSpecification &arg_types, const TypeSpecification &ret_types);
+		TypePtr get_fn_type(const TypeSpecification &arg_types, const TypeSpecification &ret_types);
 
 		bool make_alias(const vm_ptr<Symbol> &alias, TypePtr &type);
 
@@ -122,14 +122,14 @@ namespace salmon::vm {
 
 	private:
 		MemoryManager &mem_manager;
-		// struct cmpUnderlyingType {
-		// 	bool operator()(const std::shared_ptr<const Type>& a,
-		// 					const std::shared_ptr<const Type>& b) const {
-		// 		return *a < *b;
-		// 	}
-		// };
+		struct cmpUnderlyingType {
+			bool operator()(const vm_ptr<Type>& a,
+					const vm_ptr<Type>& b) const {
+				return *a < *b;
+			}
+		};
 		std::unordered_map<vm_ptr<Symbol>, vm_ptr<Type>> named_types;
-		// std::set<TypePtr, cmpUnderlyingType> functions;
+		std::set<TypePtr, cmpUnderlyingType> functions;
 	};
 }
 
