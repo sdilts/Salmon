@@ -60,7 +60,7 @@ namespace salmon::vm {
 		packages.emplace(std::string(base_package), Package(base_package, mem_manager));
 
 		Package &base_pkg = packages.find(base_package)->second;
-	    init_types(base_pkg, type_table, builtin_map);
+		init_types(base_pkg, type_table, builtin_map);
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {

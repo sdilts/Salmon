@@ -25,6 +25,7 @@ namespace salmon::vm {
 			}
 		}
 	}
+
 	SCENARIO("Type Aliases are created correctly") {
 		TypeTable table(manager);
 		GIVEN("A type object") {
