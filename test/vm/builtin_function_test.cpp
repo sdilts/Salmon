@@ -17,6 +17,9 @@ namespace salmon::vm {
 	auto func_name = manager.allocate_obj<Symbol>("foo");
 	auto arg1 = manager.allocate_obj<Symbol>("arg1");
 	auto arg2 = manager.allocate_obj<Symbol>("arg2");
+	auto type_name = manager.allocate_obj<Symbol>("type");
+	PrimitiveType p(type_name, "", 1);
+	auto type = manager.allocate_obj<Type>(p);
 
 	BuiltinFunction<Box&,Box&> func({arg1, arg2}, std::nullopt, std::nullopt, foo);
 
@@ -24,16 +27,16 @@ namespace salmon::vm {
 	SCENARIO("Builtin functions check their argument lengths", "[vm, functions]") {
 
 		WHEN("The wrong number of arguments is given") {
-			auto ptr = manager.make_vm_ptr<AllocatedItem>();
-			Box b(ptr);
+			auto symb = manager.allocate_obj<Symbol>("b");
+			Box b(symb, type);
 			std::vector<Box> input = { b };
 			THEN("An ArityException is thrown") {
 				REQUIRE_THROWS_AS(func(input), ArityException);
 			}
 		}
 		WHEN("The correct number of arguments is given") {
-			auto ptr = manager.make_vm_ptr<AllocatedItem>();
-			Box b(ptr);
+			auto symb = manager.allocate_obj<Symbol>("b");
+			Box b(symb, type);
 			std::vector<Box> input = { b, b };
 			THEN("An ArityException isn't thrown") {
 				REQUIRE_NOTHROW(func(input));
@@ -43,8 +46,9 @@ namespace salmon::vm {
 
 	SCENARIO("ArityExceptions report the correct info", "[vm, functions]") {
 		try {
-			auto ptr = manager.make_vm_ptr<AllocatedItem>();
-			Box b(ptr);
+			auto symb = manager.allocate_obj<Symbol>("b");
+			Box b(symb, type);
+
 			std::vector<Box> input = { b };
 			func(input);
 			REQUIRE(false);
