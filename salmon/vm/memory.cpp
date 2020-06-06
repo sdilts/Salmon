@@ -27,13 +27,12 @@ namespace salmon::vm {
 			   std::unordered_set<AllocatedItem*> &to_check,
 			   std::unordered_set<AllocatedItem*> &marked) {
 		marked.insert(item);
-		std::vector<AllocatedItem*> children = item->get_roots();
-		// If a child isn't marked, attempt to add it to to_check:
-		for(AllocatedItem *child : children) {
+		std::vector<AllocatedItem*> children;
+		item->get_roots([&to_check, &marked](AllocatedItem *child) {
 			if(!set_contains(marked, child)) {
 				to_check.insert(child);
 			}
-		}
+		});
 	}
 
 	/**

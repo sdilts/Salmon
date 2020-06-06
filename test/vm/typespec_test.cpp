@@ -258,7 +258,9 @@ namespace salmon::vm {
 
                 WHEN("The roots are extracted") {
 			std::vector<AllocatedItem*> roots;
-			spec.get_roots(roots);
+			spec.get_roots([&roots](AllocatedItem *item) {
+				roots.push_back(item);
+			});
                         THEN("All of the roots are accounted for") {
 				std::set<AllocatedItem*> to_check = { f32_type.get(), i32_type.get(), symb_a.get() };
                                 for (AllocatedItem *item : roots) {

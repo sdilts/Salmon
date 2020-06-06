@@ -17,7 +17,10 @@ namespace salmon::vm {
 	SCENARIO( "An InternalBox contains a integer", "[box, vm]") {
 		InternalBox box = { type.get(), 32 };
 		WHEN("The roots are given") {
-			auto roots = box.get_roots();
+			std::vector<AllocatedItem*> roots;
+			box.get_roots([&roots](AllocatedItem* item) {
+				roots.push_back(item);
+			});
 			THEN("Then it isn't added to the roots") {
 				REQUIRE(roots.size() == 1);
 			}
@@ -27,7 +30,10 @@ namespace salmon::vm {
 	SCENARIO( "An InternalBox contains a float", "[box, vm]") {
 		InternalBox box = { type.get(), 32.1f };
 		WHEN("The roots are given") {
-			auto roots = box.get_roots();
+			std::vector<AllocatedItem*> roots;
+			box.get_roots([&roots](AllocatedItem* item) {
+				roots.push_back(item);
+			});
 			THEN("Then it isn't added to the roots") {
 				REQUIRE(roots.size() == 1);
 			}
@@ -38,7 +44,10 @@ namespace salmon::vm {
 		Symbol *symb = new Symbol("foo", std::nullopt);
 		InternalBox box = { type.get(), symb };
 		WHEN("The roots are given") {
-			auto roots = box.get_roots();
+			std::vector<AllocatedItem*> roots;
+			box.get_roots([&roots](AllocatedItem* item) {
+				roots.push_back(item);
+			});
 			THEN("There are two roots") {
 				REQUIRE(roots.size() == 2);
 			}

@@ -8,12 +8,11 @@ namespace salmon::vm {
 
 	}
 
-	std::vector<AllocatedItem*> List::get_roots() const {
-		auto children = itm.get_roots();
+	void List::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
+		itm.get_roots(inserter);
 		if (next != nullptr) {
-			children.push_back(next);
+			inserter(next);
 		}
-		return children;
 	}
 
 	void List::print_debug_info() const {

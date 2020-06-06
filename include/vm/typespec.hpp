@@ -52,7 +52,7 @@ namespace salmon::vm {
 		//! Get the number of types:
 		size_t size() const;
 
-		void get_roots(std::vector<AllocatedItem*> &add) const;
+		void get_roots(const std::function<void(AllocatedItem*)>&) const;
 
 		bool equivalentTo(const TypeSpecification &other) const;
 

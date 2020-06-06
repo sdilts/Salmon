@@ -60,11 +60,10 @@ namespace salmon::vm {
 		return arg_spec.concrete() && ret_spec.concrete();
 	}
 
-        std::vector<AllocatedItem*> FunctionType::get_roots() const {
+	void FunctionType::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
 		std::vector<AllocatedItem*> to_return;
-		arg_spec.get_roots(to_return);
-		ret_spec.get_roots(to_return);
-		return to_return;
+		arg_spec.get_roots(inserter);
+		ret_spec.get_roots(inserter);
 	}
 
         bool FunctionType::operator==(const FunctionType &other) const {
@@ -121,8 +120,8 @@ namespace salmon::vm {
 		return true;
 	}
 
-        std::vector<AllocatedItem *> PrimitiveType::get_roots() const {
-		return { name };
+	void PrimitiveType::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
+		inserter(name);
 	}
 
         bool PrimitiveType::operator==(const PrimitiveType &other) const {
@@ -164,9 +163,9 @@ namespace salmon::vm {
 		return sizeof(Type);
 	}
 
-        std::vector<AllocatedItem *> Type::get_roots() const {
-		return std::visit([](auto &&arg) {
-			return arg.get_roots();
+	void Type::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
+		std::visit([&inserter](auto &&arg) {
+			arg.get_roots(inserter);
 		}, type);
         }
 

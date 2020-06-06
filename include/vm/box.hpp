@@ -29,7 +29,7 @@ namespace salmon::vm {
 	struct InternalBox {
 		Type* type;
 		BoxVariant elem;
-		std::vector<AllocatedItem*> get_roots() const;
+	        void get_roots(const std::function<void(AllocatedItem*)>&) const;
 	};
 
 	struct Box : private InternalBox {
@@ -97,7 +97,7 @@ namespace salmon::vm {
 		void push_back(Box&& item);
 
 		void print_debug_info() const override;
-		std::vector<AllocatedItem*> get_roots() const override;
+		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 		size_t allocated_size() const override;
 
 	private:
@@ -113,7 +113,7 @@ namespace salmon::vm {
 		List *next;
 
 		void print_debug_info() const override;
-		std::vector<AllocatedItem*> get_roots() const override;
+		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 		size_t allocated_size() const override;
 	};
 }

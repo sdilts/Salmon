@@ -268,15 +268,14 @@ namespace salmon::vm {
 		return is_concrete;
 	}
 
-        void TypeSpecification::get_roots(std::vector<AllocatedItem*> &add) const {
-		add.reserve(add.size() + parameters.size() + concrete_types.size());
+	void TypeSpecification::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
                 for (const auto &val : parameters) {
-			add.push_back(val.first);
+			inserter(val.first);
                 }
 		// If types appear more than once, they will added twice, but that is
 		// (probably) okay.
                 for (const auto &val : concrete_types) {
-			add.push_back(val.first);
+			inserter(val.first);
                 }
         }
 }

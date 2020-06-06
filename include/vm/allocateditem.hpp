@@ -2,6 +2,7 @@
 #define SALMON_COMPILER_VM_ALLOCATED_ITEM
 
 #include <vector>
+#include <functional>
 
 namespace salmon::vm {
 
@@ -12,8 +13,8 @@ namespace salmon::vm {
 		 * Return the immediate roots of the item.
 		 * The return value may include items that also contain roots, and need to be searched.
 		 **/
-		virtual std::vector<AllocatedItem*> get_roots() const {
-			return {};
+		virtual void get_roots(const std::function<void(AllocatedItem*)> &) const {
+
 		};
 
 		virtual void print_debug_info() const = 0;

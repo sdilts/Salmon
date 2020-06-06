@@ -30,7 +30,7 @@ namespace salmon::vm {
 		//! Check if the type can be instantiated
 		virtual bool concrete() const = 0;
 
-		virtual std::vector<AllocatedItem*> get_roots() const = 0;
+		virtual void get_roots(const std::function<void(AllocatedItem*)>&) const = 0;
 	};
 
 	struct PrimitiveType : TypeInterface {
@@ -45,13 +45,14 @@ namespace salmon::vm {
 
 		size_t size() const override;
 		bool concrete() const override;
-		std::vector<AllocatedItem*> get_roots() const override;
+		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 
 		bool operator==(const PrimitiveType &other) const;
 		bool operator!=(const PrimitiveType &other) const;
 		bool operator>(const PrimitiveType &other) const;
 		bool operator<(const PrimitiveType &other) const;
 	};
+
 	std::ostream &operator<<(std::ostream &out, const PrimitiveType &type);
 
 	struct FunctionType : TypeInterface {
@@ -70,7 +71,7 @@ namespace salmon::vm {
 		size_t size() const override;
 		bool concrete() const override;
 
-		std::vector<AllocatedItem*> get_roots() const override;
+		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 
 		bool operator==(const FunctionType &other) const;
 		bool operator!=(const FunctionType &other) const;
@@ -98,7 +99,7 @@ namespace salmon::vm {
 
 		void print_debug_info() const override;
 		size_t allocated_size() const override;
-		std::vector<AllocatedItem*> get_roots() const override;
+		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 
 		bool operator==(const Type &other) const;
 		bool operator!=(const Type &other) const;

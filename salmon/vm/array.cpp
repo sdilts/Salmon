@@ -9,13 +9,11 @@ namespace salmon::vm {
 		items.reserve(size);
 	}
 
-	std::vector<AllocatedItem*> Array::get_roots() const {
-		std::vector<AllocatedItem*> to_return;
+        void Array::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
 		for(const InternalBox &box : items) {
-			std::vector<AllocatedItem*> children = box.get_roots();
-			to_return.insert(to_return.end(), children.begin(), children.end());
+			box.get_roots(inserter);
+
 		}
-		return to_return;
 	}
 
 	void Array::push_back(const Box &item) {
