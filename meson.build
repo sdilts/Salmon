@@ -24,6 +24,7 @@ add_project_arguments(common_args, language: 'c',)
 replxx_options = [
   '-DREPLXX_BUILD_EXAMPLES=no',
   '-DCMAKE_BUILD_TYPE=Release',
+  '-DREPLXX_STATIC=yes'
 ]
 replxx_proj = cmake.subproject('replxx', cmake_options: replxx_options)
 replxx_dep = replxx_proj.dependency('replxx')
