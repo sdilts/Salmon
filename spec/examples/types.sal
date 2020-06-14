@@ -1,0 +1,17 @@
+(defstruct foo []
+  (slot1 :int)
+  (slot2 :double))
+
+(defenum build-type
+  (:debug)
+  (:release)
+  (:test))
+
+(defenum colors
+  (:white #xFFFFFF)
+  (:black #x000000))
+
+(color-value :white) ; returns #FFFFFF
+(color-contains #xFFFFFF) ; returns true
+(color-contains #xF0F000) ; returns false
+(color-list) ; returns {"white" : #xFFFFFF "black" : #x000000}

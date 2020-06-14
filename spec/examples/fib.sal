@@ -1,0 +1,18 @@
+(defn fib [a]
+  (case a
+    (:is 0
+         (return 0))
+    (:is 1
+         (return 1))
+    (:else
+     (return (+ (fib (- a 2)) (fib (- a 1)))))))
+
+(defn max [a b]
+  (if (> a b)
+    a
+    b))
+
+(defn min [a b]
+  (if (< a b)
+    a
+    b))
