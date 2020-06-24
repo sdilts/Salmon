@@ -1,0 +1,15 @@
+image: alpine:latest
+
+build:
+  stage: build
+  before_script:
+     - apk update && apk add libstdc++
+     - apk add --update meson cmake alpine-sdk
+     - mkdir build
+     - meson build
+  script:
+    - ninja -C build test
+  artifacts:
+    paths:
+      - build/salmon/salmon
+      - build/libsalmon_compiler.a
