@@ -20,40 +20,53 @@ namespace salmon::vm {
 		given(num_given),
 		desired(num_desired) {}
 
-	VmFunction::VmFunction(std::vector<vm_ptr<Symbol>>lambda_list,
+	static std::vector<Symbol*> convert(const std::vector<vm_ptr<Symbol>> &list) {
+			std::vector<Symbol*> arr;
+			arr.reserve(list.size());
+			for(auto &item : list) {
+				arr.push_back(item.get());
+			}
+			return arr;
+	}
+
+	static std::optional<List*> convert(const std::optional<vm_ptr<List>> &source) {
+		if(source) {
+			return std::make_optional(source->get());
+		} else {
+			return std::nullopt;
+		}
+	}
+
+	VmFunction::VmFunction(const vm_ptr<Type> &type,
+						   const std::vector<vm_ptr<Symbol>> &lambda_list,
 						   std::optional<std::string> doc, std::optional<std::string> file,
-						   std::optional<vm_ptr<List>> source) :
-		lambda_list(lambda_list),
-		documentation{doc},
-		source_file{file},
-		source_form{source}
+						   const std::optional<vm_ptr<List>> &source) :
+		_lambda_list(convert(lambda_list)),
+		fn_type{type.get()},
+		_documentation{doc},
+		_source_file{file},
+		_source_form{convert(source)}
 	{}
 
 	VmFunction::~VmFunction() {}
 
-	void VmFunction::describe_helper(const std::string &fn_type, std::ostream &stream) const {
-		stream << "is a " << fn_type << " function.\n";
-		stream << "  Lambda-list: [";
-		// TODO: use array print function instead
-		if(lambda_list.size() > 0) {
-			stream << *lambda_list[0];
-			for(size_t i = 1; i < lambda_list.size(); ++i) {
-				stream << " " << *lambda_list[i];
-			}
+	void VmFunction::get_roots(const std::function<void(AllocatedItem*)> &fn) const {
+		fn(fn_type);
+		if(_source_form) {
+			fn(_source_form.value());
 		}
-		stream << "]\n";
-		if(documentation) {
-			stream << "  Documentation\n";
-			stream << "  " << *documentation << "\n";
-		}
-		if(source_form) {
-			// TODO: acutally print this out
-			stream << "  Source form\n";
-		}
-		if(source_file) {
-			stream << "  Source file: " << *source_file << "\n";
-		}
-		stream << std::endl;
 	}
 
+	const Type* VmFunction::type() const {
+		return fn_type;
+	}
+	const std::optional<std::string> &VmFunction::documentation() const {
+		return _documentation;
+	}
+	const std::optional<std::string> &VmFunction::source_file() const {
+		return _source_file;
+	}
+	const std::optional<List*> &VmFunction::source_form() const {
+		return _source_form;
+	}
 }

@@ -27,12 +27,13 @@ namespace salmon::vm {
 					   const size_t num_given, const size_t num_desired);
 	};
 
-	class VmFunction {
+	class VmFunction : AllocatedItem {
 	public:
 		VmFunction() = delete;
-		VmFunction(std::vector<vm_ptr<Symbol>>lambda_list,
+		VmFunction(const vm_ptr<Type> &type,
+				   const std::vector<vm_ptr<Symbol>> &lambda_list,
 				   std::optional<std::string> doc, std::optional<std::string> file,
-				   std::optional<vm_ptr<List>> source);
+				   const std::optional<vm_ptr<List>> &source);
 		virtual ~VmFunction();
 
 		/**
@@ -42,16 +43,19 @@ namespace salmon::vm {
 		 */
 		virtual Box operator()(std::vector<Box> &args) = 0;
 
-		virtual void describe(std::ostream &stream=std::cout) const = 0;
+		void get_roots(const std::function<void(AllocatedItem*)> &) const override;
+
+		const Type* type() const;
+		const std::optional<std::string> &documentation() const;
+		const std::optional<std::string> &source_file() const;
+		const std::optional<List*> &source_form() const;
 	protected:
-		void describe_helper(const std::string &fn_type, std::ostream &stream) const;
+		std::vector<Symbol*> _lambda_list;
+		Type *fn_type;
 
-		// TODO: use boxed object instead?:
-		std::vector<vm_ptr<Symbol>> lambda_list;
-
-		std::optional<std::string> documentation;
-		std::optional<std::string> source_file;
-		std::optional<vm_ptr<List>> source_form;
+		std::optional<std::string> _documentation;
+		std::optional<std::string> _source_file;
+		std::optional<List*> _source_form;
 	};
 }
 

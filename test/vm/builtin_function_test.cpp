@@ -21,8 +21,7 @@ namespace salmon::vm {
 	PrimitiveType p(type_name, "", 1);
 	auto type = manager.allocate_obj<Type>(p);
 
-	BuiltinFunction<Box&,Box&> func({arg1, arg2}, std::nullopt, std::nullopt, foo);
-
+	BuiltinFunction<Box&,Box&> func(foo, type,{arg1, arg2}, std::nullopt, std::nullopt);
 
 	SCENARIO("Builtin functions check their argument lengths", "[vm, functions]") {
 
