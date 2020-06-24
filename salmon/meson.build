@@ -24,7 +24,7 @@ lib_compiler = static_library(
   ),
   include_directories: salmon_inc,
   dependencies: compiler_deps,
-  # cpp_pch: 'pch/pch_cpp.hpp',
+  cpp_pch: 'pch/pch_cpp.hpp',
 )
 
 
