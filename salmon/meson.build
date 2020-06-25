@@ -10,6 +10,7 @@ lib_compiler = static_library(
     'compiler/parser.cpp',
     'config.cpp',
     'vm/allocateditem.cpp',
+    'vm/arityexception.cpp',
     'vm/array.cpp',
     'vm/box.cpp',
     'vm/function.cpp',
@@ -24,7 +25,7 @@ lib_compiler = static_library(
   ),
   include_directories: salmon_inc,
   dependencies: compiler_deps,
-  # cpp_pch: 'pch/pch_cpp.hpp',
+  cpp_pch: 'pch/pch_cpp.hpp',
 )
 
 

@@ -25,6 +25,12 @@ namespace salmon::vm {
 			return tmp;
 		}
 
+		template<typename T>
+		vm_ptr<T> make_vm_ptr(T* item) {
+			vm_ptr<T> tmp(item, roots);
+			return tmp;
+		}
+
 		template<typename T, typename ... ConstructorArgs>
 		vm_ptr<T> allocate_obj(ConstructorArgs... args) {
 			T *chunk = new T(args...);

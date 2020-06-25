@@ -4,14 +4,17 @@
 
 #include <vm/memory.hpp>
 #include <vm/builtinfunction.hpp>
+#include <vm/vm.hpp>
+
 
 namespace salmon::vm {
 
-	static Box foo(Box &one, Box &two) {
-		std::ignore = two;
+	static Box foo(VirtualMachine*, Box &one,Box&) {
 		return one;
 	}
 
+	Config config;
+	VirtualMachine vm(config, "base-package");
 	MemoryManager manager;
 
 	auto func_name = manager.allocate_obj<Symbol>("foo");
@@ -21,8 +24,7 @@ namespace salmon::vm {
 	PrimitiveType p(type_name, "", 1);
 	auto type = manager.allocate_obj<Type>(p);
 
-	BuiltinFunction<Box&,Box&> func({arg1, arg2}, std::nullopt, std::nullopt, foo);
-
+	BuiltinFunction<Box&,Box&> func(foo, type,{arg1, arg2}, std::nullopt, std::nullopt);
 
 	SCENARIO("Builtin functions check their argument lengths", "[vm, functions]") {
 
@@ -31,7 +33,7 @@ namespace salmon::vm {
 			Box b(symb, type);
 			std::vector<Box> input = { b };
 			THEN("An ArityException is thrown") {
-				REQUIRE_THROWS_AS(func(input), ArityException);
+				REQUIRE_THROWS_AS(func(&vm, input), ArityException);
 			}
 		}
 		WHEN("The correct number of arguments is given") {
@@ -39,7 +41,7 @@ namespace salmon::vm {
 			Box b(symb, type);
 			std::vector<Box> input = { b, b };
 			THEN("An ArityException isn't thrown") {
-				REQUIRE_NOTHROW(func(input));
+				REQUIRE_NOTHROW(func(&vm, input));
 			}
 		}
 	}
@@ -50,7 +52,7 @@ namespace salmon::vm {
 			Box b(symb, type);
 
 			std::vector<Box> input = { b };
-			func(input);
+			func(&vm, input);
 			REQUIRE(false);
 		} catch(const ArityException &err) {
 			REQUIRE(err.desired == 2);
