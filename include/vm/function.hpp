@@ -12,13 +12,16 @@
 
 namespace salmon::vm {
 
+	class VirtualMachine;
+
 	struct ArityException : std::runtime_error {
 
 		const std::vector<vm_ptr<Symbol>> lambda_list;
 		const size_t given;
 		const size_t desired;
 
-		static ArityException build(const std::vector<vm_ptr<Symbol>> &lambda_list,
+		static ArityException build(VirtualMachine *vm,
+									const std::vector<Symbol*> &lambda_list,
 									size_t num_given, size_t num_desired);
 
 	private:
@@ -27,13 +30,15 @@ namespace salmon::vm {
 					   const size_t num_given, const size_t num_desired);
 	};
 
-	class VmFunction : AllocatedItem {
+	class VmFunction : public AllocatedItem {
 	public:
 		VmFunction() = delete;
 		VmFunction(const vm_ptr<Type> &type,
 				   const std::vector<vm_ptr<Symbol>> &lambda_list,
 				   std::optional<std::string> doc, std::optional<std::string> file,
 				   const std::optional<vm_ptr<List>> &source);
+		VmFunction(const vm_ptr<Type> &type,
+				   const std::vector<vm_ptr<Symbol>> &lambda_list);
 		virtual ~VmFunction();
 
 		/**
@@ -41,7 +46,7 @@ namespace salmon::vm {
 		 *
 		 * @throw ArityException if the vector is the incorrect length.
 		 */
-		virtual Box operator()(std::vector<Box> &args) = 0;
+		virtual Box operator()(VirtualMachine *vm, std::vector<Box> &args) = 0;
 
 		void get_roots(const std::function<void(AllocatedItem*)> &) const override;
 

@@ -4,22 +4,6 @@
 
 namespace salmon::vm {
 
-	ArityException ArityException::build(const std::vector<vm_ptr<Symbol>> &lambda_list,
-										 const size_t given, const size_t desired) {
-		std::stringstream out;
-		out << "Wrong number of arguments given to function ";
-		out << "(given " << given << ", expected " << desired << ")";
-		return ArityException(out.str(), lambda_list, given, desired);
-	}
-
-	ArityException::ArityException(const std::string &msg,
-								   const std::vector<vm_ptr<Symbol>> &lambda_list,
-								   const size_t num_given, const size_t num_desired) :
-		std::runtime_error(msg),
-		lambda_list(lambda_list),
-		given(num_given),
-		desired(num_desired) {}
-
 	static std::vector<Symbol*> convert(const std::vector<vm_ptr<Symbol>> &list) {
 			std::vector<Symbol*> arr;
 			arr.reserve(list.size());
@@ -38,6 +22,10 @@ namespace salmon::vm {
 	}
 
 	VmFunction::VmFunction(const vm_ptr<Type> &type,
+						   const std::vector<vm_ptr<Symbol>> &lambda_list) :
+		VmFunction(type, lambda_list, std::nullopt, std::nullopt, std::nullopt) {}
+
+	VmFunction::VmFunction(const vm_ptr<Type> &type,
 						   const std::vector<vm_ptr<Symbol>> &lambda_list,
 						   std::optional<std::string> doc, std::optional<std::string> file,
 						   const std::optional<vm_ptr<List>> &source) :
@@ -52,6 +40,9 @@ namespace salmon::vm {
 
 	void VmFunction::get_roots(const std::function<void(AllocatedItem*)> &fn) const {
 		fn(fn_type);
+		for(Symbol *item : _lambda_list) {
+			fn(item);
+		}
 		if(_source_form) {
 			fn(_source_form.value());
 		}

@@ -1,8 +1,6 @@
 #ifndef SALMON_COMPILER_VM_BUILTINFUNCTION
 #define SALMON_COMPILER_VM_BUILTINFUNCTION
 
-#include <cassert>
-
 #include <vm/function.hpp>
 
 namespace salmon::vm {
@@ -10,7 +8,7 @@ namespace salmon::vm {
 	template<typename ... Args>
 	class BuiltinFunction : public VmFunction {
 	public:
-		using FunctionType = Box(*)(Args ...);
+		using FunctionType = Box(*)(VirtualMachine*, Args ...);
 
 		BuiltinFunction(FunctionType fn,
 						vm_ptr<Type> type,
@@ -25,8 +23,8 @@ namespace salmon::vm {
 
 		~BuiltinFunction() = default;
 
-		Box operator()(std::vector<Box> &args) override {
-			return unpack_vector(args);
+		Box operator()(VirtualMachine *vm, std::vector<Box> &args) override {
+			return unpack_vector(vm, args);
 		}
 
 		void print_debug_info() const override {
@@ -42,15 +40,15 @@ namespace salmon::vm {
 		FunctionType actual_function;
 
 		template<std::size_t... S>
-		Box unpack_vector(std::vector<Box>& vec, std::index_sequence<S...>) {
-			return actual_function(vec[S]...);
+		Box unpack_vector(VirtualMachine *vm, std::vector<Box>& vec, std::index_sequence<S...>) {
+			return actual_function(vm, vec[S]...);
 		}
 
-		Box unpack_vector(std::vector<Box>& vec) {
+		Box unpack_vector(VirtualMachine *vm, std::vector<Box>& vec) {
 			if (vec.size() != sizeof...(Args)) {
-				throw ArityException::build(_lambda_list, vec.size(), sizeof...(Args));
+				throw ArityException::build(vm, _lambda_list, vec.size(), sizeof...(Args));
 			}
-			return unpack_vector(vec, std::make_index_sequence<sizeof...(Args)>());
+			return unpack_vector(vm, vec, std::make_index_sequence<sizeof...(Args)>());
 		}
 	};
 }
