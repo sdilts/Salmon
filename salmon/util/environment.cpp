@@ -33,8 +33,7 @@ namespace salmon {
 	static std::filesystem::path env_or_string(const std::string &var_name,
 											   const std::string &other_path) {
 		std::filesystem::path target_dir;
-		std::optional<std::string> xdg_dir = read_env(var_name);
-		if(xdg_dir) {
+		if(auto xdg_dir = read_env(var_name); xdg_dir.has_value()) {
 			target_dir = *xdg_dir;
 		} else {
 			std::optional<std::string> home_dir = read_env("HOME");
