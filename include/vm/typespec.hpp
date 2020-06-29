@@ -62,12 +62,17 @@ namespace salmon::vm {
 		bool operator>(const TypeSpecification &other) const;
 		bool operator<(const TypeSpecification &other) const;
 
+		static TypeSpecification combine(const TypeSpecification &first, const TypeSpecification &second);
+
 		friend std::ostream &operator<<(std::ostream &out, const TypeSpecification& spec);
 	private:
 		friend class SpecBuilder;
 		TypeSpecification(std::map<vm_ptr<Symbol>, std::vector<size_t>> &params,
 				  std::vector<std::pair<vm_ptr<Type>, size_t>> &concrete_types,
 				  std::vector<VariableProperties> &properties);
+		TypeSpecification(std::map<Symbol*, std::vector<size_t>> &&params,
+						  std::vector<std::pair<Type*, size_t>> &&concrete_types,
+						  std::vector<VariableProperties> &&properties);
 		// TODO: investigate how efficent this storage config is:
 
 		//! bare types are specified with specific symbol, i.e. A

@@ -127,6 +127,15 @@ namespace salmon::vm {
 		#endif
 	}
 
+	TypeSpecification::TypeSpecification(std::map<Symbol*, std::vector<size_t>> &&params,
+								std::vector<std::pair<Type*, size_t>> &&concrete_types,
+								std::vector<VariableProperties> &&properties) :
+		parameters(params),
+		concrete_types(concrete_types),
+		properties(properties),
+		is_concrete(this->concrete_types.size() == this->properties.size()) {
+	}
+
 	bool TypeSpecification::matches(const TypeSpecification &other) const {
 		if(this->size() != other.size()) {
 			std::cerr << "sizes are not the same" << std::endl;
@@ -322,4 +331,33 @@ namespace salmon::vm {
 			inserter(val.first);
                 }
         }
+	TypeSpecification TypeSpecification::combine(const TypeSpecification &first,
+												 const TypeSpecification &second) {
+		const size_t offset = first.size();
+		std::map<Symbol*, std::vector<size_t>> new_params(first.parameters);
+		for(const auto &[symb, indicies] : second.parameters) {
+			std::vector<size_t> new_indicies;
+			new_indicies.reserve(indicies.size());
+			std::transform(indicies.begin(), indicies.end(), new_indicies.begin(),
+						   [offset](size_t index) { return index + offset; });
+			new_params.emplace(symb, new_indicies);
+		}
+		std::vector<std::pair<Type*,size_t>> new_concrete_types(first.concrete_types);
+		new_concrete_types.reserve(new_concrete_types.size() + second.concrete_types.size());
+		for(const auto &[type, index] : second.concrete_types) {
+			new_concrete_types.push_back(std::make_pair(type, index + offset));
+		}
+		std::vector<VariableProperties> new_properties;
+		new_properties.reserve(first.properties.size() + second.properties.size());
+		for(const auto &item : first.properties) {
+			new_properties.push_back(item);
+		}
+		for(const auto &item : second.properties) {
+			new_properties.push_back(item);
+		}
+		TypeSpecification spec(std::move(new_params),
+							   std::move(new_concrete_types),
+							   std::move(new_properties));
+		return spec;
+	}
 }
