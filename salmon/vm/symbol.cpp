@@ -10,12 +10,16 @@
 namespace salmon::vm {
 
 	Symbol::Symbol(const std::string &name, const std::optional<Package*> &package)
-		: name{name}, package{package} {
+		: name{name}, package{package} {}
 
-	}
+	Symbol::Symbol(const std::string &&name, const std::optional<Package*> &package)
+		: name(name), package{package} {}
 
 	Symbol::Symbol(const std::string &name) :
 		name{name}, package{std::nullopt} {}
+
+	Symbol::Symbol(const std::string &&name) :
+		name(name), package{std::nullopt} {}
 
 	Symbol::~Symbol() { }
 

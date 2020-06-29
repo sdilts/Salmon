@@ -33,6 +33,25 @@ namespace salmon::vm {
 		return (*result).second;
 	}
 
+    vm_ptr<Symbol> Package::intern_symbol(std::string &&name) {
+		for(const auto &pkg : this->used) {
+			auto found = pkg.get().find_external_symbol(name);
+			if(found) {
+				return *found;
+			}
+		}
+
+		auto interned_result = interned.lower_bound(name);
+		if(interned_result == interned.end() || (*interned_result).second->name != name) {
+			vm_ptr<Symbol> new_symb = mem_manager.allocate_obj<Symbol>(name);
+			new_symb->package = std::make_optional(this);
+			auto final_place = interned.emplace_hint(interned_result, name, std::move(new_symb));
+			salmon_check((*final_place).second->name == name, "Name not added correctly");
+			return (*final_place).second;
+		}
+		return (*interned_result).second;
+	}
+
     vm_ptr<Symbol> Package::intern_symbol(const std::string &name) {
 		for(const auto &pkg : this->used) {
 			auto found = pkg.get().find_external_symbol(name);

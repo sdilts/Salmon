@@ -209,7 +209,7 @@ namespace salmon::compiler {
 			throw ParseException("Encountered package prefix or keyword while parsing reader macro #:",
 								 start_info, countStreamBuf->positionInfo());
 		} else {
-			vm::vm_ptr<vm::Symbol> tmp_symb = compiler.vm.mem_manager.allocate_obj<vm::Symbol>(chunk);
+			vm::vm_ptr<vm::Symbol> tmp_symb = compiler.vm.mem_manager.allocate_obj<vm::Symbol>(std::move(chunk));
 			vm::Box box = compiler.vm.make_boxed(tmp_symb);
 			return box;
 		}

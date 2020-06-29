@@ -46,6 +46,18 @@ namespace salmon::vm {
 			salmon_check(this->type != nullptr, "Type shouldn't be null");
 		}
 
+		template<typename T>
+		Box(const vm_ptr<T> &&elem_ptr, const vm_ptr<Type> &type) :
+			elem_ptr{elem_ptr},
+			type_ptr{type} {
+			this->type = type.get();
+			type_ptr = type;
+			if(elem_ptr) {
+				elem = elem_ptr.get();
+			}
+			salmon_check(this->type != nullptr, "Type shouldn't be null");
+		}
+
 		template <typename T>
 		Box(T scalar, const vm_ptr<Type> type) :
 			elem_ptr{type},

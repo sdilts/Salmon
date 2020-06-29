@@ -17,6 +17,8 @@ namespace salmon::vm {
 
 		Symbol(const std::string&, const std::optional<Package*>&);
 		Symbol(const std::string&);
+		Symbol(const std::string&&);
+		Symbol(const std::string&&, const std::optional<Package*>&);
 		Symbol(const Symbol&) = delete;
 		Symbol(Symbol &&) = default;
 
