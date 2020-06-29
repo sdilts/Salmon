@@ -21,7 +21,9 @@ namespace salmon::vm {
 	auto arg1 = manager.allocate_obj<Symbol>("arg1");
 	auto arg2 = manager.allocate_obj<Symbol>("arg2");
 	auto type_name = manager.allocate_obj<Symbol>("type");
-	PrimitiveType p(type_name, "", 1);
+	// This isn't the correct type, hope it doesn't bite me in the butt:
+	SpecBuilder builder;
+	FunctionType p(builder.build(), builder.build());
 	auto type = manager.allocate_obj<Type>(p);
 
 	BuiltinFunction<Box&,Box&> func(foo, type,{arg1, arg2}, std::nullopt, std::nullopt);

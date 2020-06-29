@@ -35,7 +35,8 @@ namespace salmon::vm {
 		VirtualMachine vm(config, "base-package");
 		MemoryManager &manager = vm.mem_manager;
 		auto type_name = manager.allocate_obj<Symbol>("type");
-		PrimitiveType p(type_name, "", 1);
+		SpecBuilder builder;
+		FunctionType p(builder.build(), builder.build());
 		auto type = manager.allocate_obj<Type>(p);
 
 		auto symb = manager.allocate_obj<Symbol>("symbol");

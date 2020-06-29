@@ -102,6 +102,10 @@ namespace salmon::vm {
 		}
 	}
 
+	const std::vector<Type*> FunctionType::arg_types() const {
+		return arg_spec.types();
+	}
+
 	std::ostream &operator<<(std::ostream &out, const FunctionType &fn) {
 		std::ignore = fn;
 		out << "<TYPE: (fn ";

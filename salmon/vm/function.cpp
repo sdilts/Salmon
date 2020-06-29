@@ -33,8 +33,9 @@ namespace salmon::vm {
 		fn_type{type.get()},
 		_documentation{doc},
 		_source_file{file},
-		_source_form{convert(source)}
-	{}
+		_source_form{convert(source)} {
+		salmon_check(std::holds_alternative<FunctionType>(type->type), "type must be a function type");
+	}
 
 	VmFunction::~VmFunction() {}
 
@@ -60,4 +61,77 @@ namespace salmon::vm {
 	const std::optional<List*> &VmFunction::source_form() const {
 		return _source_form;
 	}
+
+	InterfaceFunction::InterfaceFunction(const vm_ptr<Type> &type,
+										 const std::vector<vm_ptr<Symbol>> &lambda_list,
+										 std::optional<std::string> doc,
+										 std::optional<std::string> file) :
+		VmFunction(type, lambda_list, doc, file, std::nullopt)
+	{
+
+
+	}
+	InterfaceFunction::InterfaceFunction(const vm_ptr<Type> &type,
+										 const std::vector<vm_ptr<Symbol>> &lambda_list) :
+		InterfaceFunction(type,lambda_list, std::nullopt, std::nullopt)
+	{
+
+	}
+
+	static std::vector<Type*> get_signature(std::vector<Box> &args) {
+		std::vector<Type*> ret;
+		ret.reserve(args.size());
+		for(const auto &item : args) {
+			ret.push_back(item.elem_type().get());
+		}
+		return ret;
+	}
+
+	static std::vector<vm_ptr<Type>> vm_ptr_signature(std::vector<Box> &args) {
+		std::vector<vm_ptr<Type>> ret;
+		ret.reserve(args.size());
+		for(const auto &item : args) {
+			ret.push_back(item.elem_type());
+		}
+		return ret;
+	}
+
+	Box InterfaceFunction::operator()(VirtualMachine *vm, std::vector<Box> &args)  {
+		const std::vector<Type*> arg_types = get_signature(args);
+		try {
+			// TODO: fix this to not throw an exception if a value isn't found:
+			VmFunction *actual = functions.at(arg_types);
+			return (*actual)(vm, args);
+		} catch(std::out_of_range *ex) {
+			std::vector<vm_ptr<Type>> sig = vm_ptr_signature(args);
+			throw NoSuchFunction(sig);
+		}
+	}
+
+	bool InterfaceFunction::add_impl(const vm_ptr<VmFunction> &fn) {
+		auto other_fn_type = std::get<FunctionType>(fn->type()->type);
+		std::cerr << "Everything matches?" << std::get<FunctionType>(fn_type->type).match(other_fn_type) << std::endl;
+		if(fn->type()->concrete() && std::get<FunctionType>(fn_type->type).match(other_fn_type)) {
+			std::cerr << "Everthing is good to add" << std::endl;
+			const std::vector<Type*> arg_types = other_fn_type.arg_types();
+		    functions.insert_or_assign(arg_types, fn.get());
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	void InterfaceFunction::get_roots(const std::function<void(AllocatedItem*)> &inserter) const {
+		// for(auto [type, fn] : functions) {
+		// 	inserter(type);
+		// 	inserter(fn);
+		// }
+		VmFunction::get_roots(inserter);
+	}
+
+	void InterfaceFunction::print_debug_info() const {
+		std::cerr << "Interface function" << std::endl;
+	}
+
+	size_t InterfaceFunction::allocated_size() const { return sizeof(InterfaceFunction); }
 }

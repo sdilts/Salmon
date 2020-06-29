@@ -68,6 +68,8 @@ namespace salmon::vm {
 		//! Just match the arguments
 		bool match_args(const std::vector<vm_ptr<Type>> &type_list) const;
 
+		const std::vector<Type*> arg_types() const;
+
 		size_t size() const override;
 		bool concrete() const override;
 

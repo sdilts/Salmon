@@ -9,6 +9,8 @@
 #include <iostream>
 
 #include <vm/box.hpp>
+#include <util/prefixtrie.hpp>
+#include <util/cmpunderlyingtype.hpp>
 
 namespace salmon::vm {
 
@@ -28,6 +30,19 @@ namespace salmon::vm {
 		ArityException(const std::string &msg,
 					   const std::vector<vm_ptr<Symbol>> &lambda_list,
 					   const size_t num_given, const size_t num_desired);
+	};
+
+	struct NoSuchFunction : std::runtime_error {
+		NoSuchFunction(std::vector<vm_ptr<Type>> &&sig);
+		NoSuchFunction(const std::vector<vm_ptr<Type>> &sig);
+
+		const std::vector<vm_ptr<Type>> &signature() const;
+		const std::optional<vm_ptr<Symbol>> func_name() const;
+		void func_name(const vm_ptr<Symbol> &);
+		void func_name(vm_ptr<Symbol> &&);
+	private:
+		std::vector<vm_ptr<Type>> _sig;
+		std::optional<vm_ptr<Symbol>> _name;
 	};
 
 	class VmFunction : public AllocatedItem {
@@ -61,6 +76,35 @@ namespace salmon::vm {
 		std::optional<std::string> _documentation;
 		std::optional<std::string> _source_file;
 		std::optional<List*> _source_form;
+	};
+
+	class InterfaceFunction : public VmFunction {
+	public:
+		InterfaceFunction(const vm_ptr<Type> &type,
+			   const std::vector<vm_ptr<Symbol>> &lambda_list,
+			   std::optional<std::string> doc, std::optional<std::string> file);
+		InterfaceFunction(const vm_ptr<Type> &type,
+			   const std::vector<vm_ptr<Symbol>> &lambda_list);
+
+		Box operator()(VirtualMachine *vm, std::vector<Box> &args) override;
+
+		/**
+		 * Add an implementation for this interface.
+		 *
+		 * If allow_overwrite is true, allow
+		 * an existing implementation to be replaced
+		 *
+		 * @param fn the new implementation
+		 * @param allow_overwrite allow an existing implementation to be replaced.
+		 * @return whether the new implementation was added.
+		 */
+		bool add_impl(const vm_ptr<VmFunction> &fn);
+
+		void get_roots(const std::function<void(AllocatedItem*)> &) const override;
+		void print_debug_info() const override;
+		size_t allocated_size() const override;
+	private:
+		PrefixTrie<Type*, VmFunction*, cmpUnderlyingType<Type>> functions;
 	};
 }
 

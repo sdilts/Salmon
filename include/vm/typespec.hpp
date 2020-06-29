@@ -45,6 +45,8 @@ namespace salmon::vm {
 		std::optional<std::map<vm_ptr<Symbol>,vm_ptr<Type>>>
 		match_symbols(const std::vector<vm_ptr<Type>> &type_list) const;
 
+		const std::vector<Type*> types() const;
+
 		std::string str() const;
 
 		//! checks to see if this specification can be synthesised

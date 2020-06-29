@@ -1,4 +1,7 @@
+#include <vector>
+
 #include <vm/vm.hpp>
+#include <util/assert.hpp>
 #include <vm/function.hpp>
 
 namespace salmon::vm {
@@ -24,4 +27,29 @@ namespace salmon::vm {
 		lambda_list(lambda_list),
 		given(num_given),
 		desired(num_desired) {}
+
+	NoSuchFunction::NoSuchFunction(std::vector<vm_ptr<Type>> &&sig) :
+		std::runtime_error("No such function"),
+		_sig(sig),
+		_name{std::nullopt} {}
+
+	NoSuchFunction::NoSuchFunction(const std::vector<vm_ptr<Type>> &sig) :
+		std::runtime_error("No such function"),
+		_sig(sig),
+		_name{std::nullopt} {}
+
+	const std::vector<vm_ptr<Type>> &NoSuchFunction::signature() const {
+		return _sig;
+	}
+	const std::optional<vm_ptr<Symbol>> NoSuchFunction::func_name() const {
+		return _name;
+	}
+	void NoSuchFunction::func_name(const vm_ptr<Symbol> &name) {
+		salmon_check(!_name.has_value(), "Shouldn't assign a func name twice");
+		_name = name;
+	}
+	void NoSuchFunction::func_name(vm_ptr<Symbol> &&name) {
+		salmon_check(!_name.has_value(), "Shouldn't assign a func name twice");
+		_name = name;
+	}
 }

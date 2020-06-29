@@ -138,7 +138,6 @@ namespace salmon::vm {
 
 	bool TypeSpecification::matches(const TypeSpecification &other) const {
 		if(this->size() != other.size()) {
-			std::cerr << "sizes are not the same" << std::endl;
 			return false;
 		}
 		std::vector<Type*> other_concrete_types(other.size(),nullptr);
@@ -234,6 +233,15 @@ namespace salmon::vm {
         size_t TypeSpecification::size() const {
 		// Arbitrary container: they all should be the same size.
 		return properties.size();
+	}
+
+	const std::vector<Type*> TypeSpecification::types() const {
+		salmon_check(concrete(), "Type spec must be concrete to call arg_types() on it");
+		std::vector<Type*> ret(concrete_types.size(), nullptr);
+		for(const auto &[type, index] : concrete_types) {
+			ret[index] = type;
+		}
+		return ret;
 	}
 
 	bool TypeSpecification::equivalentTo(const TypeSpecification &other) const {

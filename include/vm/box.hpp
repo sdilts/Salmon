@@ -77,7 +77,7 @@ namespace salmon::vm {
 			elem_ptr = nullptr;
 		}
 
-		const vm_ptr<Type> elem_type() {
+		vm_ptr<Type> elem_type() const {
 			return type_ptr;
 		}
 
