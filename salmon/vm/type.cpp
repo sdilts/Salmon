@@ -15,6 +15,12 @@ namespace salmon::vm {
 
 	FunctionType::~FunctionType() {}
 
+	bool FunctionType::match(const FunctionType &other) const {
+		TypeSpecification combined = TypeSpecification::combine(ret_spec, arg_spec);
+		TypeSpecification combined_other = TypeSpecification::combine(other.ret_spec, other.arg_spec);
+		return combined.matches(combined_other);
+	}
+
 	bool
 	FunctionType::match(const std::vector<vm_ptr<Type>> &type_list) const {
 		const std::vector<vm_ptr<Type>> ret_list(type_list.begin(),
