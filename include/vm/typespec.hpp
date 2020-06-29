@@ -40,6 +40,7 @@ namespace salmon::vm {
 
 		//! Check if the given types conform to the specifictation
 		bool matches(const std::vector<vm_ptr<Type>> &type_list) const;
+		bool matches(const TypeSpecification &other) const;
 
 		std::optional<std::map<vm_ptr<Symbol>,vm_ptr<Type>>>
 		match_symbols(const std::vector<vm_ptr<Type>> &type_list) const;

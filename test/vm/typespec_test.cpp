@@ -273,4 +273,125 @@ namespace salmon::vm {
 			}
 		}
 	}
+
+	SCENARIO("matches works between typespecifications") {
+		MemoryManager manager;
+		Package base_package("test", manager);
+		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
+		vm_ptr<Symbol> other_symb = base_package.intern_symbol("cheese");
+
+		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
+
+		auto f32_type = manager.allocate_obj<Type>(ptype);
+		auto i32_type = manager.allocate_obj<Type>(p_i32);
+
+		GIVEN("Two empty typespecs") {
+			SpecBuilder builder;
+			TypeSpecification base = builder.build();
+			TypeSpecification other = builder.build();
+			THEN("They match") {
+				REQUIRE(base.matches(other) == true);
+			}
+		}
+
+		GIVEN("A typespec with one parameter") {
+			SpecBuilder builder;
+			builder.add_type(f32_type);
+			builder.add_parameter(type_name_symb);
+			builder.add_type(i32_type);
+			auto base = builder.build();
+			WHEN("It is matched with a matching concrete specification") {
+				SpecBuilder other_builder;
+				other_builder.add_type(f32_type);
+				other_builder.add_type(i32_type);
+				other_builder.add_type(i32_type);
+				auto other = other_builder.build();
+				bool matches = base.matches(other);
+				THEN("The function returns true") {
+					REQUIRE(matches == true);
+				}
+			}
+		}
+
+		GIVEN("Typespecs with the same parameters and concrete types") {
+			SpecBuilder builder;
+			builder.add_type(f32_type);
+			builder.add_parameter(type_name_symb);
+			builder.add_type(i32_type);
+			auto base = builder.build();
+			WHEN("It is matched with a matching concrete specification") {
+				SpecBuilder other_builder;
+				other_builder.add_type(f32_type);
+				other_builder.add_parameter(type_name_symb);
+				other_builder.add_type(i32_type);
+				auto other = other_builder.build();
+				bool matches = base.matches(other);
+				THEN("The function returns true") {
+					REQUIRE(matches == true);
+				}
+			}
+		}
+
+		GIVEN("Typespecs with different concrete types") {
+			SpecBuilder builder;
+			builder.add_type(f32_type);
+			builder.add_parameter(type_name_symb);
+			builder.add_type(i32_type);
+			auto base = builder.build();
+			WHEN("they are matched") {
+				SpecBuilder other_builder;
+				other_builder.add_type(i32_type);
+				other_builder.add_parameter(type_name_symb);
+				other_builder.add_type(f32_type);
+				auto other = other_builder.build();
+				bool matches = base.matches(other);
+				THEN("The function returns false") {
+					REQUIRE(matches == false);
+				}
+			}
+		}
+
+		GIVEN("Typespecs with different parameter lists") {
+			SpecBuilder builder;
+			builder.add_type(f32_type);
+			builder.add_parameter(type_name_symb);
+			builder.add_type(f32_type);
+			builder.add_parameter(other_symb);
+			auto base = builder.build();
+			WHEN("they are matched") {
+				SpecBuilder other_builder;
+				other_builder.add_type(f32_type);
+				other_builder.add_parameter(type_name_symb);
+				other_builder.add_type(f32_type);
+				other_builder.add_parameter(type_name_symb);
+				auto other = other_builder.build();
+				bool matches = base.matches(other);
+				THEN("The function returns false") {
+					REQUIRE(matches == false);
+				}
+			}
+		}
+
+		GIVEN("Typespecs with different parameter lists") {
+			SpecBuilder builder;
+			builder.add_type(f32_type);
+			builder.add_parameter(type_name_symb);
+			builder.add_type(f32_type);
+			builder.add_parameter(type_name_symb);
+			auto base = builder.build();
+			WHEN("they are matched") {
+				SpecBuilder other_builder;
+				other_builder.add_type(f32_type);
+				other_builder.add_parameter(type_name_symb);
+				other_builder.add_type(f32_type);
+				other_builder.add_parameter(other_symb);
+				auto other = other_builder.build();
+				bool matches = base.matches(other);
+				THEN("The function returns false") {
+					REQUIRE(matches == false);
+				}
+			}
+		}
+	}
 }

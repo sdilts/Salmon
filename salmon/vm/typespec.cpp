@@ -127,7 +127,51 @@ namespace salmon::vm {
 		#endif
 	}
 
-        bool TypeSpecification::matches(const std::vector<vm_ptr<Type>> &type_list) const {
+	bool TypeSpecification::matches(const TypeSpecification &other) const {
+		if(this->size() != other.size()) {
+			std::cerr << "sizes are not the same" << std::endl;
+			return false;
+		}
+		std::vector<Type*> other_concrete_types(other.size(),nullptr);
+		for(const auto &[type, index] : other.concrete_types) {
+			other_concrete_types[index] = type;
+		}
+		// if other doesn't have concrete types where this one does, the two don't match.
+		for(const auto &[type, index] : concrete_types) {
+			if(other_concrete_types[index] == nullptr || type != other_concrete_types[index]) {
+				return false;
+			}
+		}
+		for(const auto &[type, indices] : parameters) {
+			Type *val = other_concrete_types[indices[0]];
+			bool all_same = std::all_of(++indices.begin(), indices.end(),
+										[val,&other_concrete_types](size_t index) {
+											return val == other_concrete_types[index];
+										});
+			if(all_same) {
+				if(val == nullptr) {
+					// check to see if any of other's parameter lists match the current
+					// parameter list:
+					bool found = false;
+					for(const auto &[symbol, other_indicies] : other.parameters) {
+						if(std::equal(indices.begin(), indices.end(), other_indicies.begin())) {
+							found = true;
+							break;
+						}
+					}
+					if(!found) {
+						return false;
+					}
+				} else continue;
+			} else {
+				return false;
+			}
+		}
+		// TODO: check properties:
+		return true;
+	}
+
+	bool TypeSpecification::matches(const std::vector<vm_ptr<Type>> &type_list) const {
 		if(this->size() != type_list.size()) {
 			return false;
 		}
