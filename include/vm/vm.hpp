@@ -40,6 +40,14 @@ namespace salmon::vm {
 			return box;
 		}
 
+		template<typename T>
+		vm_ptr<Type> get_builtin_type() {
+			auto type = builtin_map[typeid(T)];
+			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
+			vm_ptr = type;
+			return vm_ptr;
+		}
+
 		// //! Call function name with args args:
 		// Box dispatch_function(vm_ptr<Symbol> &name, vm_ptr<List> &args);
 		// //! register the function with the given name.
