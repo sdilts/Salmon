@@ -6,10 +6,9 @@
 
 namespace salmon::vm {
 
-	MemoryManager manager;
-
 	SCENARIO("TypeSpecifcation objects extract the correct info from their constructor arguments",
 			 "[type]") {
+		MemoryManager manager;
 		Package base_package("test", manager);
 		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
 
@@ -42,6 +41,7 @@ namespace salmon::vm {
 	}
 
 	SCENARIO("TypeSpecification objects match the correct type lists") {
+		MemoryManager manager;
 		Package base_package("test", manager);
 		vm_ptr<Symbol> f32_name_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> i32_name_symb = base_package.intern_symbol("int-32");
@@ -126,6 +126,7 @@ namespace salmon::vm {
 	}
 
 	SCENARIO("When types match, they infer the correct types") {
+		MemoryManager manager;
 		Package base_package("test", manager);
 		vm_ptr<Symbol> f32_name_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> i32_name_symb = base_package.intern_symbol("int-32");
@@ -168,6 +169,7 @@ namespace salmon::vm {
 	}
 
 	SCENARIO("Type specification object equality functions work") {
+		MemoryManager manager;
 		Package base_package("test", manager);
 		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
 
@@ -227,17 +229,18 @@ namespace salmon::vm {
 
 			auto other_spec = other.build();
 
-                        THEN("They are not equal") {
+			THEN("They are not equal") {
 				REQUIRE(other_spec != base);
 			}
 
-                        THEN("They are equivalent") {
-                          REQUIRE(other_spec.equivalentTo(base));
-                        }
-                }
-        }
+			THEN("They are equivalent") {
+				REQUIRE(other_spec.equivalentTo(base));
+			}
+		}
+	}
 
-        SCENARIO("TypeSpec objects report the correct roots", "[gc]") {
+	SCENARIO("TypeSpec objects report the correct roots", "[gc]") {
+		MemoryManager manager;
 		Package base_package("test", manager);
 		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> symb_a = base_package.intern_symbol("a");
@@ -256,18 +259,18 @@ namespace salmon::vm {
 
 		auto spec = builder.build();
 
-                WHEN("The roots are extracted") {
+		WHEN("The roots are extracted") {
 			std::vector<AllocatedItem*> roots;
 			spec.get_roots([&roots](AllocatedItem *item) {
 				roots.push_back(item);
 			});
-                        THEN("All of the roots are accounted for") {
+			THEN("All of the roots are accounted for") {
 				std::set<AllocatedItem*> to_check = { f32_type.get(), i32_type.get(), symb_a.get() };
-                                for (AllocatedItem *item : roots) {
+				for (AllocatedItem *item : roots) {
 					to_check.erase(item);
-                                }
+				}
 				REQUIRE(to_check.size() == 0);
-                        }
-                }
-        }
+			}
+		}
+	}
 }
