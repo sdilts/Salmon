@@ -81,6 +81,10 @@ namespace salmon::vm {
 			return type_ptr;
 		}
 
+		const BoxVariant &value() const {
+			return elem;
+		}
+
 		// these need to access the InternalBox:
 		friend struct Array;
 		friend struct List;
