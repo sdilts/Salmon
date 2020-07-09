@@ -22,7 +22,16 @@ namespace salmon::vm {
 		std::optional<std::reference_wrapper<Package>> find_package(const vm_ptr<Symbol> &name);
 
 		template<typename T>
-		Box make_boxed(vm_ptr<T> item) {
+		Box make_boxed(const vm_ptr<T> &item) {
+			auto type = builtin_map[typeid(T)];
+			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
+			vm_ptr = type;
+			Box box(item, vm_ptr);
+			return box;
+		}
+
+		template<typename T>
+		Box make_boxed(vm_ptr<T> &&item) {
 			auto type = builtin_map[typeid(T)];
 			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
 			vm_ptr = type;
