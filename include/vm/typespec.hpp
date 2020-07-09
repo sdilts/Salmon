@@ -69,9 +69,9 @@ namespace salmon::vm {
 		friend std::ostream &operator<<(std::ostream &out, const TypeSpecification& spec);
 	private:
 		friend class SpecBuilder;
-		TypeSpecification(std::map<vm_ptr<Symbol>, std::vector<size_t>> &params,
-				  std::vector<std::pair<vm_ptr<Type>, size_t>> &concrete_types,
-				  std::vector<VariableProperties> &properties);
+		TypeSpecification(const std::map<vm_ptr<Symbol>, std::vector<size_t>> &params,
+						  const std::vector<std::pair<vm_ptr<Type>, size_t>> &concrete_types,
+						  const std::vector<VariableProperties> &properties);
 		TypeSpecification(std::map<Symbol*, std::vector<size_t>> &&params,
 						  std::vector<std::pair<Type*, size_t>> &&concrete_types,
 						  std::vector<VariableProperties> &&properties);

@@ -3,7 +3,7 @@
 #include <vm/box.hpp>
 
 namespace salmon::vm {
-	List::List(Box &itm) :
+	List::List(const Box &itm) :
 		itm{itm}, next{nullptr} {
 
 	}

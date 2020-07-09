@@ -35,7 +35,7 @@ namespace salmon::vm {
 	struct Box : private InternalBox {
 
 		template<typename T>
-		Box(const vm_ptr<T> &elem_ptr, const vm_ptr<Type> type) :
+		Box(const vm_ptr<T> &elem_ptr, const vm_ptr<Type> &type) :
 			elem_ptr{elem_ptr},
 			type_ptr{type} {
 			this->type = type.get();
@@ -59,7 +59,7 @@ namespace salmon::vm {
 		}
 
 		template <typename T>
-		Box(T scalar, const vm_ptr<Type> type) :
+		Box(T scalar, const vm_ptr<Type> &type) :
 			elem_ptr{type},
 			type_ptr{type} {
 			static_assert(std::is_same<vm::Empty, T>::value
@@ -121,7 +121,7 @@ namespace salmon::vm {
 	};
 
 	struct List : public AllocatedItem {
-		List(Box &itm);
+		List(const Box &itm);
 		List() = delete;
 		~List() = default;
 
