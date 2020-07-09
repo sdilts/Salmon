@@ -39,7 +39,6 @@ namespace salmon::vm {
 			elem_ptr{elem_ptr},
 			type_ptr{type} {
 			this->type = type.get();
-			type_ptr = type;
 			if(elem_ptr) {
 				elem = elem_ptr.get();
 			}
@@ -51,7 +50,6 @@ namespace salmon::vm {
 			elem_ptr{elem_ptr},
 			type_ptr{type} {
 			this->type = type.get();
-			type_ptr = type;
 			if(elem_ptr) {
 				elem = elem_ptr.get();
 			}
