@@ -23,6 +23,7 @@ namespace salmon::vm {
 
 		template<typename T>
 		Box make_boxed(const vm_ptr<T> &item) {
+			salmon_check(builtin_map.find(typeid(T)) != builtin_map.end(), "builtin type not found");
 			auto type = builtin_map[typeid(T)];
 			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
 			vm_ptr = type;
@@ -32,6 +33,7 @@ namespace salmon::vm {
 
 		template<typename T>
 		Box make_boxed(vm_ptr<T> &&item) {
+			salmon_check(builtin_map.find(typeid(T)) != builtin_map.end(), "builtin type not found");
 			auto type = builtin_map[typeid(T)];
 			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
 			vm_ptr = type;
@@ -41,6 +43,7 @@ namespace salmon::vm {
 
 		template<typename T>
 		Box make_boxed(T item) {
+			salmon_check(builtin_map.find(typeid(T)) != builtin_map.end(), "builtin type not found");
 			auto type = builtin_map[typeid(T)];
 			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
 			vm_ptr = type;
@@ -51,6 +54,7 @@ namespace salmon::vm {
 
 		template<typename T>
 		vm_ptr<Type> get_builtin_type() {
+			salmon_check(builtin_map.find(typeid(T)) != builtin_map.end(), "builtin type not found");
 			auto type = builtin_map[typeid(T)];
 			auto vm_ptr = mem_manager.make_vm_ptr<Type>(type);
 			return vm_ptr;
