@@ -142,4 +142,33 @@ namespace salmon {
 			}
 		}
 	}
+
+	SCENARIO("all_values works") {
+		PrefixTrie<std::string,int,std::greater<>> trie;
+		GIVEN("A tree with multiple levels") {
+			trie.insert_or_assign({}, 0);
+			trie.insert_or_assign({ "a" }, 1);
+			trie.insert_or_assign({ "b" }, 2);
+			trie.insert_or_assign({ "c" }, 3);
+			trie.insert_or_assign({ "b", "a" }, 4);
+			trie.insert_or_assign({ "b", "b" }, 5);
+			trie.insert_or_assign({ "c", "d" }, 6);
+			WHEN("The roots are queried") {
+				std::set<std::string> keys;
+				std::set<int> values;
+				trie.all_values([&keys](const std::string &item) {
+					keys.insert(item);
+				}, [&values](int item) {
+					values.insert(item);
+				});
+				THEN("Everything is accounted for") {
+					std::set<std::string> required_keys = {"a","b","c","d"};
+					std::set<int> required_values = {0, 1, 2, 3, 4, 5, 6};
+					REQUIRE(required_keys == keys);
+					REQUIRE(required_values == values);
+				}
+			}
+		}
+
+	}
 }

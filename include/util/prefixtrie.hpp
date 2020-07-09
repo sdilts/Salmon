@@ -5,6 +5,8 @@
 
 #include <assert.h>
 #include <iostream>
+#include <functional>
+#include <set>
 
 namespace salmon {
 
@@ -156,6 +158,25 @@ namespace salmon {
 
 		V &at(const std::vector<K> &prefixes) {
 			return at_helper(&tree, prefixes);
+		}
+
+	    void all_values(const std::function<void(const K&)> &key_fn,
+						const std::function<void(const V&)> &value_fn) const {
+			std::vector<const Node*> stack;
+			stack.push_back(&tree);
+
+			while(!stack.empty()) {
+				const Node *cur = stack.back();
+				stack.pop_back();
+
+				if(cur->item) {
+				    value_fn(*cur->item);
+				}
+				for(const auto &[key, child] : cur->tree) {
+					key_fn(key);
+					stack.push_back(child.get());
+				}
+			}
 		}
 	};
 }

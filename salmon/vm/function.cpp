@@ -122,10 +122,11 @@ namespace salmon::vm {
 	}
 
 	void InterfaceFunction::get_roots(const std::function<void(AllocatedItem*)> &inserter) const {
-		// for(auto [type, fn] : functions) {
-		// 	inserter(type);
-		// 	inserter(fn);
-		// }
+		functions.all_values([&inserter](Type* const&item) {
+			inserter(item);
+		}, [&inserter](VmFunction* const&item) {
+			inserter(item);
+		});
 		VmFunction::get_roots(inserter);
 	}
 
