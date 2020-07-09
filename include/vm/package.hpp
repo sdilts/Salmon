@@ -16,6 +16,8 @@ namespace salmon::vm {
 	class Package {
 	public:
 		Package(const std::string &name, MemoryManager &mem_manager);
+		Package(std::string &&name, MemoryManager &mem_manager);
+
 		Package(const std::string &name, MemoryManager &mem_manager,
 				const std::set<std::reference_wrapper<Package>> &used);
 
