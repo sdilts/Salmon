@@ -56,11 +56,11 @@ namespace salmon::vm {
 		return properties < other.properties;
 	}
 
-        void SpecBuilder::add_parameter(vm_ptr<Symbol> &param) {
+	void SpecBuilder::add_parameter(vm_ptr<Symbol> &param) {
 		add_parameter(param, false, false);
 	}
 
-        void SpecBuilder::add_parameter(vm_ptr<Symbol> &param, bool constant,
+	void SpecBuilder::add_parameter(vm_ptr<Symbol> &param, bool constant,
 					bool is_static) {
 		auto place = parameters.lower_bound(param);
 		if( place == parameters.end() || *(*place).first != *param ) {
@@ -73,24 +73,24 @@ namespace salmon::vm {
 		properties.emplace_back(constant, is_static);
         }
 
-        void SpecBuilder::add_type(vm_ptr<Type> &type) {
+	void SpecBuilder::add_type(vm_ptr<Type> &type) {
 		add_type(type, false, false);
 	}
 
-        void SpecBuilder::add_type(vm_ptr<Type> &type, bool constant, bool is_static) {
+	void SpecBuilder::add_type(vm_ptr<Type> &type, bool constant, bool is_static) {
 		concrete_types.emplace_back(type, num_elems);
 		num_elems += 1;
 		properties.emplace_back(constant, is_static);
 		salmon_check(properties.size() == num_elems, "didn't increment num_elems");
 	}
 
-        TypeSpecification SpecBuilder::build() {
+	TypeSpecification SpecBuilder::build() {
 		TypeSpecification spec(parameters, concrete_types, properties);
 		return spec;
 	}
 
-        static std::map<Symbol *, std::vector<size_t>>
-        copy_args(const std::map<vm_ptr<Symbol>, std::vector<size_t>> &args) {
+	static std::map<Symbol *, std::vector<size_t>>
+	copy_args(const std::map<vm_ptr<Symbol>, std::vector<size_t>> &args) {
 		std::map<Symbol*, std::vector<size_t>> ret;
                 for (const auto &val : args) {
 			ret.emplace(val.first.get(), val.second);
@@ -203,7 +203,7 @@ namespace salmon::vm {
 		return true;
 	}
 
-        std::optional<std::map<vm_ptr<Symbol>, vm_ptr<Type>>>
+	std::optional<std::map<vm_ptr<Symbol>, vm_ptr<Type>>>
         TypeSpecification::match_symbols(const std::vector<vm_ptr<Type>> &type_list) const {
 		if(type_list.size() != this->size()) {
 			return std::nullopt;
@@ -230,7 +230,7 @@ namespace salmon::vm {
                 return std::make_optional(table);
 	}
 
-        size_t TypeSpecification::size() const {
+	size_t TypeSpecification::size() const {
 		// Arbitrary container: they all should be the same size.
 		return properties.size();
 	}
@@ -330,15 +330,16 @@ namespace salmon::vm {
 	}
 
 	void TypeSpecification::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
-                for (const auto &val : parameters) {
+		for (const auto &val : parameters) {
 			inserter(val.first);
-                }
+		}
 		// If types appear more than once, they will added twice, but that is
 		// (probably) okay.
-                for (const auto &val : concrete_types) {
+		for (const auto &val : concrete_types) {
 			inserter(val.first);
-                }
-        }
+		}
+	}
+
 	TypeSpecification TypeSpecification::combine(const TypeSpecification &first,
 												 const TypeSpecification &second) {
 		const size_t offset = first.size();
