@@ -110,9 +110,7 @@ namespace salmon::vm {
 
 	bool InterfaceFunction::add_impl(const vm_ptr<VmFunction> &fn) {
 		auto other_fn_type = std::get<FunctionType>(fn->type()->type);
-		std::cerr << "Everything matches?" << std::get<FunctionType>(fn_type->type).match(other_fn_type) << std::endl;
 		if(fn->type()->concrete() && std::get<FunctionType>(fn_type->type).match(other_fn_type)) {
-			std::cerr << "Everthing is good to add" << std::endl;
 			const std::vector<Type*> arg_types = other_fn_type.arg_types();
 		    functions.insert_or_assign(arg_types, fn.get());
 			return true;
