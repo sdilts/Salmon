@@ -52,8 +52,7 @@ namespace salmon::vm {
 		template<typename T>
 		vm_ptr<Type> get_builtin_type() {
 			auto type = builtin_map[typeid(T)];
-			auto vm_ptr = mem_manager.make_vm_ptr<Type>();
-			vm_ptr = type;
+			auto vm_ptr = mem_manager.make_vm_ptr<Type>(type);
 			return vm_ptr;
 		}
 
