@@ -1,3 +1,5 @@
+#pragma once
+
 namespace salmon {
 	template<typename T>
 	struct cmpUnderlyingType {
