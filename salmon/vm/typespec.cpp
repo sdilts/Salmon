@@ -108,10 +108,10 @@ namespace salmon::vm {
 		return ret;
         }
 
-        TypeSpecification::TypeSpecification(
-            std::map<vm_ptr<Symbol>, std::vector<size_t>> &params,
-            std::vector<std::pair<vm_ptr<Type>, size_t>> &concrete_types,
-            std::vector<VariableProperties> &properties) :
+	TypeSpecification::TypeSpecification(
+		const std::map<vm_ptr<Symbol>, std::vector<size_t>> &params,
+		const std::vector<std::pair<vm_ptr<Type>, size_t>> &concrete_types,
+		const std::vector<VariableProperties> &properties) :
 		parameters{copy_args(params)},
 		concrete_types{copy_args(concrete_types)},
 		properties{properties},
