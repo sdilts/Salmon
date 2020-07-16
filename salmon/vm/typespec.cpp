@@ -318,7 +318,7 @@ namespace salmon::vm {
 				spec.properties[i].pretty_print(out);
 				out << ' ';
 				std::visit([&out](const auto &arg) { out << *arg; },
-					   to_print[0]);
+					   to_print[i]);
 				out << ')';
 			}
                 }
