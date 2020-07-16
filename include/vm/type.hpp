@@ -43,6 +43,10 @@ namespace salmon::vm {
 		const std::string documentation;
 		const size_t num_bytes;
 
+		bool equivalent_to(const PrimitiveType &) const {
+			return false;
+		}
+
 		size_t size() const override;
 		bool concrete() const override;
 		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
@@ -69,6 +73,7 @@ namespace salmon::vm {
 		bool match_args(const std::vector<vm_ptr<Type>> &type_list) const;
 
 		const std::vector<Type*> arg_types() const;
+		bool equivalent_to(const FunctionType &other) const;
 
 		size_t size() const override;
 		bool concrete() const override;
@@ -107,6 +112,8 @@ namespace salmon::vm {
 		bool operator!=(const Type &other) const;
 		bool operator>(const Type &other) const;
 		bool operator<(const Type &other) const;
+
+		bool equivalent_to(const Type &other) const;
 	};
 	std::ostream &operator<<(std::ostream &out, const Type &type);
 	using TypePtr = vm_ptr<Type>;

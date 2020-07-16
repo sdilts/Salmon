@@ -72,7 +72,14 @@ namespace salmon::vm {
 		ret_spec.get_roots(inserter);
 	}
 
-        bool FunctionType::operator==(const FunctionType &other) const {
+	bool FunctionType::equivalent_to(const FunctionType &other) const {
+		// TODO: find a more efficent way of doing this:
+		TypeSpecification this_full = TypeSpecification::combine(ret_spec,arg_spec);
+		TypeSpecification other_full = TypeSpecification::combine(other.ret_spec, other.arg_spec);
+		return this_full.equivalentTo(other_full);
+	}
+
+	bool FunctionType::operator==(const FunctionType &other) const {
 		bool arg_same = arg_spec == other.arg_spec;
 		if(arg_same) {
 			return ret_spec == other.ret_spec;
@@ -183,6 +190,16 @@ namespace salmon::vm {
 		return std::visit([](auto &&arg) {
 			return arg.concrete();
 		}, type);
+	}
+
+	bool Type::equivalent_to(const Type &other) const {
+		if(other.type.index() == type.index()) {
+			return std::visit([&other](auto &&type_obj) {
+				using T = std::decay_t<decltype(type_obj)>;
+				const T &other_actual = std::get<T>(other.type);
+				return type_obj.equivalent_to(other_actual);
+				}, type);
+		} else return false;
 	}
 
 	bool Type::operator==(const Type &other) const {
