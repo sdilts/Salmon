@@ -397,4 +397,64 @@ namespace salmon::vm {
 			}
 		}
 	}
+
+	SCENARIO("TypeSpecs are combined correctly") {
+		MemoryManager manager;
+		Package base_package("test", manager);
+
+		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
+		vm_ptr<Symbol> other_symb = base_package.intern_symbol("cheese");
+		vm_ptr<Symbol> bar_symb = base_package.intern_symbol("bar");
+		vm_ptr<Symbol> i32_symb = base_package.intern_symbol("int-32");
+
+		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(i32_symb, "documentation", sizeof(int));
+
+		auto f32_type = manager.allocate_obj<Type>(ptype);
+		auto i32_type = manager.allocate_obj<Type>(p_i32);
+
+		WHEN("Specs with no parameters are combined") {
+			SpecBuilder b1;
+			b1.add_type(f32_type);
+			SpecBuilder b2;
+			b2.add_type(i32_type);
+			TypeSpecification combined = TypeSpecification::combine(b1.build(), b2.build());
+			THEN("It is built correctly") {
+				SpecBuilder bc;
+				bc.add_type(f32_type);
+				bc.add_type(i32_type);
+				REQUIRE(combined == bc.build());
+			}
+		}
+
+		WHEN("Specs with just parameters are combined (different parameters)") {
+			SpecBuilder b1;
+			b1.add_parameter(other_symb);
+			SpecBuilder b2;
+			b2.add_parameter(bar_symb);
+			TypeSpecification combined = TypeSpecification::combine(b1.build(), b2.build());
+			THEN("It is built correctly") {
+				SpecBuilder bc;
+				bc.add_parameter(other_symb);
+				bc.add_parameter(bar_symb);
+				TypeSpecification base = bc.build();
+				REQUIRE(combined == base);
+			}
+		}
+
+		WHEN("Specs with just parameters are combined (same parameters)") {
+			SpecBuilder b1;
+			b1.add_parameter(other_symb);
+			SpecBuilder b2;
+			b2.add_parameter(other_symb);
+			TypeSpecification combined = TypeSpecification::combine(b1.build(), b2.build());
+			THEN("It is built correctly") {
+				SpecBuilder bc;
+				bc.add_parameter(other_symb);
+				bc.add_parameter(other_symb);
+				TypeSpecification base = bc.build();
+				REQUIRE(combined == base);
+			}
+		}
+	}
 }
