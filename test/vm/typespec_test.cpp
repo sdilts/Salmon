@@ -172,9 +172,10 @@ namespace salmon::vm {
 		MemoryManager manager;
 		Package base_package("test", manager);
 		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
+		vm_ptr<Symbol> i32_symb = base_package.intern_symbol("cheese");
 
 		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
-		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(i32_symb, "documentation", sizeof(int));
 
 		auto f32_type = manager.allocate_obj<Type>(ptype);
 		auto i32_type = manager.allocate_obj<Type>(p_i32);
@@ -244,9 +245,10 @@ namespace salmon::vm {
 		Package base_package("test", manager);
 		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> symb_a = base_package.intern_symbol("a");
+		vm_ptr<Symbol> i32_symb = base_package.intern_symbol("cheese");
 
 		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
-		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(i32_symb, "documentation", sizeof(int));
 
 		auto f32_type = manager.allocate_obj<Type>(ptype);
 		auto i32_type = manager.allocate_obj<Type>(p_i32);
@@ -279,9 +281,10 @@ namespace salmon::vm {
 		Package base_package("test", manager);
 		vm_ptr<Symbol> type_name_symb = base_package.intern_symbol("float-32");
 		vm_ptr<Symbol> other_symb = base_package.intern_symbol("cheese");
+		vm_ptr<Symbol> i32_symb = base_package.intern_symbol("cheese");
 
 		PrimitiveType ptype(type_name_symb, "documentation", sizeof(int));
-		PrimitiveType p_i32(type_name_symb, "documentation", sizeof(int));
+		PrimitiveType p_i32(i32_symb, "documentation", sizeof(int));
 
 		auto f32_type = manager.allocate_obj<Type>(ptype);
 		auto i32_type = manager.allocate_obj<Type>(p_i32);
