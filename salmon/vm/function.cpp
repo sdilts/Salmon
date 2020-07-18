@@ -163,7 +163,7 @@ namespace salmon::vm {
 	bool FunctionTable::new_interface(const vm_ptr<Symbol> &name,
 									  const vm_ptr<InterfaceFunction> &fn_type) {
 		auto place = interfaces.lower_bound(name);
-		if(place != interfaces.end() && *(place->first) != *name) {
+		if(place == interfaces.end() || *(place->first) != *name) {
 			interfaces.emplace(name, fn_type);
 			return true;
 		} else if(place->second->type()->equivalent_to(*fn_type->type())) {
