@@ -4,7 +4,7 @@
 
 namespace salmon::vm {
 	List::List(const Box &itm) :
-		itm{itm}, next{nullptr} {
+		itm{itm.bare()}, next{nullptr} {
 
 	}
 

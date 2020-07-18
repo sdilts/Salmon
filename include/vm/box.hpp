@@ -32,28 +32,28 @@ namespace salmon::vm {
 	        void get_roots(const std::function<void(AllocatedItem*)>&) const;
 	};
 
-	struct Box : private InternalBox {
+	struct Box {
 
 		template<typename T>
 		Box(const vm_ptr<T> &elem_ptr, const vm_ptr<Type> &type) :
 			elem_ptr{elem_ptr},
 			type_ptr{type} {
-			this->type = type.get();
+			internal.type = type.get();
 			if(elem_ptr) {
-				elem = elem_ptr.get();
+				internal.elem = elem_ptr.get();
 			}
-			salmon_check(this->type != nullptr, "Type shouldn't be null");
+			salmon_check(internal.type != nullptr, "Type shouldn't be null");
 		}
 
 		template<typename T>
 		Box(const vm_ptr<T> &&elem_ptr, const vm_ptr<Type> &type) :
 			elem_ptr{elem_ptr},
 			type_ptr{type} {
-			this->type = type.get();
+			internal.type = type.get();
 			if(elem_ptr) {
-				elem = elem_ptr.get();
+				internal.elem = elem_ptr.get();
 			}
-			salmon_check(this->type != nullptr, "Type shouldn't be null");
+			salmon_check(internal.type != nullptr, "Type shouldn't be null");
 		}
 
 		template <typename T>
@@ -63,10 +63,10 @@ namespace salmon::vm {
 			static_assert(std::is_same<vm::Empty, T>::value
 						  || (!std::is_class<T>::value && !std::is_pointer<T>::value));
 			elem_ptr = nullptr;
-			elem = scalar;
-			this->type = type.get();
+			internal.elem = scalar;
+			internal.type = type.get();
 			type_ptr = type;
-			salmon_check(this->type != nullptr, "Type shouldn't be null");
+			salmon_check(internal.type != nullptr, "Type shouldn't be null");
 		}
 
 		Box(const Box&) = default;
@@ -77,13 +77,13 @@ namespace salmon::vm {
 
 		template<typename T>
 		void set_value(const vm_ptr<T> &value) {
-			elem = value.get();
+			internal.elem = value.get();
 			elem_ptr = &*value;
 		}
 
 		template<typename T>
 		void set_value(T value) {
-			elem = value;
+			internal.elem = value;
 			elem_ptr = nullptr;
 		}
 
@@ -92,14 +92,15 @@ namespace salmon::vm {
 		}
 
 		const BoxVariant &value() const {
-			return elem;
+			return internal.elem;
 		}
 
-		// these need to access the InternalBox:
-		friend struct Array;
-		friend struct List;
+		const InternalBox &bare() const {
+			return internal;
+		}
 
 	private:
+		InternalBox internal;
 		vm_ptr<AllocatedItem> elem_ptr;
 		vm_ptr<Type> type_ptr;
 	};

@@ -17,11 +17,7 @@ namespace salmon::vm {
 	}
 
 	void Array::push_back(const Box &item) {
-		items.push_back(item);
-	}
-
-	void Array::push_back(Box&& item) {
-		items.push_back(item);
+		items.push_back(item.bare());
 	}
 
 	void Array::print_debug_info() const {
