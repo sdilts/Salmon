@@ -139,7 +139,7 @@ namespace salmon::vm {
 		 * an implementation that already exists with the given name the return value is still
 		 * true.
 		 */
-		bool new_interface(const vm_ptr<Symbol> &name, const vm_ptr<InterfaceFunction> &fn_type);
+		bool new_interface(const vm_ptr<Symbol> &name, const vm_ptr<InterfaceFunction> &fn);
 
 		std::optional<vm_ptr<VmFunction>> get_fn(const vm_ptr<Symbol> &name) const;
 
