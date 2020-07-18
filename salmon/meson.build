@@ -4,11 +4,9 @@ lib_compiler = static_library(
   'salmon_compiler',
   files(
     'util/assert.cpp',
-
     'compiler/CountingStream.cpp',
     'compiler/compiler.cpp',
     'compiler/parser.cpp',
-    'config.cpp',
     'vm/allocateditem.cpp',
     'vm/array.cpp',
     'vm/box.cpp',
@@ -32,6 +30,7 @@ lib_compiler = static_library(
 
 salmon_sources = files(
   'main.cpp',
+  'config.cpp',
   'util/environment.cpp',
   )
 

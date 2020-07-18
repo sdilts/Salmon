@@ -114,7 +114,7 @@ namespace salmon::vm {
 	VirtualMachine::VirtualMachine(const Config &config, const std::string &base_package) :
 		mem_manager{},
 		type_table{mem_manager},
-		fn_table{mem_manager},
+		fn_table{},
 		packages{},
 		_config{config},
 		base_package_name(base_package),
