@@ -56,6 +56,18 @@ namespace salmon::vm {
 			salmon_check(internal.type != nullptr, "Type shouldn't be null");
 		}
 
+		Box(InternalBox internal, const vm_ptr<AllocatedItem> &seed) :
+			internal{internal},
+			elem_ptr{seed},
+			type_ptr{seed.from(internal.type)} {
+			std::visit([this](auto &&arg) {
+				using T = std::decay<decltype(arg)>;
+				if constexpr (std::is_pointer<T>::value) {
+					this->elem_ptr = arg;
+				}
+			}, this->internal.elem);
+		}
+
 		template <typename T>
 		Box(T scalar, const vm_ptr<Type> &type) :
 			elem_ptr{type},
