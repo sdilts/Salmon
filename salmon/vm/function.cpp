@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include <vm/function.hpp>
+#include <vm/vm.hpp>
 
 namespace salmon::vm {
 
@@ -78,32 +79,34 @@ namespace salmon::vm {
 
 	}
 
-	static std::vector<Type*> get_signature(std::vector<Box> &args) {
+	static std::vector<Type*> get_signature(std::vector<InternalBox> &args) {
 		std::vector<Type*> ret;
 		ret.reserve(args.size());
 		for(const auto &item : args) {
-			ret.push_back(item.elem_type().get());
+			ret.push_back(item.type);
 		}
 		return ret;
 	}
 
-	static std::vector<vm_ptr<Type>> vm_ptr_signature(std::vector<Box> &args) {
+	static std::vector<vm_ptr<Type>> vm_ptr_signature(VirtualMachine *vm,
+													  std::vector<InternalBox> &args) {
 		std::vector<vm_ptr<Type>> ret;
 		ret.reserve(args.size());
 		for(const auto &item : args) {
-			ret.push_back(item.elem_type());
+			vm_ptr<Type> t = vm->mem_manager.make_vm_ptr(item.type);
+			ret.push_back(t);
 		}
 		return ret;
 	}
 
-	Box InterfaceFunction::operator()(VirtualMachine *vm, std::vector<Box> &args)  {
+	Box InterfaceFunction::operator()(VirtualMachine *vm, std::vector<InternalBox> &args)  {
 		const std::vector<Type*> arg_types = get_signature(args);
 		try {
 			// TODO: fix this to not throw an exception if a value isn't found:
 			VmFunction *actual = functions.at(arg_types);
 			return (*actual)(vm, args);
 		} catch(std::out_of_range *ex) {
-			std::vector<vm_ptr<Type>> sig = vm_ptr_signature(args);
+			std::vector<vm_ptr<Type>> sig = vm_ptr_signature(vm, args);
 			throw NoSuchFunction(sig);
 		}
 	}
@@ -175,10 +178,10 @@ namespace salmon::vm {
 	std::optional<vm_ptr<VmFunction>> FunctionTable::get_fn(const vm_ptr<Symbol> &name) const {
 		auto interface_place = interfaces.find(name);
 		if(interface_place != interfaces.end()) {
-			return std::make_optional(interface_place->second);
+			return std::make_optional(static_cast<vm_ptr<VmFunction>>(interface_place->second));
 		} else if(auto fn_place = functions.find(name);
 				  fn_place != functions.end()) {
-			return std::make_optional(fn_place->second);
+			return std::make_optional(static_cast<vm_ptr<VmFunction>>(fn_place->second));
 		} else return std::nullopt;
 	}
 }

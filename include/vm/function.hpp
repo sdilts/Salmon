@@ -61,7 +61,15 @@ namespace salmon::vm {
 		 *
 		 * @throw ArityException if the vector is the incorrect length.
 		 */
-		virtual Box operator()(VirtualMachine *vm, std::vector<Box> &args) = 0;
+		virtual Box invoke(VirtualMachine *vm, std::vector<Box> &args) {
+			std::vector<InternalBox> base;
+			base.reserve(args.size());
+			std::transform(args.cbegin(), args.cend(), std::back_inserter(base),
+						   [](const Box& b) { return b.bare(); });
+			return (*this)(vm, base);
+		}
+
+		virtual Box operator()(VirtualMachine *vm, std::vector<InternalBox> &args) = 0;
 
 		void get_roots(const std::function<void(AllocatedItem*)> &) const override;
 
@@ -86,7 +94,7 @@ namespace salmon::vm {
 		InterfaceFunction(const vm_ptr<Type> &type,
 			   const std::vector<vm_ptr<Symbol>> &lambda_list);
 
-		Box operator()(VirtualMachine *vm, std::vector<Box> &args) override;
+		Box operator()(VirtualMachine *vm, std::vector<InternalBox> &args) override;
 
 		/**
 		 * Add an implementation for this interface.

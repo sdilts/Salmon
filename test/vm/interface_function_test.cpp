@@ -9,15 +9,15 @@ namespace salmon::vm {
 
 	static const std::string base_package_name = "package";
 
-	static Box add_double(VirtualMachine *vm, Box &one) {
-		double val = std::get<double>(one.value());
+	static Box add_double(VirtualMachine *vm, InternalBox one) {
+		double val = std::get<double>(one.elem);
 		val = val + 1;
 		Box ret = vm->make_boxed(val);
 		return ret;
 	}
 
-	static Box add_int(VirtualMachine *vm, Box &one) {
-		int val = std::get<int>(one.value());
+	static Box add_int(VirtualMachine *vm, InternalBox one) {
+		int val = std::get<int>(one.elem);
 		val = val + 1;
 		Box ret = vm->make_boxed(val);
 		return ret;
@@ -34,19 +34,18 @@ namespace salmon::vm {
 		int_builder.add_type(int_type);
 		FunctionType int_fn_t(int_builder.build(), int_builder.build());
 		vm_ptr<Type> int_fn_type = vm.mem_manager.allocate_obj<Type>(int_fn_t);
-		vm_ptr<VmFunction> int_fn =
-			vm.mem_manager.allocate_obj<BuiltinFunction<Box&>>(add_int, int_fn_type, lambda_list,
-															   std::nullopt, std::nullopt);
+		vm_ptr<VmFunction> int_fn(vm.mem_manager.allocate_obj<BuiltinFunction<InternalBox>>(
+									  add_int, int_fn_type, lambda_list,
+									  std::nullopt, std::nullopt));
 
 		SpecBuilder double_builder;
 		double_builder.add_type(double_type);
 		FunctionType double_fn_t(double_builder.build(), double_builder.build());
 		vm_ptr<Type> double_fn_type = vm.mem_manager.allocate_obj<Type>(double_fn_t);
 		assert(double_type->concrete());
-		vm_ptr<VmFunction> double_fn =
-			vm.mem_manager.allocate_obj<BuiltinFunction<Box&>>(add_double, double_fn_type,
-															   lambda_list,
-															   std::nullopt, std::nullopt);
+		vm_ptr<VmFunction> double_fn(vm.mem_manager.allocate_obj<BuiltinFunction<InternalBox>>(
+										 add_double, double_fn_type, lambda_list,
+										 std::nullopt, std::nullopt));
 
 		SpecBuilder arg_builder;
 		arg_builder.add_parameter(param_name);
@@ -70,7 +69,7 @@ namespace salmon::vm {
 			double val = 2;
 			std::vector<Box> arg = { vm.make_boxed(val) };
 			THEN("The double function is called") {
-				Box result = func(&vm,arg);
+				Box result = func.invoke(&vm,arg);
 				REQUIRE(result.elem_type() == vm.get_builtin_type<double>());
 				REQUIRE(std::get<double>(result.value()) == 3);
 			}
@@ -79,7 +78,7 @@ namespace salmon::vm {
 			int val = 2;
 			std::vector<Box> arg = { vm.make_boxed(val) };
 			THEN("The int function is called") {
-				Box result = func(&vm,arg);
+				Box result = func.invoke(&vm,arg);
 				REQUIRE(result.elem_type() == vm.get_builtin_type<int>());
 				REQUIRE(std::get<int>(result.value()) == 3);
 			}
@@ -88,7 +87,7 @@ namespace salmon::vm {
 			bool val = true;
 			std::vector<Box> arg = { vm.make_boxed(val) };
 			THEN("An exception is thrown") {
-				REQUIRE_THROWS_AS(func(&vm,arg),NoSuchFunction);
+				REQUIRE_THROWS_AS(func.invoke(&vm,arg),NoSuchFunction);
 			}
 		}
 	}

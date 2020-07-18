@@ -49,7 +49,7 @@ namespace salmon::vm {
 		vm_ptr() = delete;
 
 		template<typename Other>
-		vm_ptr(const vm_ptr<Other> other) :
+		explicit vm_ptr(const vm_ptr<Other> other) :
 			instances{other.instances},
 			ptr(static_cast<T*>(other.get())) {
 			static_assert(std::is_base_of<T, Other>::value);
@@ -77,13 +77,22 @@ namespace salmon::vm {
 			}
 		}
 
-                template <typename O>
-                vm_ptr<O> from(O *obj) {
+		template <typename O>
+		vm_ptr<O> from(O *obj) const {
 			vm_ptr<O> thing(obj, std::ref(*this->instances));
 			return thing;
 		}
 
-                T& operator*() const {
+		template <typename O>
+		vm_ptr<O> from(vm_ptr<O> other) const {
+			if(other) {
+				return vm_ptr(other.get(), this->instances);
+			} else {
+				return vm_ptr(nullptr, this->instances);
+			}
+		}
+
+		T& operator*() const {
 			return *ptr;
 		}
 
