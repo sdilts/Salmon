@@ -20,58 +20,69 @@ static salmon::Config get_config() {
 	};
 }
 
-static void process_files(char **filenames, const int length, salmon::compiler::Compiler &engine) {
-	for(int i = 0; i < length; i++) {
-		std::filesystem::path filepath(filenames[i]);
-		if(std::filesystem::is_regular_file(filepath)) {
-			std::cout << "Processing file " << filepath.string() << std::endl;
-			try {
-				std::ifstream file;
-				file.open(filepath);
-				while(auto token = salmon::compiler::read(file, engine)) {
-					std::cout << *token->elem_type() << "\n";
-					// token = salmon::compiler::read(file, engine);
+namespace salmon {
+
+	static void process_files(char **filenames, const int length, compiler::Compiler &engine) {
+		for(int i = 0; i < length; i++) {
+			std::filesystem::path filepath(filenames[i]);
+			if(std::filesystem::is_regular_file(filepath)) {
+				std::cout << "Processing file " << filepath.string() << std::endl;
+				try {
+					std::ifstream file;
+					file.open(filepath);
+					while(auto token = salmon::compiler::read(file, engine)) {
+						std::cout << *token->elem_type() << "\n";
+
+						// token = salmon::compiler::read(file, engine);
+						engine.vm.mem_manager.do_gc();
+					}
+					file.close();
+				} catch(salmon::compiler::ParseException &error) {
+					error.add_file_info(std::filesystem::canonical(filepath));
+					std::cout << error.build_error_str() << std::endl;
+				}
+			} else {
+				std::cout << "Cannot process file" << filepath.string() << std::endl;
+			}
+		}
+	}
+
+	static void repl(salmon::compiler::Compiler& engine) {
+		using namespace salmon;
+		const std::filesystem::path history_file = engine.config.data_dir / "history.txt";
+
+		replxx::Replxx rx;
+		rx.install_window_change_handler();
+
+		rx.history_load(history_file.string());
+		rx.set_max_history_size(100);
+
+		vm::vm_ptr<vm::VmFunction> print_fn = *engine.vm.fn_table.get_fn(engine.vm.base_package().intern_symbol("print"));
+		std::vector<vm::Box> print_args = { engine.vm.make_boxed(vm::Empty()) };
+		print_args.reserve(1);
+		char const* line{nullptr};
+		while((line = rx.input(" > ")) != nullptr) {
+			if(line[0] != '\0') {
+				try {
+					auto token = compiler::read_from_string(line, engine);
+					if(token) {
+						std::cout << "token: " << *token->elem_type() << std::endl;
+						print_args.pop_back();
+						print_args.push_back(*token);
+						print_fn->invoke(&engine.vm, print_args);
+						std::cout << std::endl;
+					}
+					rx.history_add(line);
 					engine.vm.mem_manager.do_gc();
+				} catch(const compiler::ParseException &error) {
+					std::cout << error.build_error_str() << std::endl;
 				}
-				file.close();
-			} catch(salmon::compiler::ParseException &error) {
-				error.add_file_info(std::filesystem::canonical(filepath));
-				std::cout << error.build_error_str() << std::endl;
 			}
-		} else {
-			std::cout << "Cannot process file" << filepath.string() << std::endl;
+			line = "";
 		}
+		std::cout << "\n";
+		rx.history_save(history_file);
 	}
-}
-
-static void repl(salmon::compiler::Compiler& engine) {
-	using namespace salmon;
-	const std::filesystem::path history_file = engine.config.data_dir / "history.txt";
-
-	replxx::Replxx rx;
-	rx.install_window_change_handler();
-
-	rx.history_load(history_file.string());
-	rx.set_max_history_size(100);
-
-	char const* line{nullptr};
-	while((line = rx.input(" > ")) != nullptr) {
-		if(line[0] != '\0') {
-			try {
-			    auto token = compiler::read_from_string(line, engine);
-				if(token) {
-					std::cout << "token: " << *token->elem_type() << std::endl;
-				}
-				rx.history_add(line);
-				engine.vm.mem_manager.do_gc();
-			} catch(const compiler::ParseException &error) {
-				std::cout << error.build_error_str() << std::endl;
-			}
-		}
-		line = "";
-	}
-	std::cout << "\n";
-	rx.history_save(history_file);
 }
 
 int main(int argc ,char **argv) {
@@ -125,13 +136,13 @@ int main(int argc ,char **argv) {
 	const int num_to_process = argc - optind;
 
 	if(num_to_process) {
-		process_files(argv+optind, num_to_process, engine);
+		salmon::process_files(argv+optind, num_to_process, engine);
 	} else if(!repl_flag) {
 		std::cout << "No files specified. Nothing to do.\n";
 	}
 
 	if (repl_flag) {
-		repl(engine);
+		salmon::repl(engine);
 	}
 
 	return 0;
