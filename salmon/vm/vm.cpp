@@ -57,11 +57,16 @@ namespace salmon::vm {
 		fn_table{mem_manager},
 		packages{},
 		_config{config},
+		base_package_name(base_package),
 		builtin_map{} {
 		packages.emplace(std::string(base_package), Package(base_package, mem_manager));
 
-		Package &base_pkg = packages.find(base_package)->second;
+		Package &base_pkg = packages.find(base_package_name)->second;
 		init_types(base_pkg, type_table, builtin_map);
+	}
+
+	Package &VirtualMachine::base_package() {
+		return packages.find(base_package_name)->second;
 	}
 
 	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {

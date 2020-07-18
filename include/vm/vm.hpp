@@ -18,6 +18,7 @@ namespace salmon::vm {
 	public:
 		VirtualMachine(const Config &config, const std::string &base_package);
 
+		Package &base_package();
 		std::optional<std::reference_wrapper<Package>> find_package(const std::string &name);
 		std::optional<std::reference_wrapper<Package>> find_package(const vm_ptr<Symbol> &name);
 
@@ -73,6 +74,8 @@ namespace salmon::vm {
 		std::unordered_map<std::string, Package> packages;
 	private:
 		Config _config;
+		// TODO: store actual package:
+		std::string base_package_name;
 
 		// TODO: use one of those fancy constexpr maps:
 		//! map used to lookup the VM types of builtin types
