@@ -145,10 +145,12 @@ namespace salmon {
 		}
 
 		V &operator[](const std::vector<K> &prefixes) {
+			// TODO: use unchecked function:
 			return this->at(prefixes);
 		}
 
 		const V &operator[](const std::vector<K> prefixes) const {
+			// TODO: use unchecked function:
 			return this->at(prefixes);
 		}
 

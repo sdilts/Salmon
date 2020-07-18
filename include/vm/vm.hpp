@@ -73,6 +73,7 @@ namespace salmon::vm {
 	private:
 		Config _config;
 
+		// TODO: use one of those fancy constexpr maps:
 		//! map used to lookup the VM types of builtin types
 		std::unordered_map<std::type_index, Type*> builtin_map;
 		// std::map<vm_ptr<Symbol>, std::unique_ptr<VmFunction>> func_table;
