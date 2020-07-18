@@ -36,12 +36,14 @@ namespace salmon::vm {
 	}
 
 	/**
-	 * this functions implements mark and sweep garbage collection.
+	 * this function implements mark and sweep garbage collection.
 	 **/
 	void MemoryManager::do_gc() {
 		std::cerr << "Before GC: " << allocated.size() << "\n";
 		std::unordered_set<AllocatedItem*> marked = {};
 		std::unordered_set<AllocatedItem*> to_check;
+		marked.reserve(allocated.size());
+		to_check.reserve(allocated.size());
 
 		for(auto [root, count] : roots) {
 			// each root is guaranteed to be unique, so no need to check if it has
