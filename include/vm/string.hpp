@@ -16,6 +16,8 @@ namespace salmon::vm {
 		void print_debug_info() const override;
 		size_t allocated_size() const override;
 	};
+
+	std::ostream& operator<<(std::ostream &os, const StaticString &string);
 }
 
 #endif

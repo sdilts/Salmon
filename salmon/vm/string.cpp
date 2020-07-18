@@ -17,4 +17,8 @@ namespace salmon::vm {
 	size_t StaticString::allocated_size() const {
 		return sizeof(StaticString);
 	}
+
+	std::ostream& operator<<(std::ostream &os, const StaticString &string) {
+		return os << '"' << string.contents << '"';
+	}
 }
