@@ -69,6 +69,7 @@ namespace salmon::vm {
 
 		MemoryManager mem_manager;
 		TypeTable type_table;
+		FunctionTable fn_table;
 		std::unordered_map<std::string, Package> packages;
 	private:
 		Config _config;
@@ -76,11 +77,6 @@ namespace salmon::vm {
 		// TODO: use one of those fancy constexpr maps:
 		//! map used to lookup the VM types of builtin types
 		std::unordered_map<std::type_index, Type*> builtin_map;
-		// std::map<vm_ptr<Symbol>, std::unique_ptr<VmFunction>> func_table;
-		// registering interface functions require different steps,
-		// and we want to avoid instanceof usage, so use a different table.
-		// std::map<vm_ptr<Symbol>, InterfaceFunction> interface_table;
-
 	};
 }
 
