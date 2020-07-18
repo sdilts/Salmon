@@ -91,11 +91,9 @@ namespace salmon::vm {
 		/**
 		 * Add an implementation for this interface.
 		 *
-		 * If allow_overwrite is true, allow
-		 * an existing implementation to be replaced
+		 * This function will overwrite previous implementations
 		 *
 		 * @param fn the new implementation
-		 * @param allow_overwrite allow an existing implementation to be replaced.
 		 * @return whether the new implementation was added.
 		 */
 		bool add_impl(const vm_ptr<VmFunction> &fn);
@@ -105,6 +103,43 @@ namespace salmon::vm {
 		size_t allocated_size() const override;
 	private:
 		PrefixTrie<Type*, VmFunction*, cmpUnderlyingType<Type>> functions;
+	};
+
+	class FunctionTable {
+	public:
+		FunctionTable(MemoryManager &mem_manager);
+		//TODO: figure out mechanicsm for changing the signature of functions at rutime.
+		/**
+		 * Adds or overwrites the function with the given name.
+		 *
+		 * If a function with the given name already exists, only overwrite it
+		 * if the function types are identical.
+		 */
+		bool add_function(const vm_ptr<Symbol> &name, const vm_ptr<VmFunction> &fn);
+		bool add_function(const vm_ptr<Symbol> &name, vm_ptr<VmFunction> &&fn);
+
+		//TODO: figure out mechanicsm for changing the signature of functions at rutime.
+		/**
+		 * Adds an interface function with the given signature.
+		 *
+		 * If a interface with that name but with a different type, already exists,
+		 * then then nothing happens. If an interface with the same name and type already exists
+		 * in the table, then copy over the documentation string and other non-functional parts
+		 * of the given function.
+		 *
+		 * @return whether or not a new implementation was added. If the type is equal to
+		 * an implementation that already exists with the given name the return value is still
+		 * true.
+		 */
+		bool new_interface(const vm_ptr<Symbol> &name, const vm_ptr<InterfaceFunction> &fn_type);
+
+		std::optional<vm_ptr<VmFunction>> get_fn(const vm_ptr<Symbol> &name) const;
+
+	private:
+		MemoryManager &mem_manager;
+
+		std::map<vm_ptr<Symbol>, vm_ptr<VmFunction>,cmpUnderlyingType<Symbol>> functions;
+		std::map<vm_ptr<Symbol>, vm_ptr<InterfaceFunction>, cmpUnderlyingType<Symbol>> interfaces;
 	};
 }
 

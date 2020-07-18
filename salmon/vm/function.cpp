@@ -133,4 +133,52 @@ namespace salmon::vm {
 	}
 
 	size_t InterfaceFunction::allocated_size() const { return sizeof(InterfaceFunction); }
+
+	FunctionTable::FunctionTable(MemoryManager &mem_manager) :
+		mem_manager{mem_manager} {}
+
+	bool FunctionTable::add_function(const vm_ptr<Symbol> &name, const vm_ptr<VmFunction> &fn) {
+		vm_ptr<VmFunction> fn_copy = fn;
+		return add_function(name, std::move(fn_copy));
+	}
+
+	bool FunctionTable::add_function(const vm_ptr<Symbol> &name, vm_ptr<VmFunction> &&fn) {
+		auto interface_place = interfaces.find(name);
+		if(interface_place != interfaces.end()) {
+			return interface_place->second->add_impl(fn);
+		} else {
+			auto place = functions.lower_bound(name);
+			if(place == functions.end() || *place->first != *name) {
+				functions.emplace_hint(place,name, fn);
+				return true;
+			} else if(place->second->type()->equivalent_to(*fn->type())) {
+				functions.insert_or_assign(name, fn);
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	bool FunctionTable::new_interface(const vm_ptr<Symbol> &name,
+									  const vm_ptr<InterfaceFunction> &fn_type) {
+		auto place = interfaces.lower_bound(name);
+		if(place != interfaces.end() && *(place->first) != *name) {
+			interfaces.emplace(name, fn_type);
+			return true;
+		} else if(place->second->type()->equivalent_to(*fn_type->type())) {
+			// TODO: update the interface's documenation and other non-important fields
+			return true;
+		} else return false;
+	}
+
+	std::optional<vm_ptr<VmFunction>> FunctionTable::get_fn(const vm_ptr<Symbol> &name) const {
+		auto interface_place = interfaces.find(name);
+		if(interface_place != interfaces.end()) {
+			return std::make_optional(interface_place->second);
+		} else if(auto fn_place = functions.find(name);
+				  fn_place != functions.end()) {
+			return std::make_optional(fn_place->second);
+		} else return std::nullopt;
+	}
 }
