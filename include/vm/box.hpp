@@ -109,7 +109,6 @@ namespace salmon::vm {
 		Array(int32_t size);
 
 		void push_back(const Box &item);
-		void push_back(Box&& item);
 
 		void print_debug_info() const override;
 		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
