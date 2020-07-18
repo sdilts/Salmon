@@ -110,6 +110,9 @@ namespace salmon::vm {
 
 		void push_back(const Box &item);
 
+		std::vector<InternalBox>::iterator begin();
+		std::vector<InternalBox>::iterator end();
+
 		void print_debug_info() const override;
 		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 		size_t allocated_size() const override;
