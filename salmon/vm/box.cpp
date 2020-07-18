@@ -19,4 +19,8 @@ namespace salmon::vm {
 				static_assert(!std::is_pointer<T>::value);
 			} }, elem);
 	}
+
+	std::ostream& operator<<(std::ostream &os, const Empty &) {
+		return os << "Empty";
+	}
 }
