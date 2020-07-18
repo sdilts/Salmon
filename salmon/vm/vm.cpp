@@ -41,14 +41,14 @@ namespace salmon::vm {
 
 		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox>::FunctionType>> to_add =
 		{
-			{ vm->get_builtin_type<List>(), print_list },
 			{ vm->get_builtin_type<Symbol>(),       print_pointer_primitive<Symbol> },
 			{ vm->get_builtin_type<StaticString>(), print_pointer_primitive<StaticString> },
-		    { vm->get_builtin_type<double>(),       print_primitive<double> },
+			{ vm->get_builtin_type<double>(),       print_primitive<double> },
 			{ vm->get_builtin_type<int32_t>(),      print_primitive<int32_t> },
 			{ vm->get_builtin_type<bool>(),         print_primitive<bool> },
 			{ vm->get_builtin_type<Empty>(),        print_primitive<Empty> },
-			{ vm->get_builtin_type<Array>(), print_array },
+			{ vm->get_builtin_type<Array>(),        print_array },
+			{ vm->get_builtin_type<List>(),         print_list },
 		};
 
 		for(const auto &[type, fn] : to_add) {
