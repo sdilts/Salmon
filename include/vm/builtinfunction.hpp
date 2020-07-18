@@ -12,6 +12,12 @@ namespace salmon::vm {
 
 		BuiltinFunction(FunctionType fn,
 						vm_ptr<Type> type,
+						const std::vector<vm_ptr<Symbol>> &lambda_list)
+			: BuiltinFunction(fn, type, lambda_list, std::nullopt, std::nullopt) {
+		}
+
+		BuiltinFunction(FunctionType fn,
+						vm_ptr<Type> type,
 						const std::vector<vm_ptr<Symbol>> &lambda_list,
 						std::optional<std::string> docs,
 						std::optional<std::string> file) :
