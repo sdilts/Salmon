@@ -115,7 +115,7 @@ namespace salmon::vm {
 
 	class FunctionTable {
 	public:
-		FunctionTable(MemoryManager &mem_manager);
+		FunctionTable();
 		//TODO: figure out mechanicsm for changing the signature of functions at rutime.
 		/**
 		 * Adds or overwrites the function with the given name.
@@ -144,8 +144,6 @@ namespace salmon::vm {
 		std::optional<vm_ptr<VmFunction>> get_fn(const vm_ptr<Symbol> &name) const;
 
 	private:
-		MemoryManager &mem_manager;
-
 		std::map<vm_ptr<Symbol>, vm_ptr<VmFunction>,cmpUnderlyingType<Symbol>> functions;
 		std::map<vm_ptr<Symbol>, vm_ptr<InterfaceFunction>, cmpUnderlyingType<Symbol>> interfaces;
 	};

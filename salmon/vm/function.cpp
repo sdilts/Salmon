@@ -137,8 +137,7 @@ namespace salmon::vm {
 
 	size_t InterfaceFunction::allocated_size() const { return sizeof(InterfaceFunction); }
 
-	FunctionTable::FunctionTable(MemoryManager &mem_manager) :
-		mem_manager{mem_manager} {}
+	FunctionTable::FunctionTable() {}
 
 	bool FunctionTable::add_function(const vm_ptr<Symbol> &name, const vm_ptr<VmFunction> &fn) {
 		vm_ptr<VmFunction> fn_copy = fn;
