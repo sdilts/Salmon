@@ -141,8 +141,8 @@ namespace salmon::vm {
 			other = ptr;
 			THEN("The pointer it used to contain is freed.") {
 				REQUIRE(!instances.empty());
-				auto pos = instances.find(other_box);
-				REQUIRE(pos == instances.end());
+				// auto pos = instances.find(other_box);
+				REQUIRE(!instances.contains(other_box));
 				REQUIRE(instances.size() == 1);
 			}
 			delete other_box;
