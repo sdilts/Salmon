@@ -11,11 +11,6 @@ namespace salmon::vm {
 		do_gc();
 	}
 
-	static bool set_contains(const std::unordered_set<AllocatedItem*> &set, AllocatedItem* item) {
-		auto itr = set.find(item);
-		return itr != set.end();
-	}
-
 	static AllocatedItem* set_pop(std::unordered_set<AllocatedItem*> &set) {
 		auto itr = set.begin();
 		AllocatedItem *itm = *itr;
@@ -29,7 +24,7 @@ namespace salmon::vm {
 		marked.insert(item);
 		std::vector<AllocatedItem*> children;
 		item->get_roots([&to_check, &marked](AllocatedItem *child) {
-			if(!set_contains(marked, child)) {
+			if(!marked.contains(child)) {
 				to_check.insert(child);
 			}
 		});

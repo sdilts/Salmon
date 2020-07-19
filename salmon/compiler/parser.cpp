@@ -182,7 +182,7 @@ namespace salmon::compiler {
 		while( (read_in = input.peek()) && read_in != EOF) {
 			char ch = static_cast<char>(read_in);
 			if(std::isspace(static_cast<unsigned char>(ch)) ||
-			   terminating_chars.count(ch) == 1) {
+			   terminating_chars.contains(ch)) {
 				break;
 			} else {
 				token << ch;
