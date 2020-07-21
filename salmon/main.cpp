@@ -30,7 +30,8 @@ namespace salmon {
 				try {
 					std::ifstream file;
 					file.open(filepath);
-					while(auto token = salmon::compiler::read(file, engine)) {
+					compiler::CountingStreamBuffer countStreamBuf(file);
+					while(auto token = salmon::compiler::read(countStreamBuf, engine)) {
 						std::cout << *token->elem_type() << "\n";
 
 						// token = salmon::compiler::read(file, engine);

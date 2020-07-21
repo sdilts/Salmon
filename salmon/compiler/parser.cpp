@@ -483,8 +483,7 @@ namespace salmon::compiler {
 		} while(true);
 	}
 
-	std::optional<salmon::vm::Box> read(std::istream &input, Compiler &compiler) {
-		CountingStreamBuffer countStreamBuf(input);
+	std::optional<salmon::vm::Box> read(CountingStreamBuffer &countStreamBuf, Compiler &compiler) {
 		std::istream inStream(&countStreamBuf);
 		salmon_check(tracker_from_stream(inStream) == &countStreamBuf, "tracker_from_stream works");
 
@@ -508,7 +507,7 @@ namespace salmon::compiler {
 		case ReadResult::END:
 			// push  the origin stream past the end of the stream so it's
 			// eof bit is set.
-			input.get();
+			inStream.get();
 			[[fallthrough]];
 		default:
 			return item;
@@ -517,6 +516,7 @@ namespace salmon::compiler {
 
 	std::optional<salmon::vm::Box> read_from_string(const std::string& input, Compiler &compiler) {
 		std::istringstream input_stream(input);
-		return read(input_stream, compiler);
+		CountingStreamBuffer countStreamBuf(input_stream);
+		return read(countStreamBuf, compiler);
 	}
 }
