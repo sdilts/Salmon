@@ -3,6 +3,7 @@
 
 #include <string>
 #include <stdexcept>
+#include <source_location>
 
 namespace salmon {
 
@@ -10,14 +11,13 @@ namespace salmon {
 					  bool condition, const std::string &msg);
 
 	struct AssertionException : std::logic_error {
-		const std::string file;
-		const unsigned int line;
+		std::source_location loc;
 
 		friend void salmon::throw_assert(const char* predicate, const char *file, unsigned int line,
 								 bool condition, const std::string &msg);
 
 	private:
-		AssertionException(const std::string &msg, const char *file, unsigned int line);
+		AssertionException(const std::string &msg, std::source_location loc);
 	};
 }
 
