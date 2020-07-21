@@ -344,6 +344,29 @@ namespace salmon::compiler {
 	static std::pair<ReadResult, std::optional<salmon::vm::Box>>
 	read_next(std::istream &input, Compiler &compiler);
 
+	static vm::Box quote(std::istream &input, Compiler &compiler) {
+		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
+		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
+
+		// parent function doesn't consume backquote char:
+		input.get();
+		vm::vm_ptr<vm::Symbol> quote_symb = compiler.vm.base_package().intern_symbol("quote");
+		vm::vm_ptr<vm::List> list = compiler.vm.mem_manager.allocate_obj<vm::List>(
+			compiler.vm.make_boxed(quote_symb));
+
+		auto [result, cur_item] = read_next(input, compiler);
+		if(result == ReadResult::ITEM) {
+			salmon_check(cur_item != std::nullopt, "Unexpected std::nullopt");
+			vm::vm_ptr<vm::List> cdr = compiler.vm.mem_manager.allocate_obj<vm::List>(*cur_item);
+			list->next = &*cdr;
+			return compiler.vm.make_boxed(list);
+		} else {
+			meta::position_info end_info = countStreamBuf->positionInfo();
+			throw ParseException("Reached EOF while parsing quote reader macro",
+								 start_info, end_info);
+		}
+	}
+
 	static std::list<salmon::vm::Box> collect_list(std::istream &input, const ReadResult &terminator,
 		Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
@@ -446,6 +469,8 @@ namespace salmon::compiler {
 				case '"':
 					return std::make_pair(ReadResult::ITEM,
 										  parse_string(input, compiler));
+				case '\'':
+					return std::make_pair(ReadResult::ITEM, quote(input, compiler));
 				default:
 					return std::make_pair(ReadResult::ITEM,
 										  parse_primitive(input, compiler));
