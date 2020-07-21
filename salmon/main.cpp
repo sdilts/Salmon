@@ -66,7 +66,6 @@ namespace salmon {
 				try {
 					auto token = compiler::read_from_string(line, engine);
 					if(token) {
-						std::cout << "token: " << *token->elem_type() << std::endl;
 						print_args.pop_back();
 						print_args.push_back(*token);
 						print_fn->invoke(&engine.vm, print_args);
