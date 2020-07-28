@@ -21,7 +21,7 @@ namespace salmon::vm {
 
 		~TestFunction() {}
 
-		Box operator()(VirtualMachine *vm, std::vector<InternalBox>&) {
+		Box operator()(VirtualMachine *vm, std::span<InternalBox>) override {
 			Box b = vm->make_boxed(1);
 			return b;
 		}

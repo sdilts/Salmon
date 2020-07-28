@@ -7,6 +7,7 @@
 #include <vector>
 #include <exception>
 #include <iostream>
+#include <span>
 
 #include <vm/box.hpp>
 #include <util/prefixtrie.hpp>
@@ -61,15 +62,15 @@ namespace salmon::vm {
 		 *
 		 * @throw ArityException if the vector is the incorrect length.
 		 */
-		virtual Box invoke(VirtualMachine *vm, std::vector<Box> &args) {
+		virtual Box invoke(VirtualMachine *vm, std::span<Box> args) {
 			std::vector<InternalBox> base;
 			base.reserve(args.size());
-			std::transform(args.cbegin(), args.cend(), std::back_inserter(base),
+			std::transform(args.begin(), args.end(), std::back_inserter(base),
 						   [](const Box& b) { return b.bare(); });
-			return (*this)(vm, base);
+			return (*this)(vm, {base.data(), base.size()});
 		}
 
-		virtual Box operator()(VirtualMachine *vm, std::vector<InternalBox> &args) = 0;
+		virtual Box operator()(VirtualMachine *vm, std::span<InternalBox> args) = 0;
 
 		void get_roots(const std::function<void(AllocatedItem*)> &) const override;
 
@@ -94,7 +95,7 @@ namespace salmon::vm {
 		InterfaceFunction(const vm_ptr<Type> &type,
 			   const std::vector<vm_ptr<Symbol>> &lambda_list);
 
-		Box operator()(VirtualMachine *vm, std::vector<InternalBox> &args) override;
+		Box operator()(VirtualMachine *vm, std::span<InternalBox> args) override;
 
 		/**
 		 * Add an implementation for this interface.

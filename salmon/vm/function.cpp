@@ -79,7 +79,7 @@ namespace salmon::vm {
 
 	}
 
-	static std::vector<Type*> get_signature(std::vector<InternalBox> &args) {
+	static std::vector<Type*> get_signature(std::span<InternalBox> &args) {
 		std::vector<Type*> ret;
 		ret.reserve(args.size());
 		for(const auto &item : args) {
@@ -89,7 +89,7 @@ namespace salmon::vm {
 	}
 
 	static std::vector<vm_ptr<Type>> vm_ptr_signature(VirtualMachine *vm,
-													  std::vector<InternalBox> &args) {
+							  std::span<InternalBox> &args) {
 		std::vector<vm_ptr<Type>> ret;
 		ret.reserve(args.size());
 		for(const auto &item : args) {
@@ -99,7 +99,7 @@ namespace salmon::vm {
 		return ret;
 	}
 
-	Box InterfaceFunction::operator()(VirtualMachine *vm, std::vector<InternalBox> &args)  {
+	Box InterfaceFunction::operator()(VirtualMachine *vm, std::span<InternalBox> args)  {
 		const std::vector<Type*> arg_types = get_signature(args);
 		try {
 			// TODO: fix this to not throw an exception if a value isn't found:

@@ -29,8 +29,12 @@ namespace salmon::vm {
 
 		~BuiltinFunction() = default;
 
-		Box operator()(VirtualMachine *vm, std::vector<InternalBox> &args) override {
-			return unpack_vector(vm, args);
+		Box operator()(VirtualMachine *vm, std::span<InternalBox> args) override {
+			if (args.size() != sizeof...(Args)) {
+				throw ArityException::build(vm, _lambda_list, args.size(), sizeof...(Args));
+			}
+			std::span<InternalBox, sizeof...(Args)> span(args);
+			return unpack_vector(vm, span);
 		}
 
 		void print_debug_info() const override {
@@ -46,14 +50,12 @@ namespace salmon::vm {
 		FunctionType actual_function;
 
 		template<std::size_t... S>
-		Box unpack_vector(VirtualMachine *vm, std::vector<InternalBox>& vec, std::index_sequence<S...>) {
+		Box unpack_vector(VirtualMachine *vm, std::span<InternalBox, sizeof...(Args)> vec,
+						  std::index_sequence<S...>) {
 			return actual_function(vm, vec[S]...);
 		}
 
-		Box unpack_vector(VirtualMachine *vm, std::vector<InternalBox>& vec) {
-			if (vec.size() != sizeof...(Args)) {
-				throw ArityException::build(vm, _lambda_list, vec.size(), sizeof...(Args));
-			}
+		Box unpack_vector(VirtualMachine *vm, std::span<InternalBox, sizeof...(Args)> vec) {
 			return unpack_vector(vm, vec, std::make_index_sequence<sizeof...(Args)>());
 		}
 	};

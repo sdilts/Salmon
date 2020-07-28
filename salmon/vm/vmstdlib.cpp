@@ -1,5 +1,6 @@
 #include <vm/vm.hpp>
 #include <iostream>
+#include <array>
 
 namespace salmon::vm {
 
@@ -9,14 +10,15 @@ namespace salmon::vm {
 		vm_ptr<Symbol> print_symb = vm->base_package().intern_symbol("print");
 		vm_ptr<VmFunction> print_fn = *vm->fn_table.get_fn(print_symb);
 
-		std::vector<InternalBox> arg_vec = {first->itm };
+		std::array<InternalBox, 1> arg_arr = {first->itm };
+		std::span<InternalBox,1> arg_span(arg_arr);
 
 		std::cout << '(';
-		(*print_fn)(vm, arg_vec);
+		(*print_fn)(vm, arg_span);
 		for(List *head = first->next; head != nullptr; head = head->next) {
 			std::cout << ' ';
-			arg_vec[0] = head->itm;
-			(*print_fn)(vm, arg_vec);
+			arg_span[0] = head->itm;
+			(*print_fn)(vm, arg_span);
 		}
 		std::cout << ')';
 		Box ret(list, vm->mem_manager.make_vm_ptr<AllocatedItem>());
@@ -32,12 +34,13 @@ namespace salmon::vm {
 		std::cout << '[';
 		auto iter = arr->begin();
 		if(iter != arr->end()) {
-			std::vector<InternalBox> arg_vec = { *iter };
-			(*print_fn)(vm, arg_vec);
+			std::array<InternalBox, 1> arg_arr = { *iter };
+			std::span<InternalBox,1>  arg_span(arg_arr);
+			(*print_fn)(vm, arg_span);
 			for(iter = std::next(iter); iter != arr->end(); ++iter) {
 				std::cout << ' ';
-				arg_vec[0] = *iter;
-				(*print_fn)(vm, arg_vec);
+				arg_span[0] = *iter;
+				(*print_fn)(vm, arg_span);
 			}
 		}
 		std::cout << ']';

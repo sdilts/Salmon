@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <string>
 #include <filesystem>
-
+#include <span>
 #include <unistd.h>
 
 #include <replxx.hxx>
@@ -23,17 +23,23 @@ static salmon::Config get_config() {
 namespace salmon {
 
 	static void process_files(char **filenames, const int length, compiler::Compiler &engine) {
+		vm::vm_ptr<vm::VmFunction> print_fn =
+			*engine.vm.fn_table.get_fn(engine.vm.base_package().intern_symbol("print"));
 		for(int i = 0; i < length; i++) {
 			std::filesystem::path filepath(filenames[i]);
 			if(std::filesystem::is_regular_file(filepath)) {
+
+				std::array<vm::Box,1> print_args = { engine.vm.make_boxed(vm::Empty()) };
+				std::span<vm::Box,1> print_span(print_args);
 				std::cout << "Processing file " << filepath.string() << std::endl;
 				try {
 					std::ifstream file;
 					file.open(filepath);
 					compiler::CountingStreamBuffer countStreamBuf(file);
 					while(auto token = salmon::compiler::read(countStreamBuf, engine)) {
-						std::cout << *token->elem_type() << "\n";
-
+						print_span[0] = *token;
+						print_fn->invoke(&engine.vm, print_span);
+						std::cout << std::endl;
 						// token = salmon::compiler::read(file, engine);
 						engine.vm.mem_manager.do_gc();
 					}
@@ -59,17 +65,16 @@ namespace salmon {
 		rx.set_max_history_size(100);
 
 		vm::vm_ptr<vm::VmFunction> print_fn = *engine.vm.fn_table.get_fn(engine.vm.base_package().intern_symbol("print"));
-		std::vector<vm::Box> print_args = { engine.vm.make_boxed(vm::Empty()) };
-		print_args.reserve(1);
+		std::array<vm::Box,1> print_args = { engine.vm.make_boxed(vm::Empty()) };
+		std::span<vm::Box,1> print_span(print_args);
 		char const* line{nullptr};
 		while((line = rx.input(" > ")) != nullptr) {
 			if(line[0] != '\0') {
 				try {
 					auto token = compiler::read_from_string(line, engine);
 					if(token) {
-						print_args.pop_back();
-						print_args.push_back(*token);
-						print_fn->invoke(&engine.vm, print_args);
+						print_span[0] = *token;
+						print_fn->invoke(&engine.vm, print_span);
 						std::cout << std::endl;
 					}
 					rx.history_add(line);
