@@ -26,8 +26,8 @@ namespace salmon::vm {
 			return b;
 		}
 
-		void print_debug_info() const {}
-		size_t allocated_size() const { return sizeof(TestFunction); }
+		void print_debug_info() const override {}
+		size_t allocated_size() const override { return sizeof(TestFunction); }
 	};
 
 	SCENARIO("Function types record their roots correctly","[vm]") {
