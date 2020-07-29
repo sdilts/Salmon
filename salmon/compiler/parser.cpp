@@ -505,7 +505,7 @@ namespace salmon::compiler {
 														   first_char),
 								 start_info, end_info);
 		case ReadResult::END:
-			// push  the origin stream past the end of the stream so it's
+			// push the origin stream past the end of the stream so it's
 			// eof bit is set.
 			inStream.get();
 			[[fallthrough]];
