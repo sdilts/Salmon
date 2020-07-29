@@ -1,4 +1,4 @@
-image: alpine:latest
+image: opensuse/tumbleweed:latest
 
 workflow:
   rules:
@@ -9,8 +9,7 @@ stages:
 - verify_build
 
 before_script:
- - apk update && apk add libstdc++
- - apk add --update meson cmake alpine-sdk clang
+ - zypper ref && zypper in -y meson cmake clang git gcc-c++ 
 
 build_gcc:
   stage: verify_build
