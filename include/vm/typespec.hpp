@@ -91,11 +91,11 @@ namespace salmon::vm {
 
 	public:
 		//! add a paramenter to the specification
-		void add_parameter(vm_ptr<Symbol> &param);
-		void add_parameter(vm_ptr<Symbol> &param, bool constant, bool is_static);
+		void add_parameter(const vm_ptr<Symbol> &param);
+		void add_parameter(const vm_ptr<Symbol> &param, bool constant, bool is_static);
 		//! add a type to the specification
-		void add_type(vm_ptr<Type> &type);
-		void add_type(vm_ptr<Type> &type, bool constant, bool is_static);
+		void add_type(const vm_ptr<Type> &type);
+		void add_type(const vm_ptr<Type> &type, bool constant, bool is_static);
 
 		//! the the spec that you have built
 		TypeSpecification build();

@@ -93,7 +93,7 @@ namespace salmon::vm {
 		return std::nullopt;
 	}
 
-	void Package::export_symbol(vm_ptr<Symbol> &symbol) {
+	void Package::export_symbol(const vm_ptr<Symbol> &symbol) {
 		exported.insert({(*symbol).name, vm_ptr(symbol)});
 	}
 

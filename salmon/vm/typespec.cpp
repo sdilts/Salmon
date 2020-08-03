@@ -56,11 +56,11 @@ namespace salmon::vm {
 		return properties < other.properties;
 	}
 
-	void SpecBuilder::add_parameter(vm_ptr<Symbol> &param) {
+	void SpecBuilder::add_parameter(const vm_ptr<Symbol> &param) {
 		add_parameter(param, false, false);
 	}
 
-	void SpecBuilder::add_parameter(vm_ptr<Symbol> &param, bool constant,
+	void SpecBuilder::add_parameter(const vm_ptr<Symbol> &param, bool constant,
 					bool is_static) {
 		auto place = parameters.lower_bound(param);
 		if( place == parameters.end() || *(*place).first != *param ) {
@@ -73,11 +73,11 @@ namespace salmon::vm {
 		properties.emplace_back(constant, is_static);
         }
 
-	void SpecBuilder::add_type(vm_ptr<Type> &type) {
+	void SpecBuilder::add_type(const vm_ptr<Type> &type) {
 		add_type(type, false, false);
 	}
 
-	void SpecBuilder::add_type(vm_ptr<Type> &type, bool constant, bool is_static) {
+	void SpecBuilder::add_type(const vm_ptr<Type> &type, bool constant, bool is_static) {
 		concrete_types.emplace_back(type, num_elems);
 		num_elems += 1;
 		properties.emplace_back(constant, is_static);

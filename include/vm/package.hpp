@@ -44,7 +44,7 @@ namespace salmon::vm {
 
 		std::optional<vm_ptr<Symbol>> find_symbol(const std::string &name) const;
 		bool is_exported(const Symbol &symbol) const;
-		void export_symbol(vm_ptr<Symbol> &symbol);
+		void export_symbol(const vm_ptr<Symbol> &symbol);
 
 	private:
 		Package();
