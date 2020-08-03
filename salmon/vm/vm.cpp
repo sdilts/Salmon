@@ -65,50 +65,48 @@ namespace salmon::vm {
 		init_print_fns(vm);
 	}
 
+	template<typename T>
+	static constexpr size_t type_size() {
+		if(std::is_same<T,Empty>::value
+		   || !(std::is_class<T>::value || std::is_union<T>::value)) {
+			return sizeof(T);
+		} else {
+			T* tmp;
+			return sizeof(tmp);
+		}
+	}
+
+	template<typename T>
+	static void init_primitive_type(Package &base_package, TypeTable &t_table,
+									std::unordered_map<std::type_index, Type*> &builtin_map,
+									const std::string &name, const std::string &doc) {
+		vm_ptr<Symbol> name_symb = base_package.intern_symbol(name);
+		base_package.export_symbol(name_symb);
+
+		size_t size = type_size<T>();
+
+		vm_ptr<Type> type = t_table.make_primitive(name_symb, doc, size);
+		builtin_map[typeid(T)] = type.get();
+	}
+
 	static void init_types(Package &base_package, TypeTable &t_table,
-						   std::unordered_map<std::type_index, Type*> &builtin_map) {
-		vm_ptr<Symbol> str_symb = base_package.intern_symbol("const-string");
-		vm_ptr<Symbol> list_symb = base_package.intern_symbol("list");
-		vm_ptr<Symbol> dyn_arr_symb = base_package.intern_symbol("dyn-array");
-		vm_ptr<Symbol> int_symb = base_package.intern_symbol("int-32");
-		vm_ptr<Symbol> double_symb = base_package.intern_symbol("float-64");
-		vm_ptr<Symbol> symb_symb = base_package.intern_symbol("symbol");
-		vm_ptr<Symbol> bool_symb = base_package.intern_symbol("boolean");
-		vm_ptr<Symbol> empty_symb = base_package.intern_symbol("empty");
-
-		base_package.export_symbol(str_symb);
-		base_package.export_symbol(list_symb);
-		base_package.export_symbol(dyn_arr_symb);
-		base_package.export_symbol(int_symb);
-		base_package.export_symbol(double_symb);
-		base_package.export_symbol(symb_symb);
-		base_package.export_symbol(bool_symb);
-		base_package.export_symbol(empty_symb);
-
-		TypePtr str =  t_table.make_primitive(str_symb, "Constant string type used by the vm",
-											  sizeof(vm_ptr<Symbol>));
-		TypePtr list = t_table.make_primitive(list_symb, "Linked list used by the vm",
-											  sizeof(vm_ptr<Symbol>));
-		TypePtr dyn_arr = t_table.make_primitive(dyn_arr_symb, "Dynamic array used by the vm",
-												 sizeof(vm_ptr<Symbol>));
-		TypePtr int_type = t_table.make_primitive(int_symb,"32 bit integer", sizeof(vm_ptr<Symbol>));
-		TypePtr double_type = t_table.make_primitive(double_symb, "32 bit floating point",
-													 sizeof(vm_ptr<Symbol>));
-		TypePtr symbol_type = t_table.make_primitive(symb_symb, "Symbol",
-													 sizeof(vm_ptr<Symbol>));
-		TypePtr bool_type = t_table.make_primitive(bool_symb, "True or false type",
-												   sizeof(vm_ptr<Symbol>));
-		TypePtr empty_type = t_table.make_primitive(empty_symb, "Type representing the empty object.",
-													sizeof(vm_ptr<Symbol>));
-
-		builtin_map[typeid(StaticString)] = str.get();
-		builtin_map[typeid(List)] = list.get();
-		builtin_map[typeid(Array)] = dyn_arr.get();
-		builtin_map[typeid(int32_t)] = int_type.get();
-		builtin_map[typeid(double)] = double_type.get();
-		builtin_map[typeid(Symbol)] = symbol_type.get();
-		builtin_map[typeid(bool)] = bool_type.get();
-		builtin_map[typeid(Empty)] = empty_type.get();
+					   std::unordered_map<std::type_index, Type*> &builtin_map) {
+		init_primitive_type<StaticString>(base_package, t_table, builtin_map,
+									  "const-string", "Constant string type used by the vm");
+		init_primitive_type<List>(base_package, t_table, builtin_map,
+							 "list", "Linked List used by the vm");
+		init_primitive_type<Array>(base_package, t_table, builtin_map,
+							   "dyn-array", "Dynamic array used by the vm");
+		init_primitive_type<Symbol>(base_package, t_table, builtin_map,
+								"symbol", "symbol");
+		init_primitive_type<int32_t>(base_package, t_table, builtin_map,
+								 "int-32", "32 bit signed integer type");
+		init_primitive_type<double>(base_package, t_table, builtin_map,
+								"float-64", "64 bit floating type");
+		init_primitive_type<bool>(base_package, t_table, builtin_map,
+							  "bool", "Boolean type");
+		init_primitive_type<Empty>(base_package, t_table, builtin_map,
+								"Empty", "Type representing an empty object");
 	}
 
 	VirtualMachine::VirtualMachine(const Config &config, const std::string &base_package) :
