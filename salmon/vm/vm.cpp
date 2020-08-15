@@ -8,39 +8,44 @@
 namespace salmon::vm {
 
 	template<typename ... Args>
-	static void add_function(VirtualMachine *vm,
+	static void add_interface_fn(VirtualMachine *vm,
 							 const vm_ptr<Symbol> &name,
-							 typename BuiltinFunction<Args...>::FunctionType fn,
+							 const std::string &doc,
 							 const std::vector<vm_ptr<Symbol>> &lambda_list,
-							 const TypeSpecification &ret, const TypeSpecification &args) {
-		vm_ptr<Type> fn_type = vm->type_table.get_fn_type(ret, args);
-		vm_ptr<VmFunction> vm_fn(vm->mem_manager
-								 .allocate_obj<BuiltinFunction<Args...>>(fn,
-																   fn_type,
-																   lambda_list));
-		salmon_ensure(vm->fn_table.add_function(name, vm_fn), "Function not added");
+							 vm_ptr<Type> interface_type,
+							 std::vector<std::pair<vm_ptr<Type>,typename BuiltinFunction<Args...>::FunctionType>> impls) {
+		FunctionTable &fn_table = vm->fn_table;
+
+		vm_ptr<InterfaceFunction> interface_fn =
+			vm->mem_manager.allocate_obj<InterfaceFunction>(interface_type, lambda_list,
+															doc, std::nullopt);
+		salmon_ensure(fn_table.new_interface(name, interface_fn),
+					  "Interface function not added");
+		Package &base_package = vm->base_package();
+		base_package.export_symbol(name);
+
+		for(const auto &[type, fn] : impls) {
+			vm_ptr<VmFunction> vm_fn(vm->mem_manager
+									 .allocate_obj<BuiltinFunction<Args...>>(fn,
+																			 type,
+																			 lambda_list));
+			salmon_ensure(vm->fn_table.add_function(name, vm_fn), "Function not added");
+		}
 	}
 
 	static void init_print_fns(VirtualMachine *vm) {
-		FunctionTable &fn_table = vm->fn_table;
 		Package &base_package = vm->base_package();
 		TypeTable &type_table = vm->type_table;
 
 		vm_ptr<Symbol> obj_symb = base_package.intern_symbol("obj");
 		vm_ptr<Symbol> print_symb = base_package.intern_symbol("print");
+		std::vector<vm_ptr<Symbol>> lambda_list = { obj_symb };
 		SpecBuilder interfaceBuilder;
 		interfaceBuilder.add_parameter(obj_symb);
 		vm_ptr<Type> p_interface_type = type_table.get_fn_type(interfaceBuilder.build(),
 															   interfaceBuilder.build());
-		std::vector<vm_ptr<Symbol>> lambda_list = {obj_symb};
-		vm_ptr<InterfaceFunction> p_interface =
-			vm->mem_manager.allocate_obj<InterfaceFunction>(p_interface_type, lambda_list);
-		salmon_ensure(fn_table.new_interface(print_symb, p_interface),
-					  "Interface function not added");
-		base_package.export_symbol(print_symb);
 
-		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox>::FunctionType>> to_add =
-		{
+		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox>::FunctionType>> to_add = {
 			{ vm->get_builtin_type<Symbol>(),       print_pointer_primitive<Symbol> },
 			{ vm->get_builtin_type<StaticString>(), print_pointer_primitive<StaticString> },
 			{ vm->get_builtin_type<double>(),       print_primitive<double> },
@@ -51,14 +56,17 @@ namespace salmon::vm {
 			{ vm->get_builtin_type<List>(),         print_list },
 		};
 
-		for(const auto &[type, fn] : to_add) {
+		for(auto &[type, fn] : to_add) {
 			SpecBuilder spec;
 			vm_ptr<Type> tmp_type = type;
 			spec.add_type(tmp_type);
-			add_function<InternalBox>(vm, print_symb, fn, lambda_list,
-									  spec.build(), spec.build());
+			type = vm->type_table.get_fn_type(spec.build(), spec.build());
 		}
 
+		add_interface_fn<InternalBox>(vm, print_symb,
+								  "Print the readable representation of an object",
+								  lambda_list, p_interface_type,
+								  to_add);
 	}
 
 	static void init_stdlib(VirtualMachine *vm) {
