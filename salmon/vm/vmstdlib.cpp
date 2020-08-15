@@ -63,4 +63,56 @@ namespace salmon::vm {
 		Box ret(box, vm->mem_manager.make_vm_ptr<AllocatedItem>());
 		return ret;
 	}
+
+	template<typename T>
+	Box add(VirtualMachine *vm, InternalBox one, InternalBox two) {
+		salmon_check(*one.type == *vm->get_builtin_type<T>()
+					 && *two.type == *vm->get_builtin_type<T>(),
+					 "Given types are not correct");
+		T first = std::get<T>(one.elem);
+		T second = std::get<T>(two.elem);
+		T result = first + second;
+
+		Box ret(result, vm->get_builtin_type<T>());
+		return ret;
+	}
+
+	template<typename T>
+	Box subtract(VirtualMachine *vm, InternalBox one, InternalBox two) {
+		salmon_check(*one.type == *vm->get_builtin_type<T>()
+					 && *two.type == *vm->get_builtin_type<T>(),
+					 "Given types are not correct");
+		T first = std::get<T>(one.elem);
+		T second = std::get<T>(two.elem);
+		T result = first - second;
+
+		Box ret(result, vm->get_builtin_type<T>());
+		return ret;
+	}
+
+	template<typename T>
+	Box multiply(VirtualMachine *vm, InternalBox one, InternalBox two) {
+		salmon_check(*one.type == *vm->get_builtin_type<T>()
+					 && *two.type == *vm->get_builtin_type<T>(),
+					 "Given types are not correct");
+		T first = std::get<T>(one.elem);
+		T second = std::get<T>(two.elem);
+		T result = first * second;
+
+		Box ret(result, vm->get_builtin_type<T>());
+		return ret;
+	}
+
+	template<typename T>
+	Box divide(VirtualMachine *vm, InternalBox one, InternalBox two) {
+		salmon_check(*one.type == *vm->get_builtin_type<T>()
+					 && *two.type == *vm->get_builtin_type<T>(),
+					 "Given types are not correct");
+		T first = std::get<T>(one.elem);
+		T second = std::get<T>(two.elem);
+		T result = first / second;
+
+		Box ret(result, vm->get_builtin_type<T>());
+		return ret;
+	}
 }

@@ -69,8 +69,62 @@ namespace salmon::vm {
 								  to_add);
 	}
 
+	static vm_ptr<Type> init_numeric_fn_sig(VirtualMachine *vm, const vm_ptr<Type> &type) {
+		SpecBuilder arg_spec;
+		arg_spec.add_type(type);
+		arg_spec.add_type(type);
+		SpecBuilder ret_spec;
+		ret_spec.add_type(type);
+	    return vm->type_table.get_fn_type(arg_spec.build(), ret_spec.build());
+	}
+
+	static void init_arithmetic_fns(VirtualMachine *vm) {
+		Package &base_package = vm->base_package();
+		TypeTable &type_table = vm->type_table;
+
+		vm_ptr<Symbol> obj_symb = base_package.intern_symbol("num");
+		std::vector<vm_ptr<Symbol>> lambda_list = { obj_symb, obj_symb };
+		SpecBuilder interface_arg_builder;
+		interface_arg_builder.add_parameter(obj_symb);
+		interface_arg_builder.add_parameter(obj_symb);
+		SpecBuilder interface_ret_builder;
+		interface_ret_builder.add_parameter(obj_symb);
+		vm_ptr<Type> interface_type = type_table.get_fn_type(interface_arg_builder.build(),
+															 interface_ret_builder.build());
+		std::array<vm_ptr<Type>,2> fn_signatures = {
+			init_numeric_fn_sig(vm, vm->get_builtin_type<double>()),
+			init_numeric_fn_sig(vm, vm->get_builtin_type<int32_t>())
+		};
+
+		{
+		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox,InternalBox>::FunctionType>>
+			add_fn = {
+			{ fn_signatures[0], add<double> },
+			{ fn_signatures[1], add<int32_t> }
+		};
+		vm_ptr<Symbol> add_symb = base_package.intern_symbol("add");
+		add_interface_fn<InternalBox,InternalBox>(vm, add_symb,
+								  "Add two numbers",
+								  lambda_list, interface_type,
+								  add_fn);
+		}
+		{
+		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox,InternalBox>::FunctionType>>
+			sub_fn = {
+			{ fn_signatures[0], subtract<double> },
+			{ fn_signatures[1], subtract<int32_t> }
+		};
+		vm_ptr<Symbol> sub_symb = base_package.intern_symbol("subtract");
+		add_interface_fn<InternalBox,InternalBox>(vm, sub_symb,
+								  "Subtract two numbers",
+								  lambda_list, interface_type,
+								  sub_fn);
+		}
+	}
+
 	static void init_stdlib(VirtualMachine *vm) {
 		init_print_fns(vm);
+		init_arithmetic_fns(vm);
 	}
 
 	template<typename T>
