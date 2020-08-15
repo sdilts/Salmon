@@ -58,7 +58,7 @@ namespace salmon::vm {
 
 	template<typename T>
 	Box print_primitive(VirtualMachine *vm, InternalBox box) {
-		salmon_check(*box.type == *vm->get_builtin_type<T>(), "Given type is not a correct");
+		salmon_check(*box.type == *vm->get_builtin_type<T>(), "Given type is not correct");
 		std::cout << std::get<T>(box.elem);
 		Box ret(box, vm->mem_manager.make_vm_ptr<AllocatedItem>());
 		return ret;
