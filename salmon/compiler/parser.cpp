@@ -1,6 +1,7 @@
 #include <sstream>
 #include <cctype>
 #include <string>
+#include <string_view>
 #include <iostream>
 #include <streambuf>
 #include <limits>
@@ -54,7 +55,7 @@ namespace salmon::compiler {
 		source_file = file;
 	}
 
-	static std::string build_unmatched_error_str(const std::string &message, const char ch) {
+	static std::string build_unmatched_error_str(const std::string_view message, const char ch) {
 		std::stringstream out;
 		out << message;
 		out << ch;
@@ -155,7 +156,7 @@ namespace salmon::compiler {
 		INTEGER
 	};
 
-	static NumberType get_num_type(const std::string &symbol) {
+	static NumberType get_num_type(const std::string_view symbol) {
 		NumberType num_type = NumberType::INTEGER;
 		for(size_t i = 0; i < symbol.length(); i++) {
 			auto c = symbol[i];
@@ -307,7 +308,7 @@ namespace salmon::compiler {
 		}
 	}
 
-	static bool isKeyword(const std::string &symbol) {
+	static bool isKeyword(const std::string_view symbol) {
 		salmon_check(!symbol.empty(), "Symbol isn't supposed to be empty");
 		return symbol[0] == ':';
 	}

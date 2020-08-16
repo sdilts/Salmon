@@ -24,7 +24,7 @@ namespace salmon {
 
 	static void process_files(char **filenames, const int length, compiler::Compiler &engine) {
 		vm::vm_ptr<vm::VmFunction> print_fn =
-			*engine.vm.fn_table.get_fn(engine.vm.base_package().intern_symbol("print"));
+			*engine.vm.fn_table.get_fn(*engine.vm.base_package().find_symbol("print"));
 		for(int i = 0; i < length; i++) {
 			std::filesystem::path filepath(filenames[i]);
 			if(std::filesystem::is_regular_file(filepath)) {
@@ -64,7 +64,7 @@ namespace salmon {
 		rx.history_load(history_file.string());
 		rx.set_max_history_size(100);
 
-		vm::vm_ptr<vm::VmFunction> print_fn = *engine.vm.fn_table.get_fn(engine.vm.base_package().intern_symbol("print"));
+		vm::vm_ptr<vm::VmFunction> print_fn = *engine.vm.fn_table.get_fn(*engine.vm.base_package().find_symbol("print"));
 		std::array<vm::Box,1> print_args = { engine.vm.make_boxed(vm::Empty()) };
 		std::span<vm::Box,1> print_span(print_args);
 		char const* line{nullptr};

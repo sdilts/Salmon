@@ -26,7 +26,7 @@ namespace salmon::vm {
 		  used(used) { }
 
 
-	std::optional<vm_ptr<Symbol>> Package::find_external_symbol(const std::string &name) const {
+	std::optional<vm_ptr<Symbol>> Package::find_external_symbol(const std::string_view name) const {
 		auto result = this->exported.find(name);
 		if(result == this->exported.end()) {
 			for(const auto &pkg : this->used) {
@@ -78,7 +78,7 @@ namespace salmon::vm {
 		return (*interned_result).second;
 	}
 
-	std::optional<vm_ptr<Symbol>> Package::find_symbol(const std::string &name) const {
+	std::optional<vm_ptr<Symbol>> Package::find_symbol(const std::string_view name) const {
 		for(const auto &pkg : this->used) {
 			auto found = pkg.get().find_external_symbol(name);
 			if(found) {

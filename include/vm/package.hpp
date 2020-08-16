@@ -42,17 +42,17 @@ namespace salmon::vm {
 		vm_ptr<Symbol> intern_symbol(const std::string &name);
 		vm_ptr<Symbol> intern_symbol(std::string &&name);
 
-		std::optional<vm_ptr<Symbol>> find_symbol(const std::string &name) const;
+		std::optional<vm_ptr<Symbol>> find_symbol(const std::string_view name) const;
 		bool is_exported(const Symbol &symbol) const;
 		void export_symbol(const vm_ptr<Symbol> &symbol);
 
 	private:
 		Package();
 
-		std::optional<vm_ptr<Symbol>> find_external_symbol(const std::string&) const;
+		std::optional<vm_ptr<Symbol>> find_external_symbol(const std::string_view) const;
 
-		std::map<std::string, vm_ptr<Symbol>> interned;
-		std::map<std::string, vm_ptr<Symbol>> exported;
+		std::map<std::string, vm_ptr<Symbol>,std::less<>> interned;
+		std::map<std::string, vm_ptr<Symbol>,std::less<>> exported;
 
 		std::set<std::reference_wrapper<Package>> used;
 	};
