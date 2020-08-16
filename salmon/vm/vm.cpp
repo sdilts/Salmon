@@ -1,3 +1,5 @@
+#include <span>
+
 #include <util/assert.hpp>
 
 #include <vm/vm.hpp>
@@ -13,7 +15,7 @@ namespace salmon::vm {
 							 const std::string &doc,
 							 const std::vector<vm_ptr<Symbol>> &lambda_list,
 							 vm_ptr<Type> interface_type,
-							 std::vector<std::pair<vm_ptr<Type>,typename BuiltinFunction<Args...>::FunctionType>> impls) {
+							 std::span<std::pair<vm_ptr<Type>,typename BuiltinFunction<Args...>::FunctionType>> impls) {
 		FunctionTable &fn_table = vm->fn_table;
 
 		vm_ptr<InterfaceFunction> interface_fn =
@@ -45,15 +47,15 @@ namespace salmon::vm {
 		vm_ptr<Type> p_interface_type = type_table.get_fn_type(interfaceBuilder.build(),
 															   interfaceBuilder.build());
 
-		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox>::FunctionType>> to_add = {
-			{ vm->get_builtin_type<Symbol>(),       print_pointer_primitive<Symbol> },
-			{ vm->get_builtin_type<StaticString>(), print_pointer_primitive<StaticString> },
-			{ vm->get_builtin_type<double>(),       print_primitive<double> },
-			{ vm->get_builtin_type<int32_t>(),      print_primitive<int32_t> },
-			{ vm->get_builtin_type<bool>(),         print_primitive<bool> },
-			{ vm->get_builtin_type<Empty>(),        print_primitive<Empty> },
-			{ vm->get_builtin_type<Array>(),        print_array },
-			{ vm->get_builtin_type<List>(),         print_list },
+		std::array<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox>::FunctionType>,8> to_add = {
+			std::make_pair(vm->get_builtin_type<Symbol>(),       print_pointer_primitive<Symbol>),
+			std::make_pair(vm->get_builtin_type<StaticString>(), print_pointer_primitive<StaticString>),
+			std::make_pair(vm->get_builtin_type<double>(),       print_primitive<double>),
+			std::make_pair(vm->get_builtin_type<int32_t>(),      print_primitive<int32_t>),
+			std::make_pair(vm->get_builtin_type<bool>(),         print_primitive<bool>),
+			std::make_pair(vm->get_builtin_type<Empty>(),        print_primitive<Empty>),
+			std::make_pair(vm->get_builtin_type<Array>(),        print_array),
+			std::make_pair(vm->get_builtin_type<List>(),         print_list),
 		};
 
 		for(auto &[type, fn] : to_add) {
@@ -82,44 +84,40 @@ namespace salmon::vm {
 		Package &base_package = vm->base_package();
 		TypeTable &type_table = vm->type_table;
 
-		vm_ptr<Symbol> obj_symb = base_package.intern_symbol("num");
+		const vm_ptr<Symbol> obj_symb = base_package.intern_symbol("num");
 		std::vector<vm_ptr<Symbol>> lambda_list = { obj_symb, obj_symb };
 		SpecBuilder interface_arg_builder;
 		interface_arg_builder.add_parameter(obj_symb);
 		interface_arg_builder.add_parameter(obj_symb);
 		SpecBuilder interface_ret_builder;
 		interface_ret_builder.add_parameter(obj_symb);
-		vm_ptr<Type> interface_type = type_table.get_fn_type(interface_arg_builder.build(),
+		const vm_ptr<Type> interface_type = type_table.get_fn_type(interface_arg_builder.build(),
 															 interface_ret_builder.build());
-		std::array<vm_ptr<Type>,2> fn_signatures = {
+		const std::array<vm_ptr<Type>,2> fn_signatures = {
 			init_numeric_fn_sig(vm, vm->get_builtin_type<double>()),
 			init_numeric_fn_sig(vm, vm->get_builtin_type<int32_t>())
 		};
 
-		{
-		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox,InternalBox>::FunctionType>>
-			add_fn = {
-			{ fn_signatures[0], add<double> },
-			{ fn_signatures[1], add<int32_t> }
+		std::array<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox,InternalBox>::FunctionType>,2>
+			fn_list = {
+			std::make_pair(fn_signatures[0], add<double>),
+			std::make_pair(fn_signatures[1], add<int32_t>),
 		};
-		vm_ptr<Symbol> add_symb = base_package.intern_symbol("add");
+		const vm_ptr<Symbol> add_symb = base_package.intern_symbol("add");
 		add_interface_fn<InternalBox,InternalBox>(vm, add_symb,
 								  "Add two numbers",
 								  lambda_list, interface_type,
-								  add_fn);
-		}
-		{
-		std::vector<std::pair<vm_ptr<Type>,BuiltinFunction<InternalBox,InternalBox>::FunctionType>>
-			sub_fn = {
-			{ fn_signatures[0], subtract<double> },
-			{ fn_signatures[1], subtract<int32_t> }
+								  fn_list);
+
+		fn_list = {
+			std::make_pair(fn_signatures[0], subtract<double>),
+			std::make_pair(fn_signatures[1], subtract<int32_t>),
 		};
-		vm_ptr<Symbol> sub_symb = base_package.intern_symbol("subtract");
+		const vm_ptr<Symbol> sub_symb = base_package.intern_symbol("subtract");
 		add_interface_fn<InternalBox,InternalBox>(vm, sub_symb,
 								  "Subtract two numbers",
 								  lambda_list, interface_type,
-								  sub_fn);
-		}
+								  fn_list);
 	}
 
 	static void init_stdlib(VirtualMachine *vm) {
