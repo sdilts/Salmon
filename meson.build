@@ -2,7 +2,7 @@ project('salmon',
 	['cpp', 'c'],
 	version : '0.0.1',
 	license : 'MIT',
-	meson_version: '>=0.51.0',
+	meson_version: '>=0.55.0',
 	default_options : [
 	  'cpp_std=c++2a',
 	  'c_std=c17',
@@ -21,12 +21,11 @@ common_args = [
 add_project_arguments(common_args, language: 'cpp',)
 add_project_arguments(common_args, language: 'c',)
 
-replxx_options = [
-  '-DREPLXX_BUILD_EXAMPLES=no',
-  '-DCMAKE_BUILD_TYPE=Release',
-  '-DREPLXX_STATIC=yes'
-]
-replxx_proj = cmake.subproject('replxx', cmake_options: replxx_options)
+replxx_var = cmake.subproject_options()
+replxx_var.add_cmake_defines({'REPLXX_BUILD_EXAMPLES' : 0})
+replxx_var.add_cmake_defines({'CMAKE_BUILD_TYPE' : 'Release'})
+replxx_var.add_cmake_defines({'REPLXX_BUILD_STATIC' : 1})
+replxx_proj = cmake.subproject('replxx', options: replxx_var)
 replxx_dep = replxx_proj.dependency('replxx')
 
 salmon_inc = include_directories('include')
