@@ -5,7 +5,7 @@
 #include <vm/vm.hpp>
 #include <vm/string.hpp>
 #include <vm/builtinfunction.hpp>
-#include "vmstdlib.cpp"
+#include <vm/vmstdlib.hpp>
 
 namespace salmon::vm {
 
