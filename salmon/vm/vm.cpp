@@ -118,6 +118,26 @@ namespace salmon::vm {
 								  "Subtract two numbers",
 								  lambda_list, interface_type,
 								  fn_list);
+
+		fn_list = {
+			std::make_pair(fn_signatures[0], multiply<double>),
+			std::make_pair(fn_signatures[1], multiply<int32_t>),
+		};
+		const vm_ptr<Symbol> mult_symb = base_package.intern_symbol("multiply");
+		add_interface_fn<InternalBox,InternalBox>(vm, mult_symb,
+								  "Multiply two numbers",
+								  lambda_list, interface_type,
+								  fn_list);
+
+		fn_list = {
+			std::make_pair(fn_signatures[0], divide<double>),
+			std::make_pair(fn_signatures[1], divide<int32_t>),
+		};
+		const vm_ptr<Symbol> div_symb = base_package.intern_symbol("divide");
+		add_interface_fn<InternalBox,InternalBox>(vm, div_symb,
+								  "Divide two numbers",
+								  lambda_list, interface_type,
+								  fn_list);
 	}
 
 	static void init_stdlib(VirtualMachine *vm) {
