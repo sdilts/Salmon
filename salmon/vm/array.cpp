@@ -35,4 +35,16 @@ namespace salmon::vm {
 	size_t Array::allocated_size() const {
 		return sizeof(Array);
 	}
+
+	InternalBox &Array::operator[](size_t index) {
+		return items[index];
+	}
+
+	const InternalBox &Array::operator[](size_t index) const {
+		return items[index];
+	}
+
+	size_t Array::size() const {
+		return items.size();
+	}
 }

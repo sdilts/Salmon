@@ -129,6 +129,12 @@ namespace salmon::vm {
 		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 		size_t allocated_size() const override;
 
+		const InternalBox &operator[](size_t) const;
+		InternalBox &operator[](size_t);
+
+		const InternalBox &get(size_t) const;
+		size_t size() const;
+
 	private:
 		std::vector<InternalBox> items;
 	};
