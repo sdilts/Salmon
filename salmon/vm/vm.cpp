@@ -15,7 +15,7 @@ namespace salmon::vm {
 							 const std::string &doc,
 							 const std::vector<vm_ptr<Symbol>> &lambda_list,
 							 vm_ptr<Type> interface_type,
-							 std::span<std::pair<vm_ptr<Type>,typename BuiltinFunction<Args...>::FunctionType>> impls) {
+							 std::span<const std::pair<vm_ptr<Type>,typename BuiltinFunction<Args...>::FunctionType>> impls) {
 		FunctionTable &fn_table = vm->fn_table;
 
 		vm_ptr<InterfaceFunction> interface_fn =
