@@ -349,7 +349,7 @@ namespace salmon::compiler {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
 
-		// parent function doesn't consume backquote char:
+		// parent function doesn't consume quote char:
 		input.get();
 		vm::vm_ptr<vm::Symbol> quote_symb = compiler.vm.base_package().intern_symbol("quote");
 		vm::vm_ptr<vm::List> list = compiler.vm.mem_manager.allocate_obj<vm::List>(
