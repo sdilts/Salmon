@@ -44,6 +44,14 @@ namespace salmon::vm {
 		return items[index];
 	}
 
+	InternalBox &Array::at(size_t index) {
+		return items.at(index);
+	}
+
+	const InternalBox &Array::at(size_t index) const {
+		return items.at(index);
+	}
+
 	size_t Array::size() const {
 		return items.size();
 	}

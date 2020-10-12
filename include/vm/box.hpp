@@ -132,7 +132,9 @@ namespace salmon::vm {
 		const InternalBox &operator[](size_t) const;
 		InternalBox &operator[](size_t);
 
-		const InternalBox &get(size_t) const;
+		InternalBox &at(size_t index);
+		const InternalBox &at(size_t) const;
+
 		size_t size() const;
 
 	private:
