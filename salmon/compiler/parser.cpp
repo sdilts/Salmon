@@ -193,7 +193,7 @@ namespace salmon::compiler {
 		return token.str();
 	}
 
-	salmon::vm::Box read_uninterned_symbol(std::istream &input, Compiler &compiler) {
+	static salmon::vm::Box read_uninterned_symbol(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
 		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
@@ -216,31 +216,33 @@ namespace salmon::compiler {
 		}
 	}
 
-	struct HexTable {
-		unsigned int tab[128];
-		constexpr HexTable() : tab {} {
-			tab[static_cast<int>('1')] = 1; tab[static_cast<int>('2')] = 2;
-			tab[static_cast<int>('3')] = 3; tab[static_cast<int>('4')] = 4;
-			tab[static_cast<int>('5')] = 5; tab[static_cast<int>('6')] = 6;
-			tab[static_cast<int>('7')] = 7; tab[static_cast<int>('8')] = 8;
-			tab[static_cast<int>('9')] = 9; tab[static_cast<int>('a')] = 10;
-			tab[static_cast<int>('A')] = 10; tab[static_cast<int>('b')] = 11;
-			tab[static_cast<int>('B')] = 11; tab[static_cast<int>('c')] = 12;
-			tab[static_cast<int>('C')] = 12; tab[static_cast<int>('d')] = 13;
-			tab[static_cast<int>('D')] = 13; tab[static_cast<int>('e')] = 14;
-			tab[static_cast<int>('E')] = 14; tab[static_cast<int>('f')] = 15;
-			tab[static_cast<int>('F')] = 15;
-		}
-		constexpr unsigned int operator[](char const idx) const {
-			return tab[static_cast<std::size_t>(idx)];
-		}
-	} constexpr table;
-
-	constexpr unsigned int hextoint(char number) {
-		return table[(std::size_t)number];
+	namespace {
+		struct HexTable {
+			unsigned int tab[128];
+			constexpr HexTable() : tab {} {
+				tab[static_cast<int>('1')] = 1; tab[static_cast<int>('2')] = 2;
+				tab[static_cast<int>('3')] = 3; tab[static_cast<int>('4')] = 4;
+				tab[static_cast<int>('5')] = 5; tab[static_cast<int>('6')] = 6;
+				tab[static_cast<int>('7')] = 7; tab[static_cast<int>('8')] = 8;
+				tab[static_cast<int>('9')] = 9; tab[static_cast<int>('a')] = 10;
+				tab[static_cast<int>('A')] = 10; tab[static_cast<int>('b')] = 11;
+				tab[static_cast<int>('B')] = 11; tab[static_cast<int>('c')] = 12;
+				tab[static_cast<int>('C')] = 12; tab[static_cast<int>('d')] = 13;
+				tab[static_cast<int>('D')] = 13; tab[static_cast<int>('e')] = 14;
+				tab[static_cast<int>('E')] = 14; tab[static_cast<int>('f')] = 15;
+				tab[static_cast<int>('F')] = 15;
+			}
+			constexpr unsigned int operator[](char const idx) const {
+				return tab[static_cast<std::size_t>(idx)];
+			}
+		} constexpr table;
 	}
 
-	salmon::vm::Box read_hex_atom(std::istream &input, Compiler &compiler) {
+	static constexpr unsigned int hex_to_int(char number) {
+		return table[static_cast<std::size_t>(number)];
+	}
+
+	static salmon::vm::Box read_hex_atom(std::istream &input, Compiler &compiler) {
 		CountingStreamBuffer *countStreamBuf = tracker_from_stream(input);
 
 		const salmon::meta::position_info start_info = countStreamBuf->positionInfo();
@@ -272,7 +274,7 @@ namespace salmon::compiler {
 		}
 		uint32_t sum = 0;
 		for(const auto c : chunk) {
-		    uint32_t digit = table[static_cast<std::size_t>(c)];
+		    uint32_t digit = hex_to_int(c);
 			sum <<= 4;
 			sum |= digit;
 		}
