@@ -1,6 +1,8 @@
 #ifndef SALMON_COMPILER_BOX
 #define SALMON_COMPILER_BOX
 
+#include <compare>
+#include <type_traits>
 #include <variant>
 #include <unordered_set>
 
@@ -31,6 +33,8 @@ namespace salmon::vm {
 		BoxVariant elem;
 	        void get_roots(const std::function<void(AllocatedItem*)>&) const;
 	};
+	std::partial_ordering operator<=>(const InternalBox &lhs, const InternalBox &rhs);
+	bool operator==(const InternalBox &lhs, const InternalBox &rhs);
 
 	struct Box {
 
@@ -87,6 +91,10 @@ namespace salmon::vm {
 
 		Box &operator=(const Box &) = default;
 
+		auto operator<=>(const Box& other) const {
+			return internal <=> other.internal;
+		}
+
 		template<typename T>
 		void set_value(const vm_ptr<T> &value) {
 			internal.elem = value.get();
@@ -137,6 +145,12 @@ namespace salmon::vm {
 
 		size_t size() const;
 
+		auto operator<=>(const Array &other) const {
+			return other.items <=> this->items;
+		}
+		bool operator==(const Array &other) const {
+			return this->items == other.items;
+		}
 	private:
 		std::vector<InternalBox> items;
 	};
@@ -152,6 +166,28 @@ namespace salmon::vm {
 		void print_debug_info() const override;
 		void get_roots(const std::function<void(AllocatedItem*)>&) const override;
 		size_t allocated_size() const override;
+
+		bool operator==(const List &other) const {
+			if(itm == other.itm) {
+				return next == other.next;
+			} else return false;
+		}
+
+		std::partial_ordering operator<=>(const List &other) const {
+			const auto compare =  itm <=> other.itm;
+			if(compare == 0) {
+				if(next != nullptr && other.next != nullptr) {
+					return *this->next <=> *other.next;
+				} else if(next != nullptr) {
+					return std::strong_ordering::greater;
+				} else if(other.next != nullptr) {
+					return std::strong_ordering::less;
+				} else {
+					std::cout << "Items equal\n";
+					return std::strong_ordering::equal;
+				}
+			} else return compare;
+		}
 	};
 }
 

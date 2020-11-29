@@ -53,7 +53,7 @@ namespace salmon::vm {
 			vm_ptr<Symbol> foo_symb = parent1.intern_symbol("foo");
 			vm_ptr<Symbol> bar_symb = parent2.intern_symbol("bar");
 
-			Package child("child", manager, { parent1, parent2 });
+			Package child("child", manager, { &parent1, &parent2 });
 
 			WHEN( "A string from the first parent is interned" ) {
 				vm_ptr<Symbol> other = child.intern_symbol("foo");
@@ -90,7 +90,7 @@ namespace salmon::vm {
 			parent.export_symbol(symb);
 
 			WHEN( "The package is used") {
-				Package child = Package("Child", manager, { parent });
+				Package child = Package("Child", manager, { &parent });
 				THEN( "The parent's symbols should be used.") {
 					vm_ptr<Symbol> child_symb = parent.intern_symbol("test");
 
@@ -109,6 +109,32 @@ namespace salmon::vm {
 				THEN("Nothing should be found") {
 					REQUIRE(symb == std::nullopt);
 				}
+			}
+		}
+	}
+
+	SCENARIO("Packages are sorted correctly") {
+		GIVEN("Two packages with names \"abcd\" and \"xyz\"") {
+			Package abc("abcd", manager);
+			Package xyz("xyz", manager);
+			THEN("abcd package is less than xyz package") {
+				REQUIRE(abc < xyz);
+			}
+		}
+
+		GIVEN("Two packages with names \"abcd\" and \"abcd\"") {
+			Package abc("abcd", manager);
+			Package xyz("xyz", manager);
+			THEN("the packages are equal") {
+				REQUIRE(xyz > abc);
+			}
+		}
+
+		GIVEN("Two packages with names \"abcd\" and \"abcd\"") {
+			Package abc("xyz", manager);
+			Package xyz("xyz", manager);
+			THEN("the packages are equal") {
+				REQUIRE(xyz == abc);
 			}
 		}
 	}

@@ -54,4 +54,27 @@ namespace salmon::vm {
 		}
 		delete symb;
 	}
+
+	SCENARIO( "operator<=> works for InternalBox", "[box, vm]") {
+
+		WHEN("Two boxes with the same integer value are compared") {
+			InternalBox one = { type.get(), 1 };
+			InternalBox two = { type.get(), 1 };
+			THEN("They are reported as equal") {
+				REQUIRE(one == two);
+				REQUIRE((one < two) == false);
+				REQUIRE((two < one) == false);
+			}
+		}
+
+		WHEN("Two boxes with with different integer values are compared") {
+			InternalBox one = { type.get(), 1 };
+			InternalBox two = { type.get(), 2 };
+			THEN("They are reported as equal") {
+				REQUIRE(one < two);
+				REQUIRE(two > one);
+				REQUIRE(two != one);
+			}
+		}
+	}
 }

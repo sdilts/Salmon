@@ -19,8 +19,8 @@ namespace salmon::vm {
 		VirtualMachine(const Config &config, const std::string &base_package);
 
 		Package &base_package();
-		std::optional<std::reference_wrapper<Package>> find_package(const std::string &name);
-		std::optional<std::reference_wrapper<Package>> find_package(const vm_ptr<Symbol> &name);
+		std::optional<Package*> find_package(const std::string &name);
+		std::optional<Package*> find_package(const vm_ptr<Symbol> &name);
 
 		template<typename T>
 		Box make_boxed(const vm_ptr<T> &item) {

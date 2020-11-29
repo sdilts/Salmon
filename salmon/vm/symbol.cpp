@@ -1,3 +1,4 @@
+#include <compare>
 #include <optional>
 #include <functional>
 #include <iostream>
@@ -31,48 +32,24 @@ namespace salmon::vm {
 		return sizeof(Symbol);
 	}
 
-	bool operator<(const std::string &first, const Symbol &second) {
-		return first < second.name;
-	}
-
-	bool operator<(const Symbol &first, const std::string &second) {
-		return first.name < second;
-	}
-
-	bool operator<(const Symbol &first, const Symbol &second) {
-		if(first.package && second.package) {
-			if (*first.package == *second.package) {
-				return first.name < second.name;
-			}
-			return **first.package < **second.package;
-		} else if(first.package) {
-			return false;
-		} else if (second.package) {
-			return true;
-		}
-		return first.name < second.name;
-	}
-
-	bool operator>(const Symbol &first, const Symbol &second) {
-		if(first.package && second.package) {
-			if (*first.package == *second.package) {
-				return first.name > second.name;
-			}
-			return **first.package > **second.package;
-		} else if(first.package) {
-			return true;
-		} else if (second.package) {
-			return false;
-		}
-		return first.name > second.name;
-	}
-
 	bool operator==(const Symbol &first, const Symbol &second) {
 		return &first == &second;
 	}
 
-	bool operator!=(const Symbol &first, const Symbol &second) {
-		return !(first == second);
+	std::partial_ordering Symbol::operator<=>(const Symbol &other) const {
+		if(this->package && other.package) {
+			auto compare = *package <=> *(other.package);
+			if(compare == std::strong_ordering::equal) {
+				return this->name <=> other.name;
+			} else return compare;
+		} else if(package) {
+			return std::partial_ordering::greater;
+		} else if(other.package) {
+			return std::partial_ordering::less;
+		} else if(this == &other) {
+			return std::partial_ordering::equivalent;
+		}
+		return this->name <=> other.name;
 	}
 
 	std::ostream& operator<<(std::ostream &os, const Symbol &symbol) {

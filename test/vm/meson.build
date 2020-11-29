@@ -1,5 +1,7 @@
 tests = {
+	  'array_tests'    : 'array_test.cpp',
 	  'box_tests'      : 'box_tests.cpp',
+	  'list_tests'     : 'list_test.cpp',
 	  'package_tests'  : 'package_test.cpp',
 	  'symbol_tests'   : 'symbol_test.cpp',
 	  'vm_ptr_tests'   : 'vm_ptr_tests.cpp',

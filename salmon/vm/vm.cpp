@@ -208,15 +208,15 @@ namespace salmon::vm {
 		return packages.find(base_package_name)->second;
 	}
 
-	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const std::string &name) {
+	std::optional<Package*> VirtualMachine::find_package(const std::string &name) {
 		auto pkg_iter = packages.find(name);
 		if(pkg_iter != packages.end()) {
-			return std::make_optional(std::reference_wrapper(pkg_iter->second));
+			return std::make_optional(&pkg_iter->second);
 		} else {
 			return std::nullopt;
 		}
 	}
-	std::optional<std::reference_wrapper<Package>> VirtualMachine::find_package(const vm_ptr<Symbol> &name) {
+	std::optional<Package*> VirtualMachine::find_package(const vm_ptr<Symbol> &name) {
 		return find_package((*name).name);
 	}
 }

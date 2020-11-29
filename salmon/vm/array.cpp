@@ -1,3 +1,4 @@
+#include <compare>
 #include <iostream>
 
 #include <vm/box.hpp>

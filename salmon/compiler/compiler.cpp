@@ -27,7 +27,7 @@ namespace salmon::compiler {
 
 		salmon_check(keyword_pkg, "Keyword package not initialized");
 
-		_keyword_package = &(*keyword_pkg).get();
+		_keyword_package = *keyword_pkg;
 
 		salmon_check(_current_package != nullptr, "Packages not initialized");
 	}
@@ -43,7 +43,7 @@ namespace salmon::compiler {
 	bool Compiler::set_current_package(const std::string &name) {
 		auto internal_pkg = vm.find_package(name);
 		if(internal_pkg) {
-			this->_current_package = &(*internal_pkg).get();
+			this->_current_package = *internal_pkg;
 			return true;
 		}
 		return false;

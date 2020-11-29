@@ -19,7 +19,7 @@ namespace salmon::vm {
 		Package(std::string &&name, MemoryManager &mem_manager);
 
 		Package(const std::string &name, MemoryManager &mem_manager,
-				const std::set<std::reference_wrapper<Package>> &used);
+				const std::set<Package*> &used);
 
 		// Class invariants mean that packages can be moved but not copied.
 		Package(const Package&) = delete;
@@ -46,6 +46,8 @@ namespace salmon::vm {
 		bool is_exported(const Symbol &symbol) const;
 		void export_symbol(const vm_ptr<Symbol> &symbol);
 
+		std::strong_ordering operator<=>(const Package&) const;
+		bool operator==(const Package&) const;
 	private:
 		Package();
 
@@ -54,11 +56,8 @@ namespace salmon::vm {
 		std::map<std::string, vm_ptr<Symbol>,std::less<>> interned;
 		std::map<std::string, vm_ptr<Symbol>,std::less<>> exported;
 
-		std::set<std::reference_wrapper<Package>> used;
+		std::set<Package*> used;
 	};
-
-	bool operator<(const Package &first, const Package &second);
-	bool operator>(const Package &first, const Package &second);
 
 	std::ostream& operator<<(std::ostream &os, const Package &package);
 

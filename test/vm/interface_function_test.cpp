@@ -24,8 +24,8 @@ namespace salmon::vm {
 	}
 
 	static InterfaceFunction init_interface(VirtualMachine &vm) {
-		Package &package = vm.find_package(base_package_name)->get();
-		vm_ptr<Symbol> param_name = package.intern_symbol("param");
+		Package *package = *vm.find_package(base_package_name);
+		vm_ptr<Symbol> param_name = package->intern_symbol("param");
 		auto int_type = vm.get_builtin_type<int>();
 		auto double_type = vm.get_builtin_type<double>();
 

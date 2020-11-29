@@ -1,3 +1,4 @@
+#include <compare>
 #include <vm/package.hpp>
 #include <util/assert.hpp>
 
@@ -18,7 +19,7 @@ namespace salmon::vm {
 		  used() { }
 
 	Package::Package(const std::string &name, MemoryManager &mem_manager,
-					 const std::set<std::reference_wrapper<Package>> &used)
+					 const std::set<Package*> &used)
 		: name(name),
 		  mem_manager{mem_manager},
 		  interned(),
@@ -30,7 +31,7 @@ namespace salmon::vm {
 		auto result = this->exported.find(name);
 		if(result == this->exported.end()) {
 			for(const auto &pkg : this->used) {
-				auto found = pkg.get().find_external_symbol(name);
+				auto found = pkg->find_external_symbol(name);
 				if(found) {
 					return *found;
 				}
@@ -42,7 +43,7 @@ namespace salmon::vm {
 
     vm_ptr<Symbol> Package::intern_symbol(std::string &&name) {
 		for(const auto &pkg : this->used) {
-			auto found = pkg.get().find_external_symbol(name);
+			auto found = pkg->find_external_symbol(name);
 			if(found) {
 				return *found;
 			}
@@ -61,7 +62,7 @@ namespace salmon::vm {
 
     vm_ptr<Symbol> Package::intern_symbol(const std::string &name) {
 		for(const auto &pkg : this->used) {
-			auto found = pkg.get().find_external_symbol(name);
+			auto found = pkg->find_external_symbol(name);
 			if(found) {
 				return *found;
 			}
@@ -80,7 +81,7 @@ namespace salmon::vm {
 
 	std::optional<vm_ptr<Symbol>> Package::find_symbol(const std::string_view name) const {
 		for(const auto &pkg : this->used) {
-			auto found = pkg.get().find_external_symbol(name);
+			auto found = pkg->find_external_symbol(name);
 			if(found) {
 				return *found;
 			}
@@ -102,12 +103,12 @@ namespace salmon::vm {
 		return found != this->exported.end();
 	}
 
-	bool operator<(const Package &first, const Package &second) {
-		return first.name < second.name;
+	std::strong_ordering Package::operator<=>(const Package &other) const {
+		return this->name <=> other.name;
 	}
 
-	bool operator>(const Package &first, const Package &second) {
-		return first.name > second.name;
+	bool Package::operator==(const Package& other) const {
+		return this-> name == other.name;
 	}
 
 	std::ostream& operator<<(std::ostream &os, const Package &package) {
