@@ -12,17 +12,18 @@ namespace salmon::vm {
 		GIVEN( "Two symbols from a different package with the same name") {
 			Package pkg1 = Package("Test1",mem_manager);
 			Package pkg2 = Package("Test2", mem_manager);
-			const Symbol foo_symb("Foo", &pkg1);
-			const Symbol bar_symb("Foo", &pkg2);
+			const Symbol first_symb("Foo", &pkg1);
+			const Symbol second_symb("Foo", &pkg2);
 
 			THEN( "The two symbols are not reported as equal") {
-				REQUIRE(foo_symb != bar_symb);
+				REQUIRE(first_symb != second_symb);
 			}
 			THEN("The correct one is greater than the other.") {
-				REQUIRE(foo_symb < bar_symb);
+				REQUIRE(pkg1 < pkg2);
+				REQUIRE(first_symb < second_symb);
 			}
 			THEN("The correct one is less than the other.") {
-				REQUIRE(!(foo_symb > bar_symb));
+				REQUIRE(second_symb > first_symb);
 			}
 		}
 
