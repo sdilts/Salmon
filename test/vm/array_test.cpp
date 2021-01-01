@@ -8,8 +8,8 @@ namespace salmon::vm {
 		Config fakeConfig;
 		VirtualMachine vm(fakeConfig, "dyn-array-test");
 		WHEN("The empty array is compared") {
-			Array first(0);
-			Array second(0);
+			Vector first(0);
+			Vector second(0);
 			THEN("They are equal") {
 				REQUIRE(first == second);
 			}
@@ -22,10 +22,10 @@ namespace salmon::vm {
 		WHEN("Two identical arrays are compared") {
 			Box one = vm.make_boxed(1);
 			Box two = vm.make_boxed(2);
-			Array first(2);
+			Vector first(2);
 			first.push_back(one);
 			first.push_back(two);
-			Array second(2);
+			Vector second(2);
 			second.push_back(one);
 			second.push_back(two);
 			THEN("They are equal") {
@@ -40,9 +40,9 @@ namespace salmon::vm {
 		WHEN("[1 2] and [1] are compared") {
 			Box one = vm.make_boxed(1);
 			Box two = vm.make_boxed(2);
-			Array first(2);
+			Vector first(2);
 			first.push_back(two);
-			Array second(2);
+			Vector second(2);
 			second.push_back(one);
 			second.push_back(two);
 			THEN("They are not equal") {

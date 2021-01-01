@@ -427,7 +427,7 @@ namespace salmon::compiler {
 
 	static salmon::vm::Box read_array(std::istream &input, Compiler &compiler) {
 		std::list<salmon::vm::Box> collected_items = collect_list(input, ReadResult::R_BRACKET, compiler);
-		vm::vm_ptr<vm::Array> array = compiler.vm.mem_manager.allocate_obj<vm::Array>(collected_items.size());
+		vm::vm_ptr<vm::Vector> array = compiler.vm.mem_manager.allocate_obj<vm::Vector>(collected_items.size());
 		for(salmon::vm::Box &box : collected_items) {
 			array->push_back(box);
 		}

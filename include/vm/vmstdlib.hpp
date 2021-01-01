@@ -26,10 +26,10 @@ namespace salmon::vm {
 	}
 
 	Box print_array(VirtualMachine *vm, InternalBox box) {
-		salmon_check(*box.type == *vm->get_builtin_type<Array>(), "Given type is not an array");
+                salmon_check(*box.type == *vm->get_builtin_type<Vector>(), "Given type is not an array");
 		vm_ptr<Symbol> print_symb = vm->base_package().intern_symbol("print");
 		vm_ptr<VmFunction> print_fn = *vm->fn_table.get_fn(print_symb);
-		Array *arr = std::get<Array*>(box.elem);
+                Vector *arr = std::get<Vector*>(box.elem);
 
 		std::cout << '[';
 		auto iter = arr->begin();

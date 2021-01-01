@@ -54,7 +54,7 @@ namespace salmon::vm {
 			std::make_pair(vm->get_builtin_type<int32_t>(),      print_primitive<int32_t>),
 			std::make_pair(vm->get_builtin_type<bool>(),         print_primitive<bool>),
 			std::make_pair(vm->get_builtin_type<Empty>(),        print_primitive<Empty>),
-			std::make_pair(vm->get_builtin_type<Array>(),        print_array),
+            std::make_pair(vm->get_builtin_type<Vector>(),        print_array),
 			std::make_pair(vm->get_builtin_type<List>(),         print_list),
 		};
 
@@ -175,7 +175,7 @@ namespace salmon::vm {
 									  "const-string", "Constant string type used by the vm");
 		init_primitive_type<List>(base_package, t_table, builtin_map,
 							 "list", "Linked List used by the vm");
-		init_primitive_type<Array>(base_package, t_table, builtin_map,
+        init_primitive_type<Vector>(base_package, t_table, builtin_map,
 							   "dyn-array", "Dynamic array used by the vm");
 		init_primitive_type<Symbol>(base_package, t_table, builtin_map,
 								"symbol", "symbol");

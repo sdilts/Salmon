@@ -17,13 +17,13 @@
 namespace salmon::vm {
 
 	struct List;
-	struct Array;
+	struct Vector;
 
 	using BoxVariant = std::variant<int32_t,
 					double,
 					bool,
 					Empty,
-					Array*,
+					Vector*,
 					Symbol*,
 					List*,
 					StaticString*>;
@@ -125,10 +125,11 @@ namespace salmon::vm {
 		vm_ptr<Type> type_ptr;
 	};
 
-	struct Array : public AllocatedItem {
-		Array(int32_t size);
+	struct Vector : public AllocatedItem {
+		Vector(int32_t size);
 
 		void push_back(const Box &item);
+		void push_back(const InternalBox item);
 
 		std::vector<InternalBox>::iterator begin();
 		std::vector<InternalBox>::iterator end();
@@ -145,10 +146,10 @@ namespace salmon::vm {
 
 		size_t size() const;
 
-		auto operator<=>(const Array &other) const {
+		auto operator<=>(const Vector &other) const {
 			return other.items <=> this->items;
 		}
-		bool operator==(const Array &other) const {
+		bool operator==(const Vector &other) const {
 			return this->items == other.items;
 		}
 	private:

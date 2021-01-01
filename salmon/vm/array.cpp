@@ -5,55 +5,59 @@
 
 namespace salmon::vm {
 
-	Array::Array(int32_t size) :
+	Vector::Vector(int32_t size) :
 		items{} {
 		items.reserve(size);
 	}
 
-	void Array::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
+	void Vector::get_roots(const std::function<void(AllocatedItem*)>& inserter) const {
 		for(const InternalBox &box : items) {
 			box.get_roots(inserter);
 
 		}
 	}
 
-	void Array::push_back(const Box &item) {
+	void Vector::push_back(const Box &item) {
 		items.push_back(item.bare());
 	}
 
-	std::vector<InternalBox>::iterator Array::begin() {
+	void Vector::push_back(const InternalBox item) {
+		items.push_back(std::move(item));
+	}
+
+	std::vector<InternalBox>::iterator Vector::begin() {
 		return items.begin();
 	}
 
-	std::vector<InternalBox>::iterator Array::end() {
+	std::vector<InternalBox>::iterator Vector::end() {
 		return items.end();
 	}
 
-	void Array::print_debug_info() const {
+	void Vector::print_debug_info() const {
 		std::cerr << "Array " << items.size() << " " << this << std::endl;
 	}
 
-	size_t Array::allocated_size() const {
-		return sizeof(Array);
+	size_t Vector::allocated_size() const {
+		return sizeof(Vector);
 	}
 
-	InternalBox &Array::operator[](size_t index) {
+	InternalBox &Vector::operator[](size_t index) {
 		return items[index];
 	}
 
-	const InternalBox &Array::operator[](size_t index) const {
+	const InternalBox &Vector::operator[](size_t index) const {
 		return items[index];
 	}
 
-	InternalBox &Array::at(size_t index) {
+	InternalBox &Vector::at(size_t index) {
 		return items.at(index);
 	}
 
-	const InternalBox &Array::at(size_t index) const {
+	const InternalBox &Vector::at(size_t index) const {
 		return items.at(index);
 	}
 
-	size_t Array::size() const {
+	size_t Vector::size() const {
 		return items.size();
 	}
 }
