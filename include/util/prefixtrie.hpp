@@ -7,6 +7,7 @@
 #include <iostream>
 #include <functional>
 #include <set>
+#include <optional>
 
 namespace salmon {
 

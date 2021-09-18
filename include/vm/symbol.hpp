@@ -4,6 +4,7 @@
 #include <string>
 #include <set>
 #include <ostream>
+#include <optional>
 
 #include <vm/allocateditem.hpp>
 
