@@ -31,7 +31,7 @@ namespace salmon::vm {
 	struct InternalBox {
 		Type* type;
 		BoxVariant elem;
-	        void get_roots(const std::function<void(AllocatedItem*)>&) const;
+		void get_roots(const std::function<void(AllocatedItem*)>&) const;
 	};
 	std::partial_ordering operator<=>(const InternalBox &lhs, const InternalBox &rhs);
 	bool operator==(const InternalBox &lhs, const InternalBox &rhs);
