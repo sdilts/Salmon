@@ -10,17 +10,17 @@
 
 namespace salmon::vm {
 
-	Symbol::Symbol(const std::string &name, const std::optional<Package*> &package)
+	Symbol::Symbol(const std::string &name, Package* package)
 		: name{name}, package{package} {}
 
-	Symbol::Symbol(const std::string &&name, const std::optional<Package*> &package)
+	Symbol::Symbol(const std::string &&name, Package* package)
 		: name(name), package{package} {}
 
 	Symbol::Symbol(const std::string &name) :
-		name{name}, package{std::nullopt} {}
+		name{name}, package{nullptr} {}
 
 	Symbol::Symbol(const std::string &&name) :
-		name(name), package{std::nullopt} {}
+		name(name), package{nullptr} {}
 
 	Symbol::~Symbol() { }
 
@@ -54,8 +54,8 @@ namespace salmon::vm {
 
 	std::ostream& operator<<(std::ostream &os, const Symbol &symbol) {
 		if(symbol.package) {
-			os << (*symbol.package)->name;
-			if((*symbol.package)->is_exported(symbol)) {
+			os << symbol.package->name;
+			if(symbol.package->is_exported(symbol)) {
 				os << ":";
 			} else {
 				os << "::";

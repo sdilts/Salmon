@@ -40,12 +40,13 @@ namespace salmon::vm {
 			}
 			THEN("The correct one is less than the other.") {
 				REQUIRE(!(foo_symb > bar_symb));
+				REQUIRE(bar_symb > foo_symb);
 			}
 		}
 
 		GIVEN( "Two symbols with the same name but not interned") {
-			const Symbol foo_symb("foo", std::nullopt);
-			const Symbol bar_symb("foo", std::nullopt);
+			const Symbol foo_symb("foo");
+			const Symbol bar_symb("foo");
 
 			THEN( "The two symbols aren't equal") {
 				REQUIRE(foo_symb != bar_symb);
@@ -57,7 +58,7 @@ namespace salmon::vm {
 			}
 		}
 		GIVEN( "A symbol without a package") {
-			const Symbol foo_symb("foo", std::nullopt);
+			const Symbol foo_symb("foo");
 
 			THEN( "It is equal to itself." ) {
 				REQUIRE(foo_symb == foo_symb);

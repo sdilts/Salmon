@@ -9,7 +9,7 @@ namespace salmon::vm {
 
 	MemoryManager manager;
 
-	auto type_symb = manager.allocate_obj<Symbol>("type", std::nullopt);
+	auto type_symb = manager.allocate_obj<Symbol>("type");
 
 	TypeTable table(manager);
 	auto type = table.make_primitive(type_symb, "", sizeof(int));
@@ -41,7 +41,7 @@ namespace salmon::vm {
 	}
 
 	SCENARIO( "An InternalBox contains a symbol", "[box, vm]") {
-		Symbol *symb = new Symbol("foo", std::nullopt);
+		Symbol *symb = new Symbol("foo");
 		InternalBox box = { type.get(), symb };
 		WHEN("The roots are given") {
 			std::vector<AllocatedItem*> roots;

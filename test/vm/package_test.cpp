@@ -61,7 +61,8 @@ namespace salmon::vm {
 				THEN( "The given symbol is the one from the parent.") {
 					REQUIRE(*other != *foo_symb);
 					if((*other).package) {
-						REQUIRE(*(*other).package != &parent1);
+						REQUIRE(other->package != &parent1);
+						REQUIRE(other->package == &child);
 					} else {
 						REQUIRE(false);
 					}
@@ -73,7 +74,7 @@ namespace salmon::vm {
 				THEN( "The given symbol is the one from the parent.") {
 					REQUIRE(*other != *bar_symb);
 					if((*other).package) {
-						REQUIRE(*(*other).package != &parent2);
+						REQUIRE(other->package != &parent2);
 					} else {
 						REQUIRE(false);
 					}
@@ -125,7 +126,7 @@ namespace salmon::vm {
 		GIVEN("Two packages with names \"abcd\" and \"abcd\"") {
 			Package abc("abcd", manager);
 			Package xyz("xyz", manager);
-			THEN("the packages are equal") {
+			THEN("xyz packages is greater than abcd") {
 				REQUIRE(xyz > abc);
 			}
 		}

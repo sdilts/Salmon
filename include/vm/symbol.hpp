@@ -15,12 +15,15 @@ namespace salmon::vm {
 
 	struct Symbol : public AllocatedItem {
 		const std::string name;
-		std::optional<Package*> package;
+		// Having this as a pointer is a real big footgun,
+		// as it means packages can't be moved once symbols have
+		// been interned in them *unless* the symbol pointers are updated.
+		Package* package;
 
-		Symbol(const std::string&, const std::optional<Package*>&);
+		Symbol(const std::string&, Package*);
 		Symbol(const std::string&);
 		Symbol(const std::string&&);
-		Symbol(const std::string&&, const std::optional<Package*>&);
+		Symbol(const std::string&&, Package*);
 		Symbol(const Symbol&) = delete;
 		Symbol(Symbol &&) = default;
 
